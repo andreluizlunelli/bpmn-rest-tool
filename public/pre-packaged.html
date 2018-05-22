@@ -11,7 +11,7 @@
 <script src="https://unpkg.com/bpmn-js@0.27.0-1/dist/bpmn-viewer.development.js"></script>
 <script>
     // the diagram we are going to display
-    var bpmnXML = 'diagram.bpmn';
+    var bpmnXML = 'complexo.bpmn';
 
     // BpmnJS is the BPMN viewer instance
     var viewer = new BpmnJS({container: '#canvas'});
@@ -35,7 +35,7 @@
         }
     };
 
-    xhr.open('GET', 'diagram.bpmn', true);
+    xhr.open('GET', bpmnXML, true);
     xhr.send(null);
 
 </script>

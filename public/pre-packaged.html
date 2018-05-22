@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HELLO WORLD</title>
+</head>
+<body>
+<div id="canvas"></div>
+
+<!-- replace CDN url with local bpmn-js path -->
+<script src="https://unpkg.com/bpmn-js@0.27.0-1/dist/bpmn-viewer.development.js"></script>
+<script>
+    // the diagram we are going to display
+    var bpmnXML = 'complexo.bpmn';
+
+    // BpmnJS is the BPMN viewer instance
+    var viewer = new BpmnJS({container: '#canvas'});
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            // import a BPMN 2.0 diagram
+            viewer.importXML(xhr.response, function (err) {
+                if (err) {
+                    // import failed :-(
+                    console.log(err.message);
+                } else {
+                    // we did well!
+
+                    var canvas = viewer.get('canvas');
+                    canvas.zoom('fit-viewport');
+                }
+            });
+        }
+    };
+
+    xhr.open('GET', bpmnXML, true);
+    xhr.send(null);
+
+</script>
+</body>
+</html>

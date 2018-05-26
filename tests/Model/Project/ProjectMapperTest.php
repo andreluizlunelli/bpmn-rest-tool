@@ -11,7 +11,7 @@ namespace andreluizlunelli\TestBpmnRestTool\Model\Project;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use PHPUnit\Framework\TestCase;
 
-class MapProject extends TestCase
+class ProjectMapperTest extends TestCase
 {
 
     public function testMapearArquivoProjectEmObjeto()
@@ -24,6 +24,5 @@ class MapProject extends TestCase
         self::assertEquals('Project management plan.xml', $project->getNameFile());
         self::assertCount(128, $project->getTasks());
     }
-
 
 }

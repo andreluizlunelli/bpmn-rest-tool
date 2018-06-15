@@ -9,11 +9,26 @@
 namespace andreluizlunelli\TestBpmnRestTool\Model\BPMN;
 
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Bpmn;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnBuilder;
+use andreluizlunelli\BpmnRestTool\Model\Project\ProjectEntity;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use PHPUnit\Framework\TestCase;
 
 class BpmnTest extends TestCase
 {
+    /**
+     * @var ProjectEntity
+     */
+    private $projectEntity;
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management plan.xml'));
+    }
+
     public function testCriarBpmnXml()
     {
         $mapper = new ProjectMapper();
@@ -23,4 +38,25 @@ class BpmnTest extends TestCase
         $bpmn = new Bpmn($projectEntity);
         $bpmn->createXml();
     }
+
+    public function testBuildMetadata()
+    {
+        $bpmn = new BpmnBuilder($this->projectEntity);
+
+        $actual = $bpmn->buildMetadata();
+
+        $expected = [
+            'type' => 'StartEvent'
+            , 'id' => 'StartEvent_1'
+            , 'name' => 'Project Management for MS Website'
+            , 'outgoing' => [[
+                'type' => 'EndEvent'
+                , 'id' => 'EndEvent_2'
+                , 'name' => 'Initiating'
+            ]]
+        ];
+
+        self::assertEquals($expected, $actual);
+    }
+
 }

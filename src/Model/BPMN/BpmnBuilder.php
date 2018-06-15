@@ -40,37 +40,40 @@ class BpmnBuilder
         if (empty($this->project->getTasks()))
             throw new ArrayEmptyException();
 
-        $listElement = [];
+        $rootEl = null;
         $listTasks = $this->project->getTasks();
 
         /** @var TypeElementInterface $previousElement */
         $previousElement = null;
 
-        array_walk($listTasks, function ($item, $k) use ($listElement, $previousElement) {
-            $actualElement = $this->createElement($listElement, $item, $k, $previousElement);
+        $countTasks = count($listTasks);
 
-            array_push($listElement, $actualElement);
+        array_walk($listTasks, function ($item, $k) use (&$rootEl, &$previousElement, $countTasks) {
+            $actualElement = $this->createElement($countTasks, $item, $k, $previousElement);
+
+            if (empty($rootEl))
+                $rootEl = $actualElement;
 
             $previousElement = $actualElement;
         });
 
-        return $listElement;
+        return $rootEl;
     }
 
     /**
-     * @param array $listElement
+     * @param int $countTasks
      * @param ProjectTask $task
      * @param $key
      * @param TypeElementAbstract|null $previousElement
      * @return TypeElementInterface
      * @throws \Exception
      */
-    public function createElement(array $listElement, ProjectTask $task, $key, ?TypeElementAbstract $previousElement): TypeElementInterface
+    private function createElement(int $countTasks, ProjectTask $task, $key, ?TypeElementAbstract $previousElement): TypeElementInterface
     {
         if (empty($previousElement)) // primeiro elemento
             return StartEvent::createFromTask($task);
 
-        if (count($listElement)-1 == $key) // ultimo elemento
+        if ($countTasks-1 == $key) // ultimo elemento
             return $previousElement->addOutgoing(
                 EndEvent::createFromTask($task)
             );

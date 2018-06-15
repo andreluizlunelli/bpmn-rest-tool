@@ -10,7 +10,7 @@ namespace andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType;
 
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 
-interface TypeElementInterface
+interface TypeElementInterface extends \JsonSerializable
 {
-    public static function createFromTask(ProjectTask $task): self;
+    public static function createFromTask(ProjectTask $task): TypeElementInterface;
 }

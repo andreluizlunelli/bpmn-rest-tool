@@ -26,7 +26,7 @@ class BpmnTest extends TestCase
         parent::setUp();
 
         $this->projectEntity = (new ProjectMapper())
-            ->map(new \SplFileObject('../../bpmn_xml/Project management plan.xml'));
+            ->map(new \SplFileObject('../../bpmn_xml/SequenceFlowTag_TestCriarTags01Project.xml'));
     }
 
     public function testCriarBpmnXml()
@@ -45,18 +45,25 @@ class BpmnTest extends TestCase
 
         $actual = $bpmn->buildMetadata();
 
+        $tasks = $this->projectEntity->getTasks();
+
         $expected = [
             'type' => 'StartEvent'
-            , 'id' => 'StartEvent_1'
+            , 'id' => current($tasks)->getId()
             , 'name' => 'Project Management for MS Website'
+            , 'startDate' => '2018-05-16 08:00:00'
+            , 'finishDate' => '2018-09-10 17:00:00'
             , 'outgoing' => [[
                 'type' => 'EndEvent'
-                , 'id' => 'EndEvent_2'
+                , 'id' => next($tasks)->getId()
                 , 'name' => 'Initiating'
+                , 'startDate' => '2018-05-16 08:00:00'
+                , 'finishDate' => '2018-05-25 12:00:00'
+                , 'outgoing' => []
             ]]
         ];
 
-        self::assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual->jsonSerialize());
     }
 
 }

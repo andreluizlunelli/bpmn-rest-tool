@@ -10,7 +10,7 @@ namespace andreluizlunelli\BpmnRestTool\Model\BPMN;
 
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectEntity;
 
-class Bpmn
+class _Bpmn
 {
     /**
      * @var ProjectEntity

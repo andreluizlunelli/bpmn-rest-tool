@@ -63,18 +63,4 @@ EOF;
         self::assertEquals($expected, $xml);
     }
 
-    public function testArrayToXml()
-    {
-        $result = ArrayToXml::convert($this->rootEl->jsonSerialize(), [
-            'rootElementName' => 'definitions'
-            , '_attributes' => [
-                'xmlns' => 'http://www.omg.org/spec/BPMN/20100524/MODEL'
-            ],
-        ]);
-
-        ArrayToXml::convert(['task' => [ 0 =>'asdf', 1 => 'qwer']]);
-
-        var_dump($result);
-    }
-
 }

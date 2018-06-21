@@ -13,6 +13,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use PHPUnit\Framework\TestCase;
+use Spatie\ArrayToXml\ArrayToXml;
 
 class BpmnBuilderTest extends TestCase
 {
@@ -41,7 +42,7 @@ class BpmnBuilderTest extends TestCase
 
         $expected = <<<EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="http://bpmn.io" exporterVersion="0.10.1">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <process id="Process_1" isExecutable="false">
     <sequenceFlow id="SequenceFlow_1" name="" sourceRef="StartEvent_1" targetRef="Task_1" />
     <sequenceFlow id="SequenceFlow_2" sourceRef="Task_1" targetRef="ExclusiveGateway_1" />
@@ -61,4 +62,19 @@ EOF;
 
         self::assertEquals($expected, $xml);
     }
+
+    public function testArrayToXml()
+    {
+        $result = ArrayToXml::convert($this->rootEl->jsonSerialize(), [
+            'rootElementName' => 'definitions'
+            , '_attributes' => [
+                'xmlns' => 'http://www.omg.org/spec/BPMN/20100524/MODEL'
+            ],
+        ]);
+
+        ArrayToXml::convert(['task' => [ 0 =>'asdf', 1 => 'qwer']]);
+
+        var_dump($result);
+    }
+
 }

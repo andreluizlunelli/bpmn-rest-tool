@@ -13,4 +13,17 @@ use andreluizlunelli\BpmnRestTool\Model\Traits\CreateFromTask;
 class TaskActivity extends TypeElementAbstract
 {
     use CreateFromTask;
+
+    public function createArrayForXml()
+    {
+        return [
+            'task' => [
+                '_attributes' => [
+                    'id' => $this->id
+                    , 'name' => $this->name
+                ]
+            ]
+        ];
+    }
+
 }

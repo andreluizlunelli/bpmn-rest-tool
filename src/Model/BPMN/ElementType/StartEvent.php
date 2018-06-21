@@ -13,4 +13,17 @@ use andreluizlunelli\BpmnRestTool\Model\Traits\CreateFromTask;
 class StartEvent extends TypeElementAbstract
 {
     use CreateFromTask;
+
+    public function createArrayForXml()
+    {
+        return [
+            'startEvent' => [
+                '_attributes' => [
+                    'id' => $this->id
+                    , 'name' => $this->name
+                ]
+            ]
+        ];
+    }
+
 }

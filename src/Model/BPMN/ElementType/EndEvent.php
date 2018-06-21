@@ -13,4 +13,17 @@ use andreluizlunelli\BpmnRestTool\Model\Traits\CreateFromTask;
 class EndEvent extends TypeElementAbstract
 {
     use CreateFromTask;
+
+    public function createArrayForXml()
+    {
+        return [
+            'endEvent' => [
+                '_attributes' => [
+                    'id' => $this->id
+                    , 'name' => $this->name
+                ]
+            ]
+        ];
+    }
+
 }

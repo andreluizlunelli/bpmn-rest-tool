@@ -14,9 +14,9 @@ class TaskActivity extends TypeElementAbstract
 {
     use CreateFromTask;
 
-    public function createArrayForXml()
+    public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     {
-        return [
+        $xmlArray = [
             'task' => [
                 '_attributes' => [
                     'id' => $this->id
@@ -24,6 +24,14 @@ class TaskActivity extends TypeElementAbstract
                 ]
             ]
         ];
+
+        if ( ! empty($incoming))
+            $xmlArray['task']['incoming'] = $incoming;
+
+        if ( ! empty($outgoing))
+            $xmlArray['task']['outgoing'] = $outgoing;
+
+        return $xmlArray;
     }
 
 }

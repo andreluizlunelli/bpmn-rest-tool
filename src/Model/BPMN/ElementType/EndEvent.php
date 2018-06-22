@@ -14,9 +14,9 @@ class EndEvent extends TypeElementAbstract
 {
     use CreateFromTask;
 
-    public function createArrayForXml()
+    public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     {
-        return [
+        $xmlArray = [
             'endEvent' => [
                 '_attributes' => [
                     'id' => $this->id
@@ -24,6 +24,11 @@ class EndEvent extends TypeElementAbstract
                 ]
             ]
         ];
+
+        if ( ! empty($incoming))
+            $xmlArray['endEvent']['incoming'] = $incoming;
+
+        return $xmlArray;
     }
 
 }

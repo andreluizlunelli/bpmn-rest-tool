@@ -23,7 +23,7 @@ abstract class TypeElementAbstract implements TypeElementInterface
 
     public function __construct(string $id, string $name, DateTime $startDate, DateTime $finishDate, array $outgoing = [])
     {
-        $this->id = $id;
+        $this->id = "{$this->getNameWithoutNamespace()}_$id";
         $this->name = $name;
         $this->startDate = $startDate;
         $this->finishDate = $finishDate;

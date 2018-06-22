@@ -8,6 +8,9 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use Spatie\ArrayToXml\ArrayToXml;
 
@@ -29,33 +32,119 @@ class BpmnBuilder
 
     public function buildXml(): string
     {
-        $xml = $sequence = [];
-        $previousEl = $nextEl = null;
+        $xml = $sequences = [];
+        $previousEl = $nextEl = $next2 = null;
         $actualEl = $this->rootEl;
 
         do {
-            $arrayForXml = $actualEl->createArrayForXml();
+            $arrayForXml = $this->createNode($previousEl, $actualEl, $next2, $sequences);
 
             $k = key($arrayForXml);
-
             $xml[$k][] = $arrayForXml[$k];
 
             /** @var TypeElementAbstract $nextEl */
-            $nextEl = current($actualEl->getOutgoing()); // aqui pode vir uma lista, que seria uma arvore binária
+            $nextEl = current($actualEl->getOutgoing()); // aqui poderá no futuro vir uma lista, que sera uma arvore binária
 
             $previousEl = $actualEl;
-
             $actualEl = $nextEl;
+
+            $next2 = $nextEl ? current($nextEl->getOutgoing()) : null;
 
         } while ( ! empty($nextEl));
 
-        $a = ArrayToXml::convert($xml, [
+        $this->createSequencesNode($xml, $sequences);
+
+        $processNode = [
+            'process' => [
+                '_attributes' => [
+                    'id' => 'Process_1'
+                    , 'isExecutable' => false
+                ]
+            ]
+        ];
+
+        $processNode['process'] = array_merge($processNode['process'], $xml);
+
+        $a = ArrayToXml::convert($processNode, [
             'rootElementName' => 'definitions'
             , '_attributes' => [
                 'xmlns' => 'http://www.omg.org/spec/BPMN/20100524/MODEL'
             ],
         ]);
         return $a;
+    }
+
+    /**
+     * @param TypeElementAbstract $previousEl
+     * @param TypeElementAbstract $actualEl
+     * @param TypeElementAbstract $nextEl
+     * @param array $sequences
+     * @return array
+     * @throws \Exception
+     */
+    private function createNode($previousEl = null, $actualEl, $nextEl = null, array &$sequences): array
+    {
+        // todo antes de adicionar na sequences eu tenho que verificar se já existe uma sequence com os mesmos valores de $sourceRef e $targetRef
+
+        $incoming = $outgoing = null;
+
+        switch (get_class($actualEl)) {
+            case StartEvent::class:
+                $sourceRef = $actualEl->getId();
+                $targetRef = $nextEl->getId();
+                if ( ! empty($sourceRef) && ! empty($targetRef))
+                    $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+                break;
+            case EndEvent::class:
+                $sourceRef = $previousEl->getId();
+                $targetRef = $actualEl->getId();
+                if ( ! empty($sourceRef) && ! empty($targetRef))
+                    $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+                break;
+            case TaskActivity::class:
+                $sourceRef = $previousEl->getId();
+                $targetRef = $actualEl->getId();
+                if ( ! empty($sourceRef) && ! empty($targetRef))
+                    $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                $sourceRef = $actualEl->getId();
+                $targetRef = $nextEl->getId();
+                if ( ! empty($sourceRef) && ! empty($targetRef))
+                    $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+                break;
+            default:
+                throw new \Exception('Não existe a classe para o nodo');
+        }
+
+        $r = $actualEl->createArrayForXml(
+            $incoming ? $incoming->getId() : ''
+            , $outgoing ? $outgoing->getId() : ''
+        );
+
+        return $r;
+    }
+
+    private function createSequencesNode(&$xml, $sequences)
+    {
+        array_walk($sequences, function ($item, $k) use (&$xml) {
+            /** @var Sequence $item */
+            return $xml['sequenceFlow'][] = $item->createArrayForXml()['sequenceFlow'];
+        });
+    }
+
+    private function addSequence($sourceRef, $targetRef, &$sequences): Sequence
+    {
+        // verifica se já exite antes de dar um array push
+
+        /** @var Sequence $s */
+        foreach ($sequences as $s)
+            if (($s->getSourceRef() == $sourceRef)
+                && ($s->getTargetRef() == $targetRef))
+                return $s;
+
+        $seq = new Sequence($sourceRef, $targetRef);
+        array_push($sequences, $seq);
+        return $seq;
     }
 
 }

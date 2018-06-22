@@ -13,7 +13,6 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use PHPUnit\Framework\TestCase;
-use Spatie\ArrayToXml\ArrayToXml;
 
 class BpmnBuilderTest extends TestCase
 {

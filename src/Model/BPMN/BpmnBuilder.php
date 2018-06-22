@@ -54,6 +54,8 @@ class BpmnBuilder
 
         $this->createSequencesNode($xml, $sequences);
 
+        $this->normalizeIncomingOutgoing($xml, $sequences);
+
         $processNode = [
             'process' => [
                 '_attributes' => [
@@ -90,25 +92,25 @@ class BpmnBuilder
 
         switch (get_class($actualEl)) {
             case StartEvent::class:
-                $sourceRef = $actualEl->getId();
-                $targetRef = $nextEl->getId();
+                $sourceRef = $actualEl ? $actualEl->getId() : '';
+                $targetRef = $nextEl ? $nextEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
                 break;
             case EndEvent::class:
-                $sourceRef = $previousEl->getId();
-                $targetRef = $actualEl->getId();
+                $sourceRef = $previousEl ? $previousEl->getId() : '';
+                $targetRef = $actualEl ? $actualEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
                 break;
             case TaskActivity::class:
-                $sourceRef = $previousEl->getId();
-                $targetRef = $actualEl->getId();
+                $sourceRef = $previousEl ? $previousEl->getId() : '';
+                $targetRef = $actualEl ? $actualEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
 
-                $sourceRef = $actualEl->getId();
-                $targetRef = $nextEl->getId();
+                $sourceRef = $actualEl ? $actualEl->getId() : '';
+                $targetRef = $nextEl ? $nextEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
                 break;
@@ -124,7 +126,7 @@ class BpmnBuilder
         return $r;
     }
 
-    private function createSequencesNode(&$xml, $sequences)
+    private function createSequencesNode(array &$xml, array $sequences): void
     {
         array_walk($sequences, function ($item, $k) use (&$xml) {
             /** @var Sequence $item */
@@ -145,6 +147,22 @@ class BpmnBuilder
         $seq = new Sequence($sourceRef, $targetRef);
         array_push($sequences, $seq);
         return $seq;
+    }
+
+    private function normalizeIncomingOutgoing(array &$xml, array $sequences): void
+    {
+        $fn = function (&$item, $k) use ($sequences) {
+            /** @var Sequence $s */
+            foreach ($sequences as $s) {
+                if ($item['_attributes']['id'] == $s->getSourceRef())
+                    $item['outgoing'] = $s->getId();
+                if ($item['_attributes']['id'] == $s->getTargetRef())
+                    $item['incoming'] = $s->getId();
+            }
+        };
+        array_walk($xml['task'], $fn);
+        array_walk($xml['endEvent'], $fn);
+        array_walk($xml['startEvent'], $fn);
     }
 
 }

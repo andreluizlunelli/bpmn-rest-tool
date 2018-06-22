@@ -70,7 +70,11 @@ class BpmnBuilder
         $a = ArrayToXml::convert($processNode, [
             'rootElementName' => 'definitions'
             , '_attributes' => [
-                'xmlns' => 'http://www.omg.org/spec/BPMN/20100524/MODEL'
+                'xmlns' => "http://www.omg.org/spec/BPMN/20100524/MODEL"
+                , 'xmlns:bpmndi' => "http://www.omg.org/spec/BPMN/20100524/DI"
+                , 'xmlns:omgdi' => "http://www.omg.org/spec/DD/20100524/DI"
+                , 'xmlns:omgdc' => "http://www.omg.org/spec/DD/20100524/DC"
+                , 'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance"
             ],
         ]);
         return $a;

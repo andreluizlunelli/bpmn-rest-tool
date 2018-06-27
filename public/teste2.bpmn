@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<process id="Process_1" isExecutable="">
+		<startEvent id="StartEvent_5b33ff84bcb3b" name="Project Management for MS Website">
+			<outgoing>sequenceFlow_5b33ff84d1201</outgoing>
+		</startEvent>
+		<task id="TaskActivity_5b33ff84c39b7" name="Initiating">
+			<incoming>sequenceFlow_5b33ff84d1201</incoming>
+			<outgoing>sequenceFlow_5b33ff84d136a</outgoing>
+		</task>
+		<endEvent id="EndEvent_5b33ff84c75d1" name="Develop Project Charter">
+			<incoming>sequenceFlow_5b33ff84d136a</incoming>
+		</endEvent>
+		<sequenceFlow id="sequenceFlow_5b33ff84d1201" sourceRef="StartEvent_5b33ff84bcb3b" targetRef="TaskActivity_5b33ff84c39b7"/>
+		<sequenceFlow id="sequenceFlow_5b33ff84d136a" sourceRef="TaskActivity_5b33ff84c39b7" targetRef="EndEvent_5b33ff84c75d1"/>
+	</process>
+	<bpmndi:BPMNDiagram id="BpmnDiagram_1">
+		<bpmndi:BPMNPlane bpmnElement="Process_1" id="BpmnPlane_1">
+			<bpmndi:BPMNEdge bpmnElement="sequenceFlow_5b33ff84d1201" id="sequenceFlow_5b33ff84d1201_gui">
+				<omgdi:waypoint x="275" y="202"/>
+				<omgdi:waypoint x="341" y="202"/>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge bpmnElement="sequenceFlow_5b33ff84d136a" id="sequenceFlow_5b33ff84d136a_gui">
+				<omgdi:waypoint x="441" y="202"/>
+				<omgdi:waypoint x="507" y="202"/>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNShape bpmnElement="StartEvent_5b33ff84bcb3b" id="StartEvent_5b33ff84bcb3b_di">
+				<omgdc:Bounds height="80" width="100" x="673" y="184"/>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape bpmnElement="EndEvent_5b33ff84c75d1" id="EndEvent_5b33ff84c75d1_di">
+				<omgdc:Bounds height="80" width="100" x="839" y="184"/>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape bpmnElement="TaskActivity_5b33ff84c39b7" id="TaskActivity_5b33ff84c39b7_di">
+				<omgdc:Bounds height="80" width="100" x="1005" y="184"/>
+			</bpmndi:BPMNShape>
+		</bpmndi:BPMNPlane>
+	</bpmndi:BPMNDiagram>
+</definitions>

@@ -67,17 +67,24 @@ class BpmnBuilder
 
         $processNode['process'] = array_merge($processNode['process'], $xml);
 
-        $a = ArrayToXml::convert($processNode, [
-            'rootElementName' => 'definitions'
-            , '_attributes' => [
-                'xmlns' => "http://www.omg.org/spec/BPMN/20100524/MODEL"
-                , 'xmlns:bpmndi' => "http://www.omg.org/spec/BPMN/20100524/DI"
-                , 'xmlns:omgdi' => "http://www.omg.org/spec/DD/20100524/DI"
-                , 'xmlns:omgdc' => "http://www.omg.org/spec/DD/20100524/DC"
-                , 'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance"
-            ],
-        ]);
-        return $a;
+        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($xml);
+
+        try {
+            $a = ArrayToXml::convert($processNode, [
+                'rootElementName' => 'definitions'
+                , '_attributes' => [
+                    'xmlns' => "http://www.omg.org/spec/BPMN/20100524/MODEL"
+                    , 'xmlns:bpmndi' => "http://www.omg.org/spec/BPMN/20100524/DI"
+                    , 'xmlns:omgdi' => "http://www.omg.org/spec/DD/20100524/DI"
+                    , 'xmlns:omgdc' => "http://www.omg.org/spec/DD/20100524/DC"
+                    , 'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance"
+                ],
+            ]);
+        } catch (\DOMException $e) {
+            $a = 0;
+        }
+
+        return $this->normalizeXMLString($a);
     }
 
     /**
@@ -90,8 +97,6 @@ class BpmnBuilder
      */
     private function createNode($previousEl = null, $actualEl, $nextEl = null, array &$sequences): array
     {
-        // todo antes de adicionar na sequences eu tenho que verificar se já existe uma sequence com os mesmos valores de $sourceRef e $targetRef
-
         $incoming = $outgoing = null;
 
         switch (get_class($actualEl)) {
@@ -167,6 +172,118 @@ class BpmnBuilder
         array_walk($xml['task'], $fn);
         array_walk($xml['endEvent'], $fn);
         array_walk($xml['startEvent'], $fn);
+    }
+
+    private function createXmlLayoutShape(array $xml): array
+    {
+        $xmlLayout = [];
+
+        $s = $xml['sequenceFlow'] ?? null;
+        $startEvent = $xml['startEvent'] ?? null;
+        $endEvent = $xml['endEvent'] ?? null;
+        $task = $xml['task'] ?? null;
+
+        $h = 275; $s = 66;
+
+        if (! empty($s)) {
+            array_walk($xml['sequenceFlow'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+                $x['_attributes']['id'] = $item['_attributes']['id'] . '_gui';
+                $x['_attributes']['bpmnElement'] = $item['_attributes']['id'];
+
+                $o1 = ['_attributes' => [
+                        'x' => $h
+                        , 'y' => 202]];
+                $o2 = ['_attributes' => [
+                        'x' => $h + $s
+                        , 'y' => 202]];
+
+                $h += $s + 100;
+
+                $x['waypoint'][] = $o1;
+                $x['waypoint'][] = $o2;
+                $xmlLayout['BPMNEdge'][] = $x;
+            });
+        }
+
+        $s = 66;
+
+        if (! empty($startEvent)) {
+            array_walk($xml['startEvent'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+                $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
+                $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
+
+                $el['Bounds'] = [ '_attributes' => [
+                        'x' => $h + $s
+                        , 'y' => 184
+                        , 'width' => 100
+                        , 'height' => 80]];
+
+                $h += $s + 100;
+
+                $xmlLayout['BPMNShape'][] = $el;
+            });
+        }
+
+        $s = 66;
+
+        if (! empty($endEvent)) {
+            array_walk($xml['endEvent'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+                $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
+                $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
+
+                $el['Bounds'] = [ '_attributes' => [
+                    'x' => $h + $s
+                    , 'y' => 184
+                    , 'width' => 100
+                    , 'height' => 80]];
+
+                $h += $s + 100;
+
+                $xmlLayout['BPMNShape'][] = $el;
+            });
+        }
+
+        $s = 66;
+
+        if (! empty($task)) {
+            array_walk($xml['task'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+                $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
+                $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
+
+                $el['Bounds'] = [ '_attributes' => [
+                    'x' => $h + $s
+                    , 'y' => 184
+                    , 'width' => 100
+                    , 'height' => 80]];
+
+                $h += $s + 100;
+
+                $xmlLayout['BPMNShape'][] = $el;
+            });
+        }
+
+        $a = [];
+        $a['bpmndi:BPMNDiagram']['_attributes']['id'] = 'BpmnDiagram_1';
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['id'] = 'BpmnPlane_1';
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['bpmnElement'] = 'Process_1';
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['BPMNEdge'] = $xmlLayout['BPMNEdge'];
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['BPMNShape'] = $xmlLayout['BPMNShape'];
+        return $a['bpmndi:BPMNDiagram'];
+    }
+
+    private function normalizeXMLString(string $a): string
+    {
+        $a = str_replace('<BPMNEdge', '<bpmndi:BPMNEdge', $a);
+        $a = str_replace('</BPMNEdge>', '</bpmndi:BPMNEdge>', $a);
+
+        $a = str_replace('<waypoint', '<omgdi:waypoint', $a);
+
+        $a = str_replace('<BPMNShape', '<bpmndi:BPMNShape', $a);
+        $a = str_replace('</BPMNShape>', '</bpmndi:BPMNShape>', $a);
+
+        $a = str_replace('<Bounds', '<omgdc:Bounds', $a);
+
+        return $a;
     }
 
 }

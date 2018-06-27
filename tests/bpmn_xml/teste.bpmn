@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<process id="Process_1" isExecutable="">
+		<startEvent id="StartEvent_5b2c6243d90d8" name="Project Management for MS Website">
+			<outgoing>sequenceFlow_5b2c6243e83ee</outgoing>
+		</startEvent>
+		<task id="TaskActivity_5b2c6243dc6c1" name="Initiating">
+			<incoming>sequenceFlow_5b2c6243e83ee</incoming>
+			<outgoing>sequenceFlow_5b2c6243e84d5</outgoing>
+		</task>
+		<endEvent id="EndEvent_5b2c6243df8dc" name="Develop Project Charter">
+			<incoming>sequenceFlow_5b2c6243e84d5</incoming>
+		</endEvent>
+		<sequenceFlow id="sequenceFlow_5b2c6243e83ee" sourceRef="StartEvent_5b2c6243d90d8" targetRef="TaskActivity_5b2c6243dc6c1"/>
+		<sequenceFlow id="sequenceFlow_5b2c6243e84d5" sourceRef="TaskActivity_5b2c6243dc6c1" targetRef="EndEvent_5b2c6243df8dc"/>
+	</process>
+  <bpmndi:BPMNDiagram id="BpmnDiagram_1">
+    <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNEdge id="SequenceFlow_1_gui" bpmnElement="sequenceFlow_5b2c6243e83ee">
+        <omgdi:waypoint x="275" y="202" />
+        <omgdi:waypoint x="341" y="202" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_2_di" bpmnElement="sequenceFlow_5b2c6243e84d5">
+        <omgdi:waypoint x="441" y="202" />
+        <omgdi:waypoint x="503" y="202" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_16g5oa3_di" bpmnElement="StartEvent_5b2c6243d90d8">
+        <omgdc:Bounds x="239" y="184" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0kmcz3u_di" bpmnElement="TaskActivity_5b2c6243dc6c1">
+        <omgdc:Bounds x="341" y="162" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_04ookgz_di" bpmnElement="EndEvent_5b2c6243df8dc" isMarkerVisible="true">
+        <omgdc:Bounds x="503" y="177" width="50" height="50" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

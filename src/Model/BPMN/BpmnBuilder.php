@@ -178,14 +178,14 @@ class BpmnBuilder
     {
         $xmlLayout = [];
 
-        $s = $xml['sequenceFlow'] ?? null;
+        $sequenceFlow = $xml['sequenceFlow'] ?? null;
         $startEvent = $xml['startEvent'] ?? null;
         $endEvent = $xml['endEvent'] ?? null;
         $task = $xml['task'] ?? null;
 
-        $h = 275; $s = 66;
+        $h = 286; $s = 66;
 
-        if (! empty($s)) {
+        if (! empty($sequenceFlow)) {
             array_walk($xml['sequenceFlow'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
                 $x['_attributes']['id'] = $item['_attributes']['id'] . '_gui';
                 $x['_attributes']['bpmnElement'] = $item['_attributes']['id'];
@@ -205,7 +205,7 @@ class BpmnBuilder
             });
         }
 
-        $s = 66;
+        $h = 239; $s = 66;
 
         if (! empty($startEvent)) {
             array_walk($xml['startEvent'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
@@ -213,36 +213,18 @@ class BpmnBuilder
                 $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
 
                 $el['Bounds'] = [ '_attributes' => [
-                        'x' => $h + $s
+                        'x' => $h
                         , 'y' => 184
-                        , 'width' => 100
-                        , 'height' => 80]];
+                        , 'width' => 50
+                        , 'height' => 50]];
 
-                $h += $s + 100;
-
-                $xmlLayout['BPMNShape'][] = $el;
-            });
-        }
-
-        $s = 66;
-
-        if (! empty($endEvent)) {
-            array_walk($xml['endEvent'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
-                $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
-                $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
-
-                $el['Bounds'] = [ '_attributes' => [
-                    'x' => $h + $s
-                    , 'y' => 184
-                    , 'width' => 100
-                    , 'height' => 80]];
-
-                $h += $s + 100;
+                $h += 50;
 
                 $xmlLayout['BPMNShape'][] = $el;
             });
         }
 
+        $h += 65;
         $s = 66;
 
         if (! empty($task)) {
@@ -251,12 +233,32 @@ class BpmnBuilder
                 $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
 
                 $el['Bounds'] = [ '_attributes' => [
-                    'x' => $h + $s
+                    'x' => $h
                     , 'y' => 184
                     , 'width' => 100
                     , 'height' => 80]];
 
-                $h += $s + 100;
+                $h += 50;
+
+                $xmlLayout['BPMNShape'][] = $el;
+            });
+        }
+
+        $h += 115;
+        $s = 66;
+
+        if (! empty($endEvent)) {
+            array_walk($xml['endEvent'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+                $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
+                $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
+
+                $el['Bounds'] = [ '_attributes' => [
+                    'x' => $h
+                    , 'y' => 184
+                    , 'width' => 50
+                    , 'height' => 50]];
+
+                $h += 50;
 
                 $xmlLayout['BPMNShape'][] = $el;
             });

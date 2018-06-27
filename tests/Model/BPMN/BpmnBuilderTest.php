@@ -41,6 +41,7 @@ class BpmnBuilderTest extends TestCase
 
         self::assertNotEmpty($xml);
 
+        file_put_contents('../../../public/teste2.bpmn', $xml);
         echo "\n";
         echo $xml;
         echo "\n";

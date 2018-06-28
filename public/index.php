@@ -9,6 +9,8 @@ if (PHP_SAPI == 'cli-server') {
     }
 }
 
+chdir('../');
+
 require __DIR__ . '/../vendor/autoload.php';
 
 session_start();

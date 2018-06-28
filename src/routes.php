@@ -2,19 +2,8 @@
 
 use andreluizlunelli\BpmnRestTool\Controller\IndexController;
 
-/*
-// ROTAS API
-$app->group('/api', function () use ($app) {
-    // TOKEN
-    $app->post('/token', \andreluizlunelli\BpmnRestTool\Controller\TokenController::class . ':post');
-});
-
-// ADMIN
-$app->group('/admin', function () use ($app) {
-    $app->get('', \andreluizlunelli\BpmnRestTool\Controller\Admin\SugestaoController::class . ':sugestoes');
-})->add(new \andreluizlunelli\BpmnRestTool\Middleware\AutorizacaoMiddleware());
-*/
-
-// TELAS SITE
 $app->get('/', IndexController::class.':index');
+$app->get('/bpmn', IndexController::class.':bpmn');
+$app->get('/carregar-xml-project', IndexController::class.':carregarXmlProject');
+$app->post('/carregar-xml-project', IndexController::class.':postCarregarXmlProject');
 

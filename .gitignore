@@ -2,3 +2,5 @@
 cache/
 logs/
 vendor/
+public/bpmn-geradas/
+public/project-informado/

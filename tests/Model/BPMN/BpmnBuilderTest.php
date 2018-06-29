@@ -26,7 +26,7 @@ class BpmnBuilderTest extends TestCase
         parent::setUp();
 
         $projectEntity = (new ProjectMapper())
-            ->map(new \SplFileObject('../../bpmn_xml/BpmnMetadataBuilderTest_testBuildMetadataCom3Elementos.xml'));
+            ->map(new \SplFileObject('../../bpmn_xml/BpmnMetadataBuilderTest_testBuildMetadataCom4Elementos.xml'));
 
         $bpmn = new BpmnMetadataBuilder($projectEntity);
 
@@ -41,7 +41,7 @@ class BpmnBuilderTest extends TestCase
 
         self::assertNotEmpty($xml);
 
-        file_put_contents('../../../public/teste2.bpmn', $xml);
+        file_put_contents('../../../public/bpmn-geradas/teste2.bpmn', $xml);
         echo "\n";
         echo $xml;
         echo "\n";

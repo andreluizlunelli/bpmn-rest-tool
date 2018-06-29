@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/bpmn-rest-tool.iml" filepath="$PROJECT_DIR$/.idea/bpmn-rest-tool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/bpmn-rest-tool.iml" filepath="$PROJECT_DIR$/.idea/bpmn-rest-tool.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/hello-world-bpmn.iml" filepath="$PROJECT_DIR$/.idea/hello-world-bpmn.iml" />
     </modules>
   </component>

@@ -56,6 +56,7 @@ class IndexController extends ControllerBase
     {
         foreach (new \DirectoryIterator(getcwd() . '/public/bpmn-geradas') as $fileInfo) {
             if ($fileInfo->isDot()) continue;
+            if ($fileInfo->getFilename() == '.gitkeep') continue;
 
             $file['name'] = $fileInfo->getFilename();
             $file['location'] = "/bpmn-geradas/{$fileInfo->getFilename()}";

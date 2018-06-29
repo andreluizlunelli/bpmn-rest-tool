@@ -8,62 +8,8 @@
 <a href="/">voltar</a>
 <ul>
     {% for f in files %}
-        <li><a href="{{ f.location }}">{{ f.name }}</a></li>
+        <li><a href="/index.html?nameFile={{ f.name }}">{{ f.name }}</a></li>
     {% endfor %}
-    <li><a href="/complexo.bpmn">complexo</a></li>
-    <li><a href="/simples.bpmn">simples</a></li>
-    <li><a href="/unico_elemento.bpmn">unico elemento</a></li>
-    <li><a href="/teste.bpmn">teste</a></li>
-    <li><a href="/teste2.bpmn">teste2</a></li>
 </ul>
-<div id="canvas" style="width: 1000px; height: 600px"></div>
-
-<!-- replace CDN url with local bpmn-js path -->
-<script src="https://unpkg.com/bpmn-js@0.27.0-1/dist/bpmn-viewer.development.js"></script>
-<script
-        src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-        crossorigin="anonymous"></script>
-<script>
-    // the diagram we are going to display
-    var bpmnXML = 'complexo.bpmn';
-
-    // BpmnJS is the BPMN viewer instance
-    var viewer = new BpmnJS({container: '#canvas'});
-
-    var xhr = new XMLHttpRequest();
-
-    function openBpmn(nameFile) {
-        xhr.open('GET', nameFile, true);
-        xhr.send(null);
-    }
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            // import a BPMN 2.0 diagram
-            viewer.importXML(xhr.response, function (err) {
-                if (err) {
-                    // import failed :-(
-                    console.log(err.message);
-                } else {
-                    // we did well!
-
-                    var canvas = viewer.get('canvas');
-                    canvas.zoom('fit-viewport');
-                }
-            });
-        }
-    };
-
-    openBpmn(bpmnXML);
-
-    $('ul li a').on('click', function (event) {
-        event.preventDefault();
-        bpmnXML = $(this).attr('href');
-
-        openBpmn(bpmnXML);
-    })
-
-</script>
 </body>
 </html>

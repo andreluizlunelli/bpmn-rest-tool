@@ -183,82 +183,108 @@ class BpmnBuilder
         $endEvent = $xml['endEvent'] ?? null;
         $task = $xml['task'] ?? null;
 
-        $h = 286; $s = 66;
+        $margemTopoPagina = 184;
+        $margemEsquerdaInicial = 286;
+
+        $medidasSequence = [ 'w' => 62, 'h' => 20];
+        $medidasTask = [ 'w' => 100, 'h' => 80];
+        $medidasStartEvent = [ 'w' => 36, 'h' => 36];
+        $medidasEndEvent = $medidasStartEvent;
+
+        $sumMedidasSequence = ['w' => $margemEsquerdaInicial + $medidasStartEvent['w'], 'h' => $medidasSequence['h']];
+        $sumMedidasTask = ['w' => ($margemEsquerdaInicial + $medidasStartEvent['w'] + $medidasSequence['w']), 'h' => $medidasTask['h']];
+        $sumMedidasStartEvent = ['w' => $margemEsquerdaInicial, 'h' => $medidasSequence['h']];
+        $sumMedidasEndEvent = ['w' => 0, 'h' => 0];
+
+        $h = $margemEsquerdaInicial; $s = 66;
 
         if (! empty($sequenceFlow)) {
-            array_walk($xml['sequenceFlow'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
-                $x['_attributes']['id'] = $item['_attributes']['id'] . '_gui';
-                $x['_attributes']['bpmnElement'] = $item['_attributes']['id'];
+            array_walk($xml['sequenceFlow'], function ($item, $k) use (&$xmlLayout, &$margemEsquerdaInicial
+                , &$margemTopoPagina, &$medidasSequence, &$medidasTask, &$medidasStartEvent, &$medidasEndEvent
+                , &$sumMedidasSequence, &$sumMedidasTask, &$sumMedidasStartEvent, &$sumMedidasEndEvent) {
 
-                $o1 = ['_attributes' => [
-                        'x' => $h
-                        , 'y' => 202]];
-                $o2 = ['_attributes' => [
-                        'x' => $h + $s
-                        , 'y' => 202]];
+                $el['_attributes']['id'] = $item['_attributes']['id'] . '_gui';
+                $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
 
-                $h += $s + 100;
+                $paddingInternoTopo = 18;
 
-                $x['waypoint'][] = $o1;
-                $x['waypoint'][] = $o2;
-                $xmlLayout['BPMNEdge'][] = $x;
+                $y = $margemTopoPagina + $paddingInternoTopo;
+                $x = $sumMedidasSequence['w'];
+
+                $waypoint1 = ['_attributes' => [
+                        'x' => $x
+                        , 'y' => $y]];
+
+                $x += $medidasSequence['w'];
+
+                $waypoint2 = ['_attributes' => [
+                        'x' => $x
+                        , 'y' => $y]];
+
+                $sumMedidasSequence['w'] = $x + $medidasTask['w'];
+
+                $el['waypoint'][] = $waypoint1;
+                $el['waypoint'][] = $waypoint2;
+                $xmlLayout['BPMNEdge'][] = $el;
             });
         }
-
-        $h = 239; $s = 66;
 
         if (! empty($startEvent)) {
-            array_walk($xml['startEvent'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+            array_walk($xml['startEvent'], function ($item, $k) use (&$xmlLayout, &$margemEsquerdaInicial
+                , &$margemTopoPagina, &$medidasSequence, &$medidasTask, &$medidasStartEvent, &$medidasEndEvent
+                , &$sumMedidasSequence, &$sumMedidasTask, &$sumMedidasStartEvent, &$sumMedidasEndEvent) {
+
                 $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
                 $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
 
-                $el['Bounds'] = [ '_attributes' => [
-                        'x' => $h
-                        , 'y' => 184
-                        , 'width' => 50
-                        , 'height' => 50]];
+                $x = $sumMedidasStartEvent['w'];
 
-                $h += 50;
+                $el['Bounds'] = [ '_attributes' => [
+                        'x' => $x
+                        , 'y' => $margemTopoPagina
+                        , 'width' => $medidasStartEvent['w']
+                        , 'height' => $medidasStartEvent['h']]];
+                // não precisa somar pq só vai ter um elemento inicial
 
                 $xmlLayout['BPMNShape'][] = $el;
             });
         }
-
-        $h += 65;
-        $s = 66;
 
         if (! empty($task)) {
-            array_walk($xml['task'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+            array_walk($xml['task'], function ($item, $k) use (&$xmlLayout, &$margemEsquerdaInicial
+                , &$margemTopoPagina, &$medidasSequence, &$medidasTask, &$medidasStartEvent, &$medidasEndEvent
+                , &$sumMedidasSequence, &$sumMedidasTask, &$sumMedidasStartEvent, &$sumMedidasEndEvent) {
+
                 $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
                 $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
 
-                $el['Bounds'] = [ '_attributes' => [
-                    'x' => $h
-                    , 'y' => 184
-                    , 'width' => 100
-                    , 'height' => 80]];
+                $x = $sumMedidasTask['w'];
 
-                $h += 50;
+                $el['Bounds'] = [ '_attributes' => [
+                    'x' => $x
+                    , 'y' => $margemTopoPagina
+                    , 'width' => $medidasTask['w']
+                    , 'height' => $medidasTask['h']]];
+
+                $sumMedidasTask['w'] = $x + $medidasTask['w'] + $medidasSequence['w'];
 
                 $xmlLayout['BPMNShape'][] = $el;
             });
         }
 
-        $h += 115;
-        $s = 66;
-
         if (! empty($endEvent)) {
-            array_walk($xml['endEvent'], function ($item, $k) use (&$xmlLayout, &$h, &$s) {
+            array_walk($xml['endEvent'], function ($item, $k) use (&$xmlLayout, &$margemEsquerdaInicial
+                , &$margemTopoPagina, &$medidasSequence, &$medidasTask, &$medidasStartEvent, &$medidasEndEvent
+                , &$sumMedidasSequence, &$sumMedidasTask, &$sumMedidasStartEvent, &$sumMedidasEndEvent) {
+
                 $el['_attributes']['id'] = $item['_attributes']['id'] . '_di';
                 $el['_attributes']['bpmnElement'] = $item['_attributes']['id'];
 
                 $el['Bounds'] = [ '_attributes' => [
-                    'x' => $h
-                    , 'y' => 184
-                    , 'width' => 50
-                    , 'height' => 50]];
-
-                $h += 50;
+                    'x' => $sumMedidasTask['w']
+                    , 'y' => $margemTopoPagina
+                    , 'width' => $medidasEndEvent['w']
+                    , 'height' => $medidasEndEvent['h']]];
 
                 $xmlLayout['BPMNShape'][] = $el;
             });

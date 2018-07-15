@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue.js</title>
+</head>
+<body>
+
+<div id="app">
+    <div v-once>{{ message }}</div>
+</div>
+
+<!-- versão de desenvolvimento, inclui aviso úteis no console  -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Olá Vue!'
+        },
+        created: function () {
+            console.log('aiaia');
+        }
+    })
+</script>
+</body>
+</html>

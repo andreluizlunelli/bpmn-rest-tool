@@ -5,7 +5,6 @@
     "slim/slim": "^3.1",
     "slim/php-view": "2.0.0",
     "monolog/monolog": "^1.17",
-    "doctrine/orm": "^2.5",
     "cocur/slugify": "^2.5",
     "slim/flash": "^0.2.0",
     "lcobucci/jwt": "^3",

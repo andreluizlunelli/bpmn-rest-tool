@@ -10,6 +10,7 @@ const extractSass = new ExtractText({
 const config = {
     entry: {
         style: './app/styles/style.scss',
+        login: './app/styles/login.scss',
         index: './app/index.ts'
     },
     output: {
@@ -53,7 +54,7 @@ const config = {
                     }
                 ]
             },
-            exclude: /nade_modules/
+            exclude: /node_modules/
         },{
             test: /\.ts/,
             loader: 'awesome-typescript-loader'
@@ -63,10 +64,10 @@ const config = {
                 use: [{
                     loader: 'css-loader',
                     options: {
-                        minimize: false
+                        minimize: true
                     }
                 },{
-                    loader: 'style-loader'
+                    loader: 'sass-loader'
                 }],
                 fallback: 'style-loader'
             })

@@ -40,9 +40,7 @@ class IndexController extends ControllerBase
 
             $bpmn = new BpmnMetadataBuilder($projectEntity);
 
-            $rootEl = $bpmn->buildMetadata();
-
-            $builder = new BpmnBuilder($rootEl);
+            $builder = new BpmnBuilder($bpmn->buildMetadata());
 
             $xml = $builder->buildXml();
 

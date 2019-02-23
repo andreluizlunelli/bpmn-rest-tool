@@ -5,3 +5,4 @@ vendor/
 public/bpmn-geradas/*
 public/project-informado/*
 !*.gitkeep
+public/node_modules/

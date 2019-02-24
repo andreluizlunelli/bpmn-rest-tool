@@ -23,6 +23,8 @@ return [
             'level' => \Monolog\Logger::DEBUG,
         ],
 
+        'base_assets' => 'http://192.168.0.18:8081',
+
         // doctrine
         'doctrine' => [
             'dev_mode' => true

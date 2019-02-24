@@ -23,7 +23,7 @@ const config = {
     },
     plugins: [ extractSass ],
     devServer: {
-        host: 'localhost'
+        host: '192.168.0.18'
     },
     optimization: {
         minimize: false,
@@ -64,7 +64,7 @@ const config = {
                 use: [{
                     loader: 'css-loader',
                     options: {
-                        minimize: true
+                        minimize: false
                     }
                 },{
                     loader: 'sass-loader'

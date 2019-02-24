@@ -1,6 +1,8 @@
 <?php
 // DIC configuration
 
+use andreluizlunelli\BpmnRestTool\Model\Twig\ViewFunctions;
+
 $container = $app->getContainer();
 
 // twig
@@ -10,6 +12,7 @@ $container['view'] = function ($c) {
     // Add extensions
     $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
     $view->addExtension(new Twig_Extension_Debug());
+    $view->addExtension(new ViewFunctions($settings->all()));
     return $view;
 };
 

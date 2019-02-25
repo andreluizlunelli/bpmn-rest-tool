@@ -1,9 +1,10 @@
-.idea/
-cache/
-logs/
-vendor/
+.idea/*
+cache/*
+logs/*
+vendor/*
 public/bpmn-geradas/*
+public/vendor/*
 public/project-informado/*
 !*.gitkeep
-public/node_modules/
-public/dist/
+public/node_modules/*
+public/dist/*

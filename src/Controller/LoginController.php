@@ -18,3 +18,4 @@ class LoginController extends ControllerBase
         return $this->view()->render($response, 'login.twig', $args);
     }
 }
+

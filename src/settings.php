@@ -1,7 +1,10 @@
 <?php
 return [
     'settings' => [
-        'url' => 'http://localhost:8080',
+        'base_assets' => 'http://192.168.0.18:8081',
+        'date_formats' => [
+            'date_time_format' => 'Y-m-d H:i:s'
+        ],
         'displayErrorDetails' => true, // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
 
@@ -23,8 +26,6 @@ return [
             'level' => \Monolog\Logger::DEBUG,
         ],
 
-        'base_assets' => 'http://192.168.0.18:8081',
-
         // doctrine
         'doctrine' => [
             'dev_mode' => true
@@ -33,7 +34,7 @@ return [
             ],
             'driver' => 'pdo_pgsql',
             'host' => 'localhost',
-            'dbname' => 'rodizio',
+            'dbname' => 'bpmnresttool',
             'user' => 'postgres',
             'password' => 'postgres'
         ]

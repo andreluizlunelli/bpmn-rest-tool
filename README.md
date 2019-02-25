@@ -6,5 +6,8 @@
     
     Tecnologia(s): PHP, TYPESCRIPT/JAVASCRIPT, HTML, BPMN.io
     
-    STATUS:      Hello World, ok 
-    Prox.Passos: Prova de conceito (POC), ok
+    
+```
+Adicionar usuário:
+composer run add-user -- --nome andre --email to.lunelli@gmail.com
+```

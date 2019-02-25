@@ -9,76 +9,58 @@
 namespace andreluizlunelli\BpmnRestTool\Model\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 trait TimestampTrait
 {
     /**
      * @ORM\Column(type="datetime")
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $updatedAt;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
-     *
-     * @var \DateTime
+     * @return DateTime
      */
-    private $deletedAt;
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
+     * @return TimestampTrait
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
+        return $this;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param \DateTime $updatedAt
+     * @param DateTime $updatedAt
+     * @return TimestampTrait
      */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDeletedAt(): \DateTime
-    {
-        return $this->deletedAt;
-    }
-
-    /**
-     * @param \DateTime $deletedAt
-     */
-    public function setDeletedAt(\DateTime $deletedAt)
-    {
-        $this->deletedAt = $deletedAt;
+        return $this;
     }
 
 }

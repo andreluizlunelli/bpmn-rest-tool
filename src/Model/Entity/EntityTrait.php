@@ -12,8 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait EntityTrait
 {
-    use TimestampTrait;
-
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")

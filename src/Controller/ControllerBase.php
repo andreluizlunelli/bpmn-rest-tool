@@ -9,6 +9,8 @@
 namespace andreluizlunelli\BpmnRestTool\Controller;
 
 use Psr\Container\ContainerInterface;
+use Slim\Flash\Messages;
+use Slim\Router;
 
 class ControllerBase
 {
@@ -21,11 +23,24 @@ class ControllerBase
         $this->container = $container;
     }
 
-    /**
-     * @return \Slim\Views\Twig
-     */
-    protected function view()
+    protected function view(): \Slim\Views\Twig
     {
         return $this->container->get('view');
     }
+
+    protected function route(): Router
+    {
+        return $this->container->get('router');
+    }
+
+    protected function message(): Messages
+    {
+        return $this->container->get('message');
+    }
+
+    protected function errorMessage(string $msg): void
+    {
+        $this->message()->addMessage('error', $msg);
+    }
+
 }

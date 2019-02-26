@@ -7,7 +7,7 @@
     "monolog/monolog": "^1.17",
     "doctrine/orm": "^2.5",
     "cocur/slugify": "^2.5",
-    "slim/flash": "^0.2.0",
+    "slim/flash": "^0.4.0",
     "lcobucci/jwt": "^3",
     "slim/twig-view": "^2.3",
     "querypath/querypath": "^3.0",

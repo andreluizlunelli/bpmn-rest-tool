@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @package andreluizlunelli\BpmnRestTool\Model\Entity
  *
  * @ORM\Entity()
- * @ORM\Table(name="customer")
+ * @ORM\Table(name="users")
  */
 class User implements JsonSerializable, ToArray
 {
@@ -49,7 +49,7 @@ class User implements JsonSerializable, ToArray
      * @param string|null $password
      * @throws \Exception
      */
-    public function __construct(string $name, string $email, ?string $password)
+    public function __construct(string $name, string $email, ?string $password = null)
     {
         $this->createdAt = new DateTime('now');
         $this->name = $name;
@@ -83,7 +83,7 @@ class User implements JsonSerializable, ToArray
     public function toArray(): array
     {
         $arr = $this->jsonSerialize();
-        array_push($arr, ['password' => $this->password]);
+        $arr['password'] = $this->password;
         return $arr;
     }
 

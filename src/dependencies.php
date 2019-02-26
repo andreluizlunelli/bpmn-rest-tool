@@ -2,6 +2,10 @@
 // DIC configuration
 
 use andreluizlunelli\BpmnRestTool\Model\Twig\ViewFunctions;
+use Zend\Session\Config\SessionConfig;
+use Zend\Session\SessionManager;
+use Zend\Session\Storage\SessionArrayStorage;
+use Slim\Flash\Messages;
 
 $container = $app->getContainer();
 
@@ -27,3 +31,12 @@ $container['logger'] = function ($c) {
 
 $container['em'] = \andreluizlunelli\BpmnRestTool\System\Database::getEntityManager();
 
+$container['SessionManager'] = function ($c) {
+    $sessionManager = new SessionManager(new SessionConfig(), new SessionArrayStorage());
+    $sessionManager->start();
+    return $sessionManager;
+};
+
+$container['message'] = function () {
+    return new Messages();
+};

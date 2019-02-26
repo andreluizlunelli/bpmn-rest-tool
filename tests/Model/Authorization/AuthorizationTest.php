@@ -8,6 +8,7 @@
 
 namespace andreluizlunelli\TestBpmnRestTool\Model\Authorization;
 
+use andreluizlunelli\BpmnRestTool\Model\Entity\User;
 use PHPUnit\Framework\TestCase;
 use Zend\Session\Config\StandardConfig;
 use Zend\Session\SessionManager;
@@ -19,7 +20,10 @@ class AuthorizationTest extends TestCase
 
     public function testSession()
     {
-        $manager = new SessionManager(new StandardConfig(), new SessionArrayStorage());
+        $user = new User('nome', 'email');
+
+        $manager = new SessionManager(new StandardConfig(), new ArrayStorage());
+        $manager->getStorage()->setMetadata('user', $user->toArray());
         $manager->start();
     }
 

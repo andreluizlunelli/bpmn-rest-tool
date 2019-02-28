@@ -45,7 +45,7 @@ class AuthorizationUser
         $user = $this->getUser($email);
 
         if (empty($user))
-            throw new \InvalidArgumentException('Ops! Esse usuário não existe :(');
+            throw new \InvalidArgumentException('Ops! Esse usuário não existe :\'(');
 
         if ( ! $user->passwordVerify($password))
             throw new \InvalidArgumentException('Senha errada. Tente novamente por gentileza.');

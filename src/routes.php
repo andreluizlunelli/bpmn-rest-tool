@@ -8,10 +8,9 @@ $app->any('/login', lc::class.':login')->setName('login');
 $app->any('/logout', lc::class.':logout')->setName('logout');
 
 $app->group('/', function () use ($app) {
-    $app->get('', ic::class.':index')->setName('index');
-    $app->get('bpmn', ic::class.':bpmn');
-    $app->get('carregar-xml-project', ic::class.':carregarXmlProject');
-    $app->post('carregar-xml-project', ic::class.':postCarregarXmlProject');
+    $app->get('', ic::class.':bpmn')->setName('index');
+    $app->get('carregar-xml-project', ic::class.':carregarXmlProject')->setName('carregarXmlProject');
+    $app->post('carregar-xml-project', ic::class.':postCarregarXmlProject')->setName('postCarregarXmlProject');
 })
     ->add(AuthorizationMiddleware::class);
 

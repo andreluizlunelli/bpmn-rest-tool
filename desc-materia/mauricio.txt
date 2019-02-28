@@ -1,0 +1,23 @@
+encontros
+			 12/03 bcc
+	provavel 15-16/04 - regulamento
+	provavel 13-14/05 erros comuns
+			 17-18/06 entregar o trabalho pra banca
+			 01-02/07 entrega do texto, a implementação já deve estar pronta em junho
+
+
+desc
+	tcc é um trabalho de pesquisa, de investigação (e também um software)
+	validar oq estou pesquisando, gerar dados analiticos
+
+
+	pesquisa > validar > gerar dados analíticos
+
+	
+	mauriocio sempre vai estar nas terças horario 12-13 no departamento t210
+
+	pesquisar no portal de periodicos da CAPES ou SCIELO, SCOPUS, ISIS
+
+	olhar o email da furb agora
+
+	https://www.mendeley.com

@@ -1,1 +1,18 @@
+@import "variables";
+@import "types";
 @import "~bootstrap/scss/bootstrap";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/button-group";
+@import "~bootstrap/scss/input-group";
+@import "~bootstrap/scss/utilities";
+
+.navbar {
+  background: $msproject-light;
+}

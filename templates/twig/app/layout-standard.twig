@@ -1,0 +1,5 @@
+{% extends './app/layout-base.twig' %}
+{% block content %}
+    {% include './partial/navbar.twig' %}
+    {% include './partial/flashMessage.twig' with {'flashMessage': flashMessage} %}
+{% endblock %}

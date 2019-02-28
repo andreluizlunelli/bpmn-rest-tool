@@ -8,23 +8,24 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\Twig;
 
+use Psr\Container\ContainerInterface;
 use Twig_Extension;
 use Twig_Function;
 
 class ViewFunctions extends Twig_Extension
 {
     /**
-     * @var array
+     * @var ContainerInterface
      */
-    private $settings;
+    private $container;
 
     /**
      * ViewFunctions constructor.
-     * @param array $settings
+     * @param ContainerInterface $container
      */
-    public function __construct(array $settings)
+    public function __construct(ContainerInterface $container)
     {
-        $this->settings = $settings;
+        $this->container = $container;
     }
 
     public function getFunctions(): array
@@ -36,7 +37,7 @@ class ViewFunctions extends Twig_Extension
 
     public function baseAssets(): string
     {
-        return $this->settings['base_assets'] ?? '';
+        return $this->container->get('settings')['base_assets'] ?? '';
     }
 
 }

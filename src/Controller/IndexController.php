@@ -17,11 +17,6 @@ use Slim\Http\Response;
 
 class IndexController extends ControllerBase
 {
-    public function index(Request $request, Response $response, $args)
-    {
-        return $this->view()->render($response, 'controller/index/index.twig', $args);
-    }
-
     public function carregarXmlProject(Request $request, Response $response, $args)
     {
         return $this->view()->render($response, 'controller/index/carregarXmlProject.twig', $args);
@@ -61,7 +56,7 @@ class IndexController extends ControllerBase
 
             $args['files'][] = $file;
         }
-        return $this->view()->render($response, 'controller/index/bpmn.twig', $args);
+        return $this->view()->render($response, './bpmn.twig', $args);
     }
 
 }

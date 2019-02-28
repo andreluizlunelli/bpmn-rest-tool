@@ -1,0 +1,15 @@
+{% extends './app/layout-standard.twig' %}
+
+{% block content %}{{ parent() }}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="list-group mt-3">
+                {% for f in files %}
+                    <li class="list-group-item"><a href="/index.html?nameFile={{ f.name }}">{{ f.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

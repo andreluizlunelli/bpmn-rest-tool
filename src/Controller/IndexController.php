@@ -19,7 +19,7 @@ class IndexController extends ControllerBase
 {
     public function carregarXmlProject(Request $request, Response $response, $args)
     {
-        return $this->view()->render($response, 'controller/index/carregarXmlProject.twig', $args);
+        return $this->view()->render($response, './enviar.twig', $args);
     }
 
     public function postCarregarXmlProject(Request $request, Response $response, $args)

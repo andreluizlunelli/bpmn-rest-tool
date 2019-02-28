@@ -1,0 +1,17 @@
+{% extends './app/layout-standard.twig' %}
+
+{% block content %}{{ parent() }}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Arquivo .XML do MSProject</label>
+                    <input type="file" class="form-control" name="xml">
+                </div>
+                <input type="submit" value="Enviar" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

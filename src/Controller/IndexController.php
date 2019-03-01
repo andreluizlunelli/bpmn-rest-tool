@@ -47,6 +47,11 @@ class IndexController extends ControllerBase
 
     public function bpmn(Request $request, Response $response, $args)
     {
+        return $this->view()->render($response, './bpmn.twig', $args);
+    }
+
+    public function bpmnList(Request $request, Response $response, $args)
+    {
         foreach (new \DirectoryIterator(getcwd() . '/public/bpmn-geradas') as $fileInfo) {
             if ($fileInfo->isDot()) continue;
             if ($fileInfo->getFilename() == '.gitkeep') continue;
@@ -56,7 +61,7 @@ class IndexController extends ControllerBase
 
             $args['files'][] = $file;
         }
-        return $this->view()->render($response, './bpmn.twig', $args);
+        return $this->view()->render($response, './bpmn-list.twig', $args);
     }
 
 }

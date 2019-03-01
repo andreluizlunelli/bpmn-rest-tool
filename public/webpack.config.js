@@ -11,6 +11,7 @@ const config = {
     entry: {
         style: './app/styles/style.scss',
         login: './app/styles/login.scss',
+        bpmn: './app/styles/bpmn.scss',
         index: './app/index.ts'
     },
     output: {
@@ -21,9 +22,18 @@ const config = {
     resolve: {
         extensions: ['.ts', '.js']
     },
-    plugins: [ extractSass ],
+    plugins: [
+        extractSass,
+        new webpack.ProvidePlugin({
+            '$': 'jquery',
+            'jQuery': 'jquery',
+            'jquery': 'jquery',
+            'window.jQuery': 'jquery',
+            'window.$': 'jquery'})
+
+    ],
     devServer: {
-        host: '192.168.0.18'
+        host: '0.0.0.0'
     },
     optimization: {
         minimize: false,

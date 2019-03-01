@@ -8,7 +8,8 @@ $app->any('/login', lc::class.':login')->setName('login');
 $app->any('/logout', lc::class.':logout')->setName('logout');
 
 $app->group('/', function () use ($app) {
-    $app->get('', ic::class.':bpmn')->setName('index');
+    $app->get('', ic::class.':bpmnList')->setName('index');
+    $app->get('bpmn/{fileName}', ic::class.':bpmn')->setName('bpmn');
     $app->get('carregar-xml-project', ic::class.':carregarXmlProject')->setName('carregarXmlProject');
     $app->post('carregar-xml-project', ic::class.':postCarregarXmlProject')->setName('postCarregarXmlProject');
 })

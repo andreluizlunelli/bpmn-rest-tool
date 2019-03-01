@@ -3,12 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="{{ base_assets() }}/dist/style.bundle.css">
     <title>BPMN E PROCESSOS GERENCIAIS!</title>
-    {% block style %}{% endblock %}
+    {% block style %}
+        <link rel="stylesheet" href="{{ base_assets() }}/dist/style.bundle.css">
+    {% endblock %}
 </head>
 <body>
 {% block content %}{% endblock %}
-{% block script %}{% endblock %}
+{% block script %}
+    <script src="{{ base_assets() }}/dist/index.bundle.js"></script>
+{% endblock %}
 </body>
 </html>

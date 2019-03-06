@@ -56,7 +56,7 @@ class IndexController extends ControllerBase
             if ($fileInfo->isDot()) continue;
             if ($fileInfo->getFilename() == '.gitkeep') continue;
 
-            $file['name'] = $fileInfo->getFilename();
+            $file['name'] = pathinfo($fileInfo->getBasename(), PATHINFO_FILENAME);
             $file['location'] = "/bpmn-geradas/{$fileInfo->getFilename()}";
 
             $args['files'][] = $file;

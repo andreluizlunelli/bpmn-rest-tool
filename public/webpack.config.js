@@ -11,7 +11,8 @@ const config = {
     entry: {
         style: './app/styles/style.scss',
         login: './app/styles/login.scss',
-        bpmn: './app/styles/bpmn.scss',
+        bpmnstyle: './app/styles/bpmnstyle.scss',
+        bpmn: './app/bpmn/bpmn.js',
         index: './app/index.ts'
     },
     output: {
@@ -58,10 +59,7 @@ const config = {
             loader: 'babel-loader',
             options: {
                 presets: [
-                    'es2015',
-                    {
-                        modules: false
-                    }
+                    'es2015'
                 ]
             },
             exclude: /node_modules/

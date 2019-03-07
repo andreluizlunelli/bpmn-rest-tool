@@ -13,6 +13,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
 use andreluizlunelli\BpmnRestTool\Model\Entity\BpmnEntity;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use Psr\Http\Message\UploadedFileInterface;
+use Slim\Http\Body;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -45,7 +46,7 @@ class IndexController extends ControllerBase
                 $bpmnEntity = (new BpmnEntity())
                     ->setFileInformed(file_get_contents($splFile->getPathname()))
                     ->setGeneratedFile($xml)
-                    ->setName(uniqid() . "-" . $f->getClientFilename());
+                    ->setName(uniqid() . "-" . pathinfo($f->getClientFilename())['filename']);
 
                 $user = $this->getUserLoggedin();
                 $user->addBpmn($bpmnEntity);
@@ -61,6 +62,21 @@ class IndexController extends ControllerBase
         return $response->withRedirect($this->route()->pathFor('index'));
     }
 
+    public function fetchBpmn(Request $request, Response $response, $args)
+    {
+        $fileName = $args['fileName'];
+
+        $user = $this->getUserLoggedin();
+
+        $bpmnEntityCollection = $user->getBpmnList()->filter(function (/** @var BpmnEntity $item */ $item) use ($fileName) {
+            return $fileName === $item->getName() ? $item : false;
+        });
+
+        return $response
+            ->withStatus(200)
+            ->write($bpmnEntityCollection->first()->getGeneratedFile());
+    }
+
     public function bpmn(Request $request, Response $response, $args)
     {
         return $this->view()->render($response, './bpmn.twig', $args);
@@ -69,7 +85,7 @@ class IndexController extends ControllerBase
     public function bpmnList(Request $request, Response $response, $args)
     {
         $args['files'] = array_map(function (/** @var $item BpmnEntity*/ $item) {
-            return ['name' => $item->getName() ];
+            return ['name' => $item->getName()];
         }, $this->getUserLoggedin()
             ->getBpmnList()
             ->toArray()

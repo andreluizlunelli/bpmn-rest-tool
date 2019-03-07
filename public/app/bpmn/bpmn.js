@@ -14,9 +14,7 @@ let modeler = new BpmnModeler({
 });
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    const pathname = window.location.pathname;
-    let bpmnxml = pathname.replace('/bpmn/', '');
-    fetch(new Request(`/bpmn-geradas/${bpmnxml}.bpmn`))
+    fetch(new Request(window.location.pathname + '/fetch'))
         .then((response) => {
             response.text().then((text) => {
                 openDiagram(text);

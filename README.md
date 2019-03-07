@@ -9,5 +9,5 @@
     
 ```
 Adicionar usuário:
-composer run add-user -- --nome andre --email to.lunelli@gmail.com
+composer run add-user -- --n andre --e to.lunelli@gmail.com -s suasenha
 ```

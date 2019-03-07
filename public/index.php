@@ -18,5 +18,6 @@ session_start();
 // Instantiate the app
 $app = \andreluizlunelli\BpmnRestTool\System\App::getApp();
 
+
 // Run app
 $app->run();

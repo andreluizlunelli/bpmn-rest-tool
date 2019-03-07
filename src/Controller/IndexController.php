@@ -10,6 +10,7 @@ namespace andreluizlunelli\BpmnRestTool\Controller;
 
 use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
+use andreluizlunelli\BpmnRestTool\Model\Entity\BpmnEntity;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\Http\Request;
@@ -17,6 +18,8 @@ use Slim\Http\Response;
 
 class IndexController extends ControllerBase
 {
+    use UserLoggedin;
+
     public function carregarXmlProject(Request $request, Response $response, $args)
     {
         return $this->view()->render($response, './enviar.twig', $args);
@@ -28,21 +31,34 @@ class IndexController extends ControllerBase
 
         /** @var UploadedFileInterface $f */
         foreach ($files as $f) {
-            $f->moveTo(getcwd() . '/public/project-informado/' . $f->getClientFilename());
+            try {
+                $f->moveTo(getcwd() . '/public/project-informado/' . $f->getClientFilename());
 
-            $projectEntity = (new ProjectMapper())
-                ->map(new \SplFileObject(getcwd() . '/public/project-informado/' . $f->getClientFilename()));
+                $splFile = new \SplFileObject(getcwd() . '/public/project-informado/' . $f->getClientFilename());
 
-            $bpmn = new BpmnMetadataBuilder($projectEntity);
+                $projectEntity = (new ProjectMapper())->map($splFile);
 
-            $builder = new BpmnBuilder($bpmn->buildMetadata());
+                $bpmn = new BpmnMetadataBuilder($projectEntity);
+                $builder = new BpmnBuilder($bpmn->buildMetadata());
+                $xml = $builder->buildXml();
 
-            $xml = $builder->buildXml();
+                $bpmnEntity = (new BpmnEntity())
+                    ->setFileInformed(file_get_contents($splFile->getPathname()))
+                    ->setGeneratedFile($xml)
+                    ->setName(uniqid() . "-" . $f->getClientFilename());
 
-            file_put_contents(getcwd() . '/public/bpmn-geradas/' . current(explode('.', $f->getClientFilename())).'.bpmn', $xml);
+                $user = $this->getUserLoggedin();
+                $user->addBpmn($bpmnEntity);
+                $this->em()->persist($user);
+                $this->em()->flush();
+            } finally {
+                $delete = $splFile->getPathname();
+                $splFile = null;
+                unlink($delete);
+            }
         }
 
-        return $response->withRedirect('/bpmn');
+        return $response->withRedirect($this->route()->pathFor('index'));
     }
 
     public function bpmn(Request $request, Response $response, $args)
@@ -52,15 +68,13 @@ class IndexController extends ControllerBase
 
     public function bpmnList(Request $request, Response $response, $args)
     {
-        foreach (new \DirectoryIterator(getcwd() . '/public/bpmn-geradas') as $fileInfo) {
-            if ($fileInfo->isDot()) continue;
-            if ($fileInfo->getFilename() == '.gitkeep') continue;
+        $args['files'] = array_map(function (/** @var $item BpmnEntity*/ $item) {
+            return ['name' => $item->getName() ];
+        }, $this->getUserLoggedin()
+            ->getBpmnList()
+            ->toArray()
+        );
 
-            $file['name'] = pathinfo($fileInfo->getBasename(), PATHINFO_FILENAME);
-            $file['location'] = "/bpmn-geradas/{$fileInfo->getFilename()}";
-
-            $args['files'][] = $file;
-        }
         return $this->view()->render($response, './bpmn-list.twig', $args);
     }
 

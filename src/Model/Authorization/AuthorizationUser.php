@@ -51,7 +51,7 @@ class AuthorizationUser
             throw new \InvalidArgumentException('Senha errada. Tente novamente por gentileza.');
 
         $this->sessionManager->start();
-        $this->sessionManager->getStorage()->setMetadata('user', $user->jsonSerialize());
+        $this->sessionManager->getStorage()->setMetadata('user', $user->toArray());
     }
 
 }

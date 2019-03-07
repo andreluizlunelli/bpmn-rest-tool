@@ -9,6 +9,8 @@
 namespace andreluizlunelli\BpmnRestTool\Model\Entity;
 
 use andreluizlunelli\BpmnRestTool\System\SystemConst;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use JsonSerializable;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -43,6 +45,13 @@ class User implements JsonSerializable, ToArray
     private $password;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="BpmnEntity", mappedBy="user", cascade={"persist"})
+     */
+    private $bpmnList;
+
+    /**
      * User constructor.
      * @param string $name
      * @param string $email
@@ -56,6 +65,14 @@ class User implements JsonSerializable, ToArray
         $this->email = $email;
         if ( ! empty($password))
             $this->password = self::passwordHash($password);
+        $this->bpmnList = new ArrayCollection();
+    }
+
+    public function addBpmn(BpmnEntity $bpmnEntity): void
+    {
+        $bpmnEntity->setUser($this);
+
+        $this->bpmnList->add($bpmnEntity);
     }
 
     /**
@@ -84,6 +101,7 @@ class User implements JsonSerializable, ToArray
     {
         $arr = $this->jsonSerialize();
         $arr['password'] = $this->password;
+        $arr['id'] = $this->id;
         return $arr;
     }
 
@@ -149,6 +167,22 @@ class User implements JsonSerializable, ToArray
     {
         $this->password = $password;
         return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getBpmnList(): Collection
+    {
+        return $this->bpmnList;
+    }
+
+    /**
+     * @param Collection $bpmnList
+     */
+    public function setBpmnList(Collection $bpmnList): void
+    {
+        $this->bpmnList = $bpmnList;
     }
 
 }

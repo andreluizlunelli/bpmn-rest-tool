@@ -8,6 +8,7 @@
 
 namespace andreluizlunelli\BpmnRestTool\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Psr\Container\ContainerInterface;
 use Slim\Flash\Messages;
 use Slim\Router;
@@ -21,6 +22,11 @@ class ControllerBase
 
     public function __construct(ContainerInterface $container) {
         $this->container = $container;
+    }
+
+    protected function em(): EntityManager
+    {
+        return $this->container->get('em');
     }
 
     protected function view(): \Slim\Views\Twig

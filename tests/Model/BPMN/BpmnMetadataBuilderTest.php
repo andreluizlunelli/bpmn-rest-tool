@@ -138,11 +138,7 @@ class BpmnMetadataBuilderTest extends TestCase
                                 ,'outgoing' => [
                                     'type' => 'TaskActivity'
                                     ,'name' => 'Research Previous Experience'
-                                    ,'outgoing' => [
-                                        'type' => 'TaskActivity'
-                                        ,'name' => 'Develop Project Charter'
-                                        ,'outgoing' => []
-                                    ]
+                                    ,'outgoing' => []
                                 ]
                             ]
                         ]

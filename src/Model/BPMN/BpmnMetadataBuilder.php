@@ -108,6 +108,14 @@ class BpmnMetadataBuilder
             return $taskActivity;
         }
 
+        if ((int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text() > (int)$task->domQuery->find('OutlineLevel')->text()) {
+            $outlineLevelSearch = (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text() - (int)$task->domQuery->find('OutlineLevel')->text();
+            $prevOutgoing = $this->getPrevOutgoing($outlineLevelSearch);
+            $taskActivity = TaskActivity::createFromTask($task);
+            $prevOutgoing->setOutgoing($taskActivity);
+            return $taskActivity;
+        }
+
         throw new \Exception('Não foi possivel criar o elemento');
     }
 
@@ -130,6 +138,15 @@ class BpmnMetadataBuilder
             }
         } while (! $find);
         return $subProcess;
+    }
+
+    private function getPrevOutgoing(int $outlineLevelSearch): TypeElementAbstract
+    {
+        $arr = $this->project->getTasks();
+        return current(array_filter($arr, function ($item) use ($outlineLevelSearch) {
+            if ((int)$item->domQuery->find('OutlineLevel')->text() == $outlineLevelSearch)
+                return $item;
+        }));
     }
 
 }

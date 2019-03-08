@@ -837,104 +837,6 @@ The template was built using all the stages, activities and tasks from the Proje
 			</ExtendedAttribute>
 		</Task>
 		<Task>
-			<UID>8</UID>
-			<ID>6</ID>
-			<Name>Develop Project Charter</Name>
-			<Active>1</Active>
-			<Manual>0</Manual>
-			<Type>0</Type>
-			<IsNull>0</IsNull>
-			<CreateDate>2006-12-05T11:53:00</CreateDate>
-			<WBS>1.1.4</WBS>
-			<OutlineNumber>1.1.4</OutlineNumber>
-			<OutlineLevel>3</OutlineLevel>
-			<Priority>500</Priority>
-			<Start>2018-05-21T08:00:00</Start>
-			<Finish>2018-05-21T12:00:00</Finish>
-			<Duration>PT4H0M0S</Duration>
-			<ManualStart>2018-05-21T08:00:00</ManualStart>
-			<ManualFinish>2018-05-21T12:00:00</ManualFinish>
-			<ManualDuration>PT4H0M0S</ManualDuration>
-			<DurationFormat>39</DurationFormat>
-			<Work>PT8H0M0S</Work>
-			<ResumeValid>0</ResumeValid>
-			<EffortDriven>1</EffortDriven>
-			<Recurring>0</Recurring>
-			<OverAllocated>0</OverAllocated>
-			<Estimated>1</Estimated>
-			<Milestone>0</Milestone>
-			<Summary>0</Summary>
-			<DisplayAsSummary>0</DisplayAsSummary>
-			<Critical>1</Critical>
-			<IsSubproject>0</IsSubproject>
-			<IsSubprojectReadOnly>0</IsSubprojectReadOnly>
-			<ExternalTask>0</ExternalTask>
-			<EarlyStart>2018-05-21T08:00:00</EarlyStart>
-			<EarlyFinish>2018-05-21T12:00:00</EarlyFinish>
-			<LateStart>2018-05-21T08:00:00</LateStart>
-			<LateFinish>2018-05-21T12:00:00</LateFinish>
-			<StartVariance>0</StartVariance>
-			<FinishVariance>0</FinishVariance>
-			<WorkVariance>480000.00</WorkVariance>
-			<FreeSlack>0</FreeSlack>
-			<TotalSlack>0</TotalSlack>
-			<StartSlack>0</StartSlack>
-			<FinishSlack>0</FinishSlack>
-			<FixedCost>0</FixedCost>
-			<FixedCostAccrual>3</FixedCostAccrual>
-			<PercentComplete>0</PercentComplete>
-			<PercentWorkComplete>0</PercentWorkComplete>
-			<Cost>0</Cost>
-			<OvertimeCost>0</OvertimeCost>
-			<OvertimeWork>PT0H0M0S</OvertimeWork>
-			<ActualDuration>PT0H0M0S</ActualDuration>
-			<ActualCost>0</ActualCost>
-			<ActualOvertimeCost>0</ActualOvertimeCost>
-			<ActualWork>PT0H0M0S</ActualWork>
-			<ActualOvertimeWork>PT0H0M0S</ActualOvertimeWork>
-			<RegularWork>PT8H0M0S</RegularWork>
-			<RemainingDuration>PT4H0M0S</RemainingDuration>
-			<RemainingCost>0</RemainingCost>
-			<RemainingWork>PT8H0M0S</RemainingWork>
-			<RemainingOvertimeCost>0</RemainingOvertimeCost>
-			<RemainingOvertimeWork>PT0H0M0S</RemainingOvertimeWork>
-			<ACWP>0.00</ACWP>
-			<CV>0.00</CV>
-			<ConstraintType>0</ConstraintType>
-			<CalendarUID>-1</CalendarUID>
-			<LevelAssignments>1</LevelAssignments>
-			<LevelingCanSplit>1</LevelingCanSplit>
-			<LevelingDelay>0</LevelingDelay>
-			<LevelingDelayFormat>8</LevelingDelayFormat>
-			<PreLeveledStart>2007-07-02T08:00:00</PreLeveledStart>
-			<PreLeveledFinish>2007-07-02T12:00:00</PreLeveledFinish>
-			<IgnoreResourceCalendar>0</IgnoreResourceCalendar>
-			<Notes>Develop the Project Charter and present it for approval to proceed with the project.</Notes>
-			<HideBar>0</HideBar>
-			<Rollup>0</Rollup>
-			<BCWS>0.00</BCWS>
-			<BCWP>0.00</BCWP>
-			<PhysicalPercentComplete>0</PhysicalPercentComplete>
-			<EarnedValueMethod>0</EarnedValueMethod>
-			<PredecessorLink>
-				<PredecessorUID>7</PredecessorUID>
-				<Type>1</Type>
-				<CrossProject>0</CrossProject>
-				<LinkLag>0</LinkLag>
-				<LagFormat>7</LagFormat>
-			</PredecessorLink>
-			<IsPublished>1</IsPublished>
-			<CommitmentType>0</CommitmentType>
-			<ExtendedAttribute>
-				<FieldID>188743731</FieldID>
-				<Value>VPEND&lt;VP ID="0_134438" TYP="0"&gt;&lt;VP ID="0_134441" TYP="2"&gt;&lt;VP ID="0_134448" TYP="3" /&gt;&lt;/VP&gt;&lt;VP ID="0_17303" TYP="1" /&gt;&lt;VP ID="0_20510" TYP="1" /&gt;&lt;/VP&gt;</Value>
-			</ExtendedAttribute>
-			<ExtendedAttribute>
-				<FieldID>188743747</FieldID>
-				<Value>Project Charter</Value>
-			</ExtendedAttribute>
-		</Task>
-		<Task>
 			<UID>9</UID>
 			<ID>7</ID>
 			<Name>Develop Preliminary Project Scope Statement</Name>
@@ -1122,7 +1024,7 @@ The template was built using all the stages, activities and tasks from the Proje
 				<FieldID>188743747</FieldID>
 				<Value>Delivery Approach, Meeting Minutes, Action Items</Value>
 			</ExtendedAttribute>
-		</Task>		
+		</Task>
 	</Tasks>
 	<Resources>
 		<Resource>

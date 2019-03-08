@@ -110,19 +110,11 @@ class BpmnMetadataBuilderTest extends TestCase
             ,'outgoing' => [
                 'type' => 'SubProcess'
                 ,'name' => 'Project Management for MS Website'
-                ,'outgoing' => [
-                    'type' => 'EndEvent'
-                    ,'name' => ''
-                    ,'outgoing' => []
-                ]
+                ,'outgoing' => []
                 ,'subprocess' => [
                     'type' => 'SubProcess'
                     ,'name' => 'Initiating'
-                    ,'outgoing' => [
-                        'type' => 'SubProcess'
-                        ,'name' => ''
-                        ,'outgoing' => []
-                    ]
+                    ,'outgoing' => []
                     ,'subprocess' => [
                         'type' => 'SubProcess'
                         ,'name' => 'Develop Project Charter'

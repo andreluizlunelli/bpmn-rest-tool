@@ -14,6 +14,11 @@ class SubProcess extends TypeElementAbstract
 {
     use CreateFromTask;
 
+    /**
+     * @var TypeElementAbstract
+     */
+    private $subprocess;
+
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     {
         $xmlArray = [
@@ -32,6 +37,24 @@ class SubProcess extends TypeElementAbstract
             $xmlArray['SubProcess']['outgoing'] = $outgoing;
 
         return $xmlArray;
+    }
+
+    /**
+     * @return TypeElementAbstract
+     */
+    public function getSubprocess(): TypeElementAbstract
+    {
+        return $this->subprocess;
+    }
+
+    /**
+     * @param TypeElementAbstract $subprocess
+     * @return SubProcess
+     */
+    public function setSubprocess(TypeElementAbstract $subprocess): self
+    {
+        $this->subprocess = $subprocess;
+        return $this;
     }
 
 }

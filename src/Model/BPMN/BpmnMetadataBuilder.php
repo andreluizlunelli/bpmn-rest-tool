@@ -93,11 +93,11 @@ class BpmnMetadataBuilder
             return $startEvent;
         }
 
-        if ((int)$task->domQuery->find('OutlineLevel')->text() > (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) {
+        if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) { // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
             // significa que o previosElement é um subprocess
             $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
             $taskActivity = TaskActivity::createFromTask($task);
-            $previousElement->setOutgoing($taskActivity);
+            $previousElement->setSubprocess($taskActivity);
             return $taskActivity;
         }
 
@@ -111,7 +111,7 @@ class BpmnMetadataBuilder
         throw new \Exception('Não foi possivel criar o elemento');
     }
 
-    private function changeTypeTaskActivityToSubProcess(TypeElementAbstract $previousElement): TypeElementAbstract
+    private function changeTypeTaskActivityToSubProcess(TaskActivity $previousElement): SubProcess
     {
         $prev = $this->rootEl;
         $outgoing = $prev->getOutgoing();
@@ -120,10 +120,13 @@ class BpmnMetadataBuilder
             if ($outgoing->projectTask->getId() == $previousElement->projectTask->getId()) {
                 $find = true;
                 $subProcess = new SubProcess($previousElement->projectTask, $outgoing->getOutgoing());
-                $prev->setOutgoing($subProcess);
+                if ($prev instanceof SubProcess)
+                    $prev->setSubprocess($subProcess);
+                else
+                    $prev->setOutgoing($subProcess);
             } else {
                 $prev = $outgoing;
-                $outgoing = $outgoing->getOutgoing();
+                $outgoing = $outgoing->getSubprocess();
             }
         } while (! $find);
         return $subProcess;

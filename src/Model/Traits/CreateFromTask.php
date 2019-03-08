@@ -15,7 +15,7 @@ trait CreateFromTask
 {
     public static function createFromTask(ProjectTask $task): TypeElementInterface
     {
-        return new self($task->getId(), $task->getName());
+        return new self($task);
     }
 
 }

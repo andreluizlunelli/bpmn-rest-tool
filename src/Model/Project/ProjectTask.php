@@ -20,9 +20,10 @@ class ProjectTask
      */
     public $domQuery;
 
-    public function __construct()
+    public function __construct(string $name = '')
     {
         $this->id = uniqid();
+        $this->name = $name;
     }
 
 }

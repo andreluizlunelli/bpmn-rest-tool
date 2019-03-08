@@ -11,18 +11,30 @@ namespace andreluizlunelli\BpmnRestTool\Model\BPMN;
 use andreluizlunelli\BpmnRestTool\Exception\ArrayEmptyException;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementInterface;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectEntity;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 
+/**
+ * Class BpmnMetadataBuilder
+ * @package andreluizlunelli\BpmnRestTool\Model\BPMN
+ *
+ * Cria o metadado em array php utilizado pelo criador de BPMN
+ */
 class BpmnMetadataBuilder
 {
     /**
      * @var ProjectEntity
      */
     private $project;
+
+    /**
+     * @var TypeElementAbstract
+     */
+    private $rootEl;
 
     /**
      * BpmnMapper constructor.
@@ -43,22 +55,26 @@ class BpmnMetadataBuilder
             throw new ArrayEmptyException();
 
         /** @var TypeElementInterface $previousElement */
-        $previousElement = $rootEl = null;
+        $previousElement = $this->rootEl = null;
 
         $listTasks = $this->project->getTasks();
 
         $countTasks = count($listTasks);
 
-        array_walk($listTasks, function ($item, $k) use (&$rootEl, &$previousElement, $countTasks) {
+        array_walk($listTasks, function ($item, $k) use (&$previousElement, $countTasks) {
+            /** @var TypeElementAbstract $actualElement */
             $actualElement = $this->createElement($countTasks, $item, $k, $previousElement);
 
-            if (empty($rootEl))
-                $rootEl = $actualElement;
+            if (empty($this->rootEl)) {
+                $this->rootEl = $actualElement;
+                $previousElement = current($actualElement->getOutgoing());
+            } else {
+                $previousElement = $actualElement;
+            }
 
-            $previousElement = $actualElement;
         });
 
-        return $rootEl;
+        return $this->rootEl;
     }
 
     /**
@@ -69,8 +85,24 @@ class BpmnMetadataBuilder
      * @return TypeElementInterface
      * @throws \Exception
      */
-    private function createElement(int $countTasks, ProjectTask $task, $key, ?TypeElementAbstract $previousElement): TypeElementInterface
+    private function createElement(int $countTasks, ProjectTask $task, $key, ?TypeElementAbstract &$previousElement): TypeElementInterface
     {
+        if ($key === 0) {
+            $startEvent = StartEvent::createFromTask(new ProjectTask());
+            $taskActivity = TaskActivity::createFromTask($task);
+            $startEvent->addOutgoing($taskActivity);
+            return $startEvent;
+        }
+
+        if ((int)$task->domQuery->find('OutlineLevel')->text() > (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) {
+            // significa que o previosElement é um subprocess
+            $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
+            $taskActivity = TaskActivity::createFromTask($task);
+            $previousElement->setOutgoing($taskActivity);
+            return $taskActivity;
+        }
+
+
         $node = null;
         if (empty($previousElement)) // primeiro elemento
             return StartEvent::createFromTask($task);
@@ -84,8 +116,22 @@ class BpmnMetadataBuilder
         if (empty($node))
             throw new \Exception('Não foi possivel criar o elemento');
 
-        $previousElement->addOutgoing($node);
+        $previousElement->setOutgoing($node);
         return $node;
+    }
+
+    private function changeTypeTaskActivityToSubProcess(TypeElementAbstract $previousElement): TypeElementAbstract
+    {
+        $previousSubprocess = SubProcess::createFromTask($previousElement->projectTask);
+        do {
+            $outgoing = $this->rootEl->getOutgoing();
+
+            if ($outgoing->projectTask->getId() == $previousElement->projectTask->getId()) {
+                
+            }
+
+        } while (! empty($outgoing));
+
     }
 
 }

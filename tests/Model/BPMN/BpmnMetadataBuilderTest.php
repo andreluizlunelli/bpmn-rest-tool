@@ -98,13 +98,11 @@ class BpmnMetadataBuilderTest extends TestCase
         // OutlineLevel ele traz o nível de identação das tarefas pra identificar os subprocessos
 
         $this->projectEntity = (new ProjectMapper())
-            ->map(new \SplFileObject('../../bpmn_xml/Project management plan.xml'));
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado.xml'));
 
         $bpmn = new BpmnMetadataBuilder($this->projectEntity);
 
         $actual = $bpmn->buildMetadata();
-
-        $tasks = $this->projectEntity->getTasks();
 
         $expected = [
             'type' => 'StartEvent'
@@ -132,7 +130,11 @@ class BpmnMetadataBuilderTest extends TestCase
                             [
                                 'type' => 'SubProcess'
                                 ,'name' => 'Develop Preliminary Project Scope Statement'
-                                ,'outgoing' => []
+                                ,'outgoing' => [
+                                    'type' => 'TaskActivity'
+                                    ,'name' => 'Conduct Planning Workshop'
+                                    ,'outgoing' => []
+                                ]
                             ]
                         ]
                         ,'subprocess' => [
@@ -143,15 +145,11 @@ class BpmnMetadataBuilderTest extends TestCase
                                 ,'name' => 'Develop Strategies and Plans'
                                 ,'outgoing' => [
                                     'type' => 'TaskActivity'
-                                    ,'name' => 'Develop Strategies and Plans'
+                                    ,'name' => 'Research Previous Experience'
                                     ,'outgoing' => [
                                         'type' => 'TaskActivity'
-                                        ,'name' => 'Research Previous Experience'
-                                        ,'outgoing' => [
-                                            'type' => 'TaskActivity'
-                                            ,'name' => 'Develop Project Charter'
-                                            ,'outgoing' => []
-                                        ]
+                                        ,'name' => 'Develop Project Charter'
+                                        ,'outgoing' => []
                                     ]
                                 ]
                             ]

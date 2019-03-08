@@ -8,6 +8,7 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType;
 
+use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 use andreluizlunelli\BpmnRestTool\Model\Traits\AttrElement;
 
 abstract class TypeElementAbstract implements TypeElementInterface
@@ -15,14 +16,20 @@ abstract class TypeElementAbstract implements TypeElementInterface
     use AttrElement;
 
     /**
-     * @var array <TypeElementInterface>
+     * @var self
      */
     protected $outgoing;
 
-    public function __construct(string $id, string $name, array $outgoing = [])
+    /**
+     * @var ProjectTask
+     */
+    public $projectTask;
+
+    public function __construct(ProjectTask $projectTask, ?self $outgoing = null)
     {
-        $this->id = "{$this->getNameWithoutNamespace()}_$id";
-        $this->name = $name;
+        $this->projectTask = $projectTask;
+        $this->id = "{$this->getNameWithoutNamespace()}_{$projectTask->getId()}";
+        $this->name = $projectTask->getName();
         $this->outgoing = $outgoing;
     }
 
@@ -32,23 +39,16 @@ abstract class TypeElementAbstract implements TypeElementInterface
             'type' => $this->getNameWithoutNamespace()
             , 'id' => $this->id
             , 'name' => $this->name
-            , 'outgoing' => array_map(function ($item) { return $item->jsonSerialize(); }, $this->outgoing)
+            , 'outgoing' => $this->outgoing
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function getOutgoing(): array
+    public function getOutgoing(): self
     {
         return $this->outgoing;
     }
 
-    /**
-     * @param array $outgoing
-     * @return TypeElementAbstract
-     */
-    public function setOutgoing(array $outgoing): self
+    public function setOutgoing(self $outgoing): self
     {
         $this->outgoing = $outgoing;
         return $this;

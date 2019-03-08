@@ -54,7 +54,6 @@ class BpmnMetadataBuilder
         if (empty($this->project->getTasks()))
             throw new ArrayEmptyException();
 
-        /** @var TypeElementInterface $previousElement */
         $previousElement = $this->rootEl = null;
 
         $listTasks = $this->project->getTasks();
@@ -67,7 +66,7 @@ class BpmnMetadataBuilder
 
             if (empty($this->rootEl)) {
                 $this->rootEl = $actualElement;
-                $previousElement = current($actualElement->getOutgoing());
+                $previousElement = $actualElement->getOutgoing();
             } else {
                 $previousElement = $actualElement;
             }
@@ -85,12 +84,12 @@ class BpmnMetadataBuilder
      * @return TypeElementInterface
      * @throws \Exception
      */
-    private function createElement(int $countTasks, ProjectTask $task, $key, ?TypeElementAbstract &$previousElement): TypeElementInterface
+    private function createElement(int $countTasks, ProjectTask $task, $key, ?TypeElementAbstract $previousElement): TypeElementInterface
     {
         if ($key === 0) {
             $startEvent = StartEvent::createFromTask(new ProjectTask());
             $taskActivity = TaskActivity::createFromTask($task);
-            $startEvent->addOutgoing($taskActivity);
+            $startEvent->setOutgoing($taskActivity);
             return $startEvent;
         }
 
@@ -102,36 +101,32 @@ class BpmnMetadataBuilder
             return $taskActivity;
         }
 
+        if ((int)$task->domQuery->find('OutlineLevel')->text() == (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) {
+            // significa que deve criar apenas uma taskActivity pois está no mesmo nível de identação no ms-project
+            $taskActivity = TaskActivity::createFromTask($task);
+            $previousElement->setOutgoing($taskActivity);
+            return $taskActivity;
+        }
 
-        $node = null;
-        if (empty($previousElement)) // primeiro elemento
-            return StartEvent::createFromTask($task);
-
-        else if ($countTasks-1 == $key) // ultimo elemento
-            $node = EndEvent::createFromTask($task);
-
-        else if ( ! empty($task->getName()))
-            $node = TaskActivity::createFromTask($task);
-
-        if (empty($node))
-            throw new \Exception('Não foi possivel criar o elemento');
-
-        $previousElement->setOutgoing($node);
-        return $node;
+        throw new \Exception('Não foi possivel criar o elemento');
     }
 
     private function changeTypeTaskActivityToSubProcess(TypeElementAbstract $previousElement): TypeElementAbstract
     {
-        $previousSubprocess = SubProcess::createFromTask($previousElement->projectTask);
+        $prev = $this->rootEl;
+        $outgoing = $prev->getOutgoing();
+        $find = false;
         do {
-            $outgoing = $this->rootEl->getOutgoing();
-
             if ($outgoing->projectTask->getId() == $previousElement->projectTask->getId()) {
-                
+                $find = true;
+                $subProcess = new SubProcess($previousElement->projectTask, $outgoing->getOutgoing());
+                $prev->setOutgoing($subProcess);
+            } else {
+                $prev = $outgoing;
+                $outgoing = $outgoing->getOutgoing();
             }
-
-        } while (! empty($outgoing));
-
+        } while (! $find);
+        return $subProcess;
     }
 
 }

@@ -43,7 +43,7 @@ abstract class TypeElementAbstract implements TypeElementInterface
         ];
     }
 
-    public function getOutgoing(): self
+    public function getOutgoing(): ?self
     {
         return $this->outgoing;
     }
@@ -51,12 +51,6 @@ abstract class TypeElementAbstract implements TypeElementInterface
     public function setOutgoing(self $outgoing): self
     {
         $this->outgoing = $outgoing;
-        return $this;
-    }
-
-    public function addOutgoing(TypeElementInterface $element): self
-    {
-        array_push($this->outgoing, $element);
         return $this;
     }
 

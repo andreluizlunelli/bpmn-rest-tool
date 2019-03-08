@@ -8,6 +8,7 @@
 namespace andreluizlunelli\BpmnRestTool\Model\Project;
 
 use DateTime;
+use QueryPath\DOMQuery;
 
 class ProjectEntity
 {
@@ -25,6 +26,11 @@ class ProjectEntity
      * @var string
      */
     private $title;
+
+    /**
+     * @var DOMQuery
+     */
+    public $domQuery;
 
     /**
      * @var array <ProjectTask>

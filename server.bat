@@ -1,1 +1,1 @@
-cd public && start chrome http://192.168.0.18:8080 && php -S 192.168.0.18:8080
+cd public && start chrome http://localhost:8080 && php -S 0.0.0.0:8080

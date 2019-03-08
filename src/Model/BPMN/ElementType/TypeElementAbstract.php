@@ -8,25 +8,21 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType;
 
-use andreluizlunelli\BpmnRestTool\Model\Consts;
-use andreluizlunelli\BpmnRestTool\Model\Traits\AttrIdNameStartFinishDate;
-use DateTime;
+use andreluizlunelli\BpmnRestTool\Model\Traits\AttrElement;
 
 abstract class TypeElementAbstract implements TypeElementInterface
 {
-    use AttrIdNameStartFinishDate;
+    use AttrElement;
 
     /**
      * @var array <TypeElementInterface>
      */
     protected $outgoing;
 
-    public function __construct(string $id, string $name, DateTime $startDate, DateTime $finishDate, array $outgoing = [])
+    public function __construct(string $id, string $name, array $outgoing = [])
     {
         $this->id = "{$this->getNameWithoutNamespace()}_$id";
         $this->name = $name;
-        $this->startDate = $startDate;
-        $this->finishDate = $finishDate;
         $this->outgoing = $outgoing;
     }
 
@@ -36,8 +32,6 @@ abstract class TypeElementAbstract implements TypeElementInterface
             'type' => $this->getNameWithoutNamespace()
             , 'id' => $this->id
             , 'name' => $this->name
-            , 'startDate' => $this->startDate->format(Consts::DATA_HORA)
-            , 'finishDate' => $this->finishDate->format(Consts::DATA_HORA)
             , 'outgoing' => array_map(function ($item) { return $item->jsonSerialize(); }, $this->outgoing)
         ];
     }

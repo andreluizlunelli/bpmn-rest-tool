@@ -8,11 +8,17 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\Project;
 
-use andreluizlunelli\BpmnRestTool\Model\Traits\AttrIdNameStartFinishDate;
+use andreluizlunelli\BpmnRestTool\Model\Traits\AttrElement;
+use QueryPath\DOMQuery;
 
 class ProjectTask
 {
-    use AttrIdNameStartFinishDate;
+    use AttrElement;
+
+    /**
+     * @var DOMQuery
+     */
+    public $domQuery;
 
     public function __construct()
     {

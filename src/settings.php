@@ -1,7 +1,7 @@
 <?php
 return [
     'settings' => [
-        'base_assets' => 'http://192.168.0.18:8081',
+        'base_assets' => 'http://localhost:8081',
         'date_formats' => [
             'date_time_format' => 'Y-m-d H:i:s'
         ],

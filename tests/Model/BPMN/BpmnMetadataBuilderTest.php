@@ -29,7 +29,7 @@ class BpmnMetadataBuilderTest extends TestCase
             ->map(new \SplFileObject('../../bpmn_xml/BpmnMetadataBuilderTest_testBuildMetadata.xml'));
     }
 
-    public function testBuildMetadata()
+    public function testBuildMetadata2()
     {
         $bpmn = new BpmnMetadataBuilder($this->projectEntity);
 
@@ -87,6 +87,49 @@ class BpmnMetadataBuilderTest extends TestCase
                     , 'finishDate' => '2018-05-21 12:00:00'
                     , 'outgoing' => []
                 ]]
+            ]]
+        ];
+
+        self::assertEquals($expected, $actual->jsonSerialize());
+    }
+
+    public function testBuildMetadata()
+    {
+        $this->projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management plan.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($this->projectEntity);
+
+        $actual = $bpmn->buildMetadata();
+
+        $tasks = $this->projectEntity->getTasks();
+
+        self::assertCount(128, $tasks);
+
+        $expected = [
+            'type' => 'StartEvent'
+            , 'name' => 'Project Management for MS Website'
+            , 'outgoing' => [[
+                'type' => 'SubProcess'
+                , 'name' => 'Initiating'
+                , 'outgoing' => [
+                    [
+                        'type' => 'StartEvent'
+                        ,'name' => ''
+                        ,'outgoing' => [
+                            [
+                                'type' => 'SubProcess'
+                                ,'name' => 'Develop Project Charter'
+                                ,''
+                            ]
+                        ]
+                    ]
+                    ,[
+                        'type' => 'EndEvent'
+                        , 'name' => 'Develop Project Charter'
+                        , 'outgoing' => []
+                    ]
+                ]
             ]]
         ];
 

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: André Luiz
- * Date: 19/06/2018
- * Time: 00:13
- */
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN;
 

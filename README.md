@@ -11,3 +11,5 @@
 Adicionar usuário:
 composer run add-user -- --nome andre --email to.lunelli@gmail.com
 ```
+
+Usando https://waffle.io

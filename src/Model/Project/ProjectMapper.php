@@ -27,20 +27,18 @@ class ProjectMapper
             ->setNameFile($nameFile)
         ;
 
+        $project->domQuery = $query;
+
         if ($query->find('Task')->count() < 1)
             return $project;
 
-        foreach ($query->find('Task') as $task)
-            $project->addTask((new ProjectTask())
-                ->setName($task->find('Name')->text())
-                ->setStartDate(
-                    DateTime::createFromFormat(self::DATE_FORMAT_READ, $task->find('Start')->text())
-                )
-                ->setFinishDate(
-                    DateTime::createFromFormat(self::DATE_FORMAT_READ, $task->find('Finish')->text())
-                )
-            );
-
+        foreach ($query->find('Task') as $taskQuery) {
+            $pt = (new ProjectTask())
+                ->setName($taskQuery->find('Name')->text())
+            ;
+            $pt->domQuery = clone $taskQuery;
+            $project->addTask($pt);
+        }
         return $project;
     }
 

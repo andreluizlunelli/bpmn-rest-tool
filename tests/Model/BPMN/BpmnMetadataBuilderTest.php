@@ -95,6 +95,8 @@ class BpmnMetadataBuilderTest extends TestCase
 
     public function testBuildMetadata()
     {
+        // OutlineLevel ele traz o nível de identação das tarefas pra identificar os subprocessos
+
         $this->projectEntity = (new ProjectMapper())
             ->map(new \SplFileObject('../../bpmn_xml/Project management plan.xml'));
 
@@ -104,33 +106,59 @@ class BpmnMetadataBuilderTest extends TestCase
 
         $tasks = $this->projectEntity->getTasks();
 
-        self::assertCount(128, $tasks);
-
         $expected = [
             'type' => 'StartEvent'
-            , 'name' => 'Project Management for MS Website'
-            , 'outgoing' => [[
+            ,'name' => ''
+            ,'outgoing' => [
                 'type' => 'SubProcess'
-                , 'name' => 'Initiating'
-                , 'outgoing' => [
-                    [
-                        'type' => 'StartEvent'
+                ,'name' => 'Project Management for MS Website'
+                ,'outgoing' => [
+                    'type' => 'EndEvent'
+                    ,'name' => ''
+                    ,'outgoing' => []
+                ]
+                ,'subprocess' => [
+                    'type' => 'SubProcess'
+                    ,'name' => 'Initiating'
+                    ,'outgoing' => [
+                        'type' => 'SubProcess'
                         ,'name' => ''
+                        ,'outgoing' => []
+                    ]
+                    ,'subprocess' => [
+                        'type' => 'SubProcess'
+                        ,'name' => 'Develop Project Charter'
                         ,'outgoing' => [
                             [
                                 'type' => 'SubProcess'
-                                ,'name' => 'Develop Project Charter'
-                                ,''
+                                ,'name' => 'Develop Preliminary Project Scope Statement'
+                                ,'outgoing' => []
+                            ]
+                        ]
+                        ,'subprocess' => [
+                            'type' => 'TaskActivity'
+                            ,'name' => 'Identify Goals and Objectives'
+                            ,'outgoing' => [
+                                'type' => 'TaskActivity'
+                                ,'name' => 'Develop Strategies and Plans'
+                                ,'outgoing' => [
+                                    'type' => 'TaskActivity'
+                                    ,'name' => 'Develop Strategies and Plans'
+                                    ,'outgoing' => [
+                                        'type' => 'TaskActivity'
+                                        ,'name' => 'Research Previous Experience'
+                                        ,'outgoing' => [
+                                            'type' => 'TaskActivity'
+                                            ,'name' => 'Develop Project Charter'
+                                            ,'outgoing' => []
+                                        ]
+                                    ]
+                                ]
                             ]
                         ]
                     ]
-                    ,[
-                        'type' => 'EndEvent'
-                        , 'name' => 'Develop Project Charter'
-                        , 'outgoing' => []
-                    ]
                 ]
-            ]]
+            ]
         ];
 
         self::assertEquals($expected, $actual->jsonSerialize());

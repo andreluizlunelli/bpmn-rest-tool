@@ -42,7 +42,7 @@ class SubProcess extends TypeElementAbstract
     /**
      * @return TypeElementAbstract
      */
-    public function getSubprocess(): TypeElementAbstract
+    public function getSubprocess(): ?TypeElementAbstract
     {
         return $this->subprocess;
     }

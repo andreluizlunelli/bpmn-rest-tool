@@ -109,7 +109,7 @@ class BpmnMetadataBuilder
         }
 
         if ((int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text() > (int)$task->domQuery->find('OutlineLevel')->text()) {
-            $outlineLevelSearch = (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text() - (int)$task->domQuery->find('OutlineLevel')->text();
+            $outlineLevelSearch = (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text();
             $prevOutgoing = $this->getPrevOutgoing($outlineLevelSearch);
             $taskActivity = TaskActivity::createFromTask($task);
             $prevOutgoing->setOutgoing($taskActivity);
@@ -119,22 +119,35 @@ class BpmnMetadataBuilder
         throw new \Exception('Não foi possivel criar o elemento');
     }
 
-    private function changeTypeTaskActivityToSubProcess(TaskActivity $previousElement): SubProcess
+    private function changeTypeTaskActivityToSubProcess(TaskActivity $changeElement): SubProcess
     {
         $prev = $this->rootEl;
         $outgoing = $prev->getOutgoing();
         $find = false;
+        $subProcess = null;
         do {
-            if ($outgoing->projectTask->getId() == $previousElement->projectTask->getId()) {
+            if ($outgoing->projectTask->getId() == $changeElement->projectTask->getId()) {
                 $find = true;
-                $subProcess = new SubProcess($previousElement->projectTask, $outgoing->getOutgoing());
-                if ($prev instanceof SubProcess)
-                    $prev->setSubprocess($subProcess);
+                $subProcess = new SubProcess($changeElement->projectTask, $outgoing->getOutgoing());
+                if ($prev instanceof SubProcess) {
+                    if ($changeElement->projectTask->domQuery->find('OutlineLevel')->text()
+                    == $prev->projectTask->domQuery->find('OutlineLevel')->text())
+                        $prev->setOutgoing($subProcess);
+                    else
+                        $prev->setSubprocess($subProcess);
+                }
                 else
                     $prev->setOutgoing($subProcess);
             } else {
                 $prev = $outgoing;
-                $outgoing = $outgoing->getSubprocess();
+                $outgoing = $outgoing instanceof SubProcess
+                    ? $outgoing->getSubprocess()
+                    : $outgoing->getOutgoing();
+                if (empty($outgoing)) {
+//                    $outgoing = ($this->getPrevOutgoing((int)$prev->projectTask->domQuery->find('OutlineLevel')->text()))->getOutgoing();
+                    $prev = $this->getPrevOutgoing((int)$prev->projectTask->domQuery->find('OutlineLevel')->text());
+                    $outgoing = $prev->getOutgoing();
+                }
             }
         } while (! $find);
         return $subProcess;
@@ -142,11 +155,22 @@ class BpmnMetadataBuilder
 
     private function getPrevOutgoing(int $outlineLevelSearch): TypeElementAbstract
     {
-        $arr = $this->project->getTasks();
-        return current(array_filter($arr, function ($item) use ($outlineLevelSearch) {
-            if ((int)$item->domQuery->find('OutlineLevel')->text() == $outlineLevelSearch)
-                return $item;
-        }));
+        $find = false;
+        $prevOutgoing = null;
+        $prev = $this->rootEl;
+        $current = $prev->getOutgoing();
+        do {
+            if ((int)$current->projectTask->domQuery->find('OutlineLevel')->text() == $outlineLevelSearch) {
+                $find = true;
+                $prevOutgoing = $prev;
+            } else {
+                $prev = $current;
+                $current = $current instanceof SubProcess
+                    ? $current->getSubprocess()
+                    : $current->getOutgoing();
+            }
+        } while (! $find);
+        return $prevOutgoing;
     }
 
 }

@@ -110,11 +110,11 @@ class BpmnMetadataBuilderTest extends TestCase
             ,'outgoing' => [
                 'type' => 'SubProcess'
                 ,'name' => 'Project Management for MS Website'
-                ,'outgoing' => []
+                ,'outgoing' => null
                 ,'subprocess' => [
                     'type' => 'SubProcess'
                     ,'name' => 'Initiating'
-                    ,'outgoing' => []
+                    ,'outgoing' => null
                     ,'subprocess' => [
                         'type' => 'SubProcess'
                         ,'name' => 'Develop Project Charter'
@@ -122,10 +122,10 @@ class BpmnMetadataBuilderTest extends TestCase
                             [
                                 'type' => 'SubProcess'
                                 ,'name' => 'Develop Preliminary Project Scope Statement'
-                                ,'outgoing' => [
+                                ,'subprocess' => [
                                     'type' => 'TaskActivity'
                                     ,'name' => 'Conduct Planning Workshop'
-                                    ,'outgoing' => []
+                                    ,'outgoing' => null
                                 ]
                             ]
                         ]
@@ -138,7 +138,7 @@ class BpmnMetadataBuilderTest extends TestCase
                                 ,'outgoing' => [
                                     'type' => 'TaskActivity'
                                     ,'name' => 'Research Previous Experience'
-                                    ,'outgoing' => []
+                                    ,'outgoing' => null
                                 ]
                             ]
                         ]

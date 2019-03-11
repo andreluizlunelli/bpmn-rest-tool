@@ -119,14 +119,13 @@ class BpmnMetadataBuilderTest extends TestCase
                         'type' => 'SubProcess'
                         ,'name' => 'Develop Project Charter'
                         ,'outgoing' => [
-                            [
-                                'type' => 'SubProcess'
-                                ,'name' => 'Develop Preliminary Project Scope Statement'
-                                ,'subprocess' => [
-                                    'type' => 'TaskActivity'
-                                    ,'name' => 'Conduct Planning Workshop'
-                                    ,'outgoing' => null
-                                ]
+                            'type' => 'SubProcess'
+                            ,'name' => 'Develop Preliminary Project Scope Statement'
+                            ,'outgoing' => null
+                            ,'subprocess' => [
+                                'type' => 'TaskActivity'
+                                ,'name' => 'Conduct Planning Workshop'
+                                ,'outgoing' => null
                             ]
                         ]
                         ,'subprocess' => [

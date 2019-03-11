@@ -37,9 +37,8 @@ abstract class TypeElementAbstract implements TypeElementInterface
     {
         return [
             'type' => $this->getNameWithoutNamespace()
-            , 'id' => $this->id
             , 'name' => $this->name
-            , 'outgoing' => $this->outgoing
+            , 'outgoing' => $this->outgoing ? $this->outgoing->jsonSerialize() : null
         ];
     }
 

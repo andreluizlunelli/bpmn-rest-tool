@@ -57,4 +57,11 @@ class SubProcess extends TypeElementAbstract
         return $this;
     }
 
+    public function jsonSerialize()
+    {
+        $arr = parent::jsonSerialize();
+        $arr['subprocess'] = $this->subprocess ? $this->subprocess->jsonSerialize() : null;
+        return $arr;
+    }
+
 }

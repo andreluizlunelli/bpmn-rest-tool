@@ -105,7 +105,7 @@ class BpmnMetadataBuilderTest extends TestCase
         $actual = $bpmn->buildMetadata();
 
         $expected = [
-            'type' => 'StartEvent'
+            'type' => 'StartEvent' // único momento que existe o StartEvent nesse contexto
             ,'name' => ''
             ,'outgoing' => [
                 'type' => 'SubProcess'

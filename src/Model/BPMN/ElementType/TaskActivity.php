@@ -16,8 +16,9 @@ class TaskActivity extends TypeElementAbstract
 
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     {
+        $key = 'task';
         $xmlArray = [
-            'task' => [
+            $key => [
                 '_attributes' => [
                     'id' => $this->id
                     , 'name' => $this->name
@@ -26,10 +27,10 @@ class TaskActivity extends TypeElementAbstract
         ];
 
         if ( ! empty($incoming))
-            $xmlArray['task']['incoming'] = $incoming;
+            $xmlArray[$key]['incoming'] = $incoming;
 
         if ( ! empty($outgoing))
-            $xmlArray['task']['outgoing'] = $outgoing;
+            $xmlArray[$key]['outgoing'] = $outgoing;
 
         return $xmlArray;
     }

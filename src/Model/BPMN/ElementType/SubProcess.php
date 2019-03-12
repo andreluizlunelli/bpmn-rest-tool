@@ -21,8 +21,9 @@ class SubProcess extends TypeElementAbstract
 
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     {
+        $key = lcfirst($this->getNameWithoutNamespace());
         $xmlArray = [
-            'SubProcess' => [
+            $key => [
                 '_attributes' => [
                     'id' => $this->id
                     , 'name' => $this->name
@@ -31,10 +32,10 @@ class SubProcess extends TypeElementAbstract
         ];
 
         if ( ! empty($incoming))
-            $xmlArray['SubProcess']['incoming'] = $incoming;
+            $xmlArray[$key]['incoming'] = $incoming;
 
         if ( ! empty($outgoing))
-            $xmlArray['SubProcess']['outgoing'] = $outgoing;
+            $xmlArray[$key]['outgoing'] = $outgoing;
 
         return $xmlArray;
     }

@@ -16,8 +16,9 @@ class EndEvent extends TypeElementAbstract
 
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     {
+        $key = lcfirst($this->getNameWithoutNamespace());
         $xmlArray = [
-            'endEvent' => [
+            $key => [
                 '_attributes' => [
                     'id' => $this->id
                     , 'name' => $this->name
@@ -26,7 +27,7 @@ class EndEvent extends TypeElementAbstract
         ];
 
         if ( ! empty($incoming))
-            $xmlArray['endEvent']['incoming'] = $incoming;
+            $xmlArray[$key]['incoming'] = $incoming;
 
         return $xmlArray;
     }

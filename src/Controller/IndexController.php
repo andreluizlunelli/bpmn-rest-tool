@@ -30,9 +30,7 @@ class IndexController extends ControllerBase
                 $f->moveTo(getcwd() . '/public/project-informado/' . $f->getClientFilename());
 
                 $splFile = new \SplFileObject(getcwd() . '/public/project-informado/' . $f->getClientFilename());
-
                 $projectEntity = (new ProjectMapper())->map($splFile);
-
                 $bpmn = new BpmnMetadataBuilder($projectEntity);
                 $builder = new BpmnBuilder($bpmn->buildMetadata());
                 $xml = $builder->buildXml();

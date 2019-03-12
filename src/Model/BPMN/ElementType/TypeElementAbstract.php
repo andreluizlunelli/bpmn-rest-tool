@@ -56,7 +56,7 @@ abstract class TypeElementAbstract implements TypeElementInterface
     /**
      * @return mixed
      */
-    private function getNameWithoutNamespace(): string
+    protected function getNameWithoutNamespace(): string
     {
         $arr = explode('\\', get_class($this));
 

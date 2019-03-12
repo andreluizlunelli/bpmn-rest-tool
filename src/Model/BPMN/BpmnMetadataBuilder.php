@@ -144,7 +144,6 @@ class BpmnMetadataBuilder
                     ? $outgoing->getSubprocess()
                     : $outgoing->getOutgoing();
                 if (empty($outgoing)) {
-//                    $outgoing = ($this->getPrevOutgoing((int)$prev->projectTask->domQuery->find('OutlineLevel')->text()))->getOutgoing();
                     $prev = $this->getPrevOutgoing((int)$prev->projectTask->domQuery->find('OutlineLevel')->text());
                     $outgoing = $prev->getOutgoing();
                 }

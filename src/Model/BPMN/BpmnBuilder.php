@@ -4,8 +4,10 @@ namespace andreluizlunelli\BpmnRestTool\Model\BPMN;
 
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
+use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class BpmnBuilder
@@ -27,22 +29,20 @@ class BpmnBuilder
     public function buildXml(): string
     {
         $xml = $sequences = [];
-        $previousEl = $nextEl = $next2 = null;
+        $previousEl = $nextEl = null;
         $actualEl = $this->rootEl;
 
         do {
-            $arrayForXml = $this->createNode($previousEl, $actualEl, $next2, $sequences);
+            $arrayForXml = $this->createNode($previousEl, $actualEl, $nextEl, $sequences);
 
             $k = key($arrayForXml);
-            $xml[$k][] = $arrayForXml[$k];
+            $xml[$k][] = $arrayForXml[$k]; // todo mover esse cara para o createNode
 
-            /** @var TypeElementAbstract $nextEl */
-            $nextEl = current($actualEl->getOutgoing()); // aqui poderá no futuro vir uma lista, que sera uma arvore binária
+            $nextEl = $this->getNextEl($actualEl);
 
             $previousEl = $actualEl;
             $actualEl = $nextEl;
-
-            $next2 = $nextEl ? current($nextEl->getOutgoing()) : null;
+            $nextEl = $this->getNextEl($nextEl);
 
         } while ( ! empty($nextEl));
 
@@ -111,6 +111,26 @@ class BpmnBuilder
                 $targetRef = $actualEl ? $actualEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                $sourceRef = $actualEl ? $actualEl->getId() : '';
+                $targetRef = $nextEl ? $nextEl->getId() : '';
+                if ( ! empty($sourceRef) && ! empty($targetRef))
+                    $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+                break;
+            case SubProcess::class:
+                $sourceRef = $previousEl ? $previousEl->getId() : '';
+                $targetRef = $actualEl ? $actualEl->getId() : '';
+                if ( ! empty($sourceRef) && ! empty($targetRef))
+                    $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                if (empty($actualEl->getOutgoing())) { // tenho que criar um elemento de finalização e uma sequence pra ele
+                    $endEventSubprocess = new EndEvent(new ProjectTask());
+                    $endEventTargetRef = $endEventSubprocess->getId();
+                    $this->addSequence($sourceRef, $endEventTargetRef, $sequences);
+                    $actualEl->setOutgoing($endEventSubprocess);
+                }
+
+                // lembrar que subprocessos são identados no xml e não apenas sequenciais
 
                 $sourceRef = $actualEl ? $actualEl->getId() : '';
                 $targetRef = $nextEl ? $nextEl->getId() : '';
@@ -306,6 +326,16 @@ class BpmnBuilder
         $a = str_replace('<Bounds', '<omgdc:Bounds', $a);
 
         return $a;
+    }
+
+    private function getNextEl(?TypeElementAbstract $el): ?TypeElementAbstract
+    {
+        if (empty($el))
+            return null;
+
+        return $el instanceof SubProcess
+            ? $el->getSubprocess()
+            : $el->getOutgoing();
     }
 
 }

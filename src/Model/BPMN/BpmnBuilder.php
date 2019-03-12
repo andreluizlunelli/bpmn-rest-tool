@@ -18,6 +18,11 @@ class BpmnBuilder
     private $rootEl;
 
     /**
+     * @var array
+     */
+    private $rootXml;
+
+    /**
      * BpmnBuilder constructor.
      * @param TypeElementAbstract $rootEl
      */
@@ -28,15 +33,12 @@ class BpmnBuilder
 
     public function buildXml(): string
     {
-        $xml = $sequences = [];
+        $this->rootXml = $sequences = [];
         $previousEl = $nextEl = null;
         $actualEl = $this->rootEl;
 
         do {
-            $arrayForXml = $this->createNode($previousEl, $actualEl, $nextEl, $sequences);
-
-            $k = key($arrayForXml);
-            $xml[$k][] = $arrayForXml[$k]; // todo mover esse cara para o createNode
+            $this->createNode($previousEl, $actualEl, $nextEl, $sequences);
 
             $nextEl = $this->getNextEl($actualEl);
 
@@ -46,9 +48,9 @@ class BpmnBuilder
 
         } while ( ! empty($nextEl));
 
-        $this->createSequencesNode($xml, $sequences);
+        $this->createSequencesNode($this->rootXml, $sequences);
 
-        $this->normalizeIncomingOutgoing($xml, $sequences);
+        $this->normalizeIncomingOutgoing($this->rootXml, $sequences);
 
         $processNode = [
             'process' => [
@@ -59,9 +61,9 @@ class BpmnBuilder
             ]
         ];
 
-        $processNode['process'] = array_merge($processNode['process'], $xml);
+        $processNode['process'] = array_merge($processNode['process'], $this->rootXml);
 
-        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($xml);
+        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
 
         try {
             $a = ArrayToXml::convert($processNode, [
@@ -89,7 +91,7 @@ class BpmnBuilder
      * @return array
      * @throws \Exception
      */
-    private function createNode($previousEl = null, $actualEl, $nextEl = null, array &$sequences): array
+    private function createNode($previousEl = null, $actualEl, $nextEl = null, array &$sequences): void
     {
         $incoming = $outgoing = null;
 
@@ -99,12 +101,28 @@ class BpmnBuilder
                 $targetRef = $nextEl ? $nextEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                $r = $actualEl->createArrayForXml(
+                    $incoming ? $incoming->getId() : ''
+                    , $outgoing ? $outgoing->getId() : ''
+                );
+
+                $k = key($r);
+                $this->rootXml[$k][] = $r[$k];
                 break;
             case EndEvent::class:
                 $sourceRef = $previousEl ? $previousEl->getId() : '';
                 $targetRef = $actualEl ? $actualEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                $r = $actualEl->createArrayForXml(
+                    $incoming ? $incoming->getId() : ''
+                    , $outgoing ? $outgoing->getId() : ''
+                );
+
+                $k = key($r);
+                $this->rootXml[$k][] = $r[$k];
                 break;
             case TaskActivity::class:
                 $sourceRef = $previousEl ? $previousEl->getId() : '';
@@ -116,6 +134,14 @@ class BpmnBuilder
                 $targetRef = $nextEl ? $nextEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                $r = $actualEl->createArrayForXml(
+                    $incoming ? $incoming->getId() : ''
+                    , $outgoing ? $outgoing->getId() : ''
+                );
+
+                $k = key($r);
+                $this->rootXml[$k][] = $r[$k];
                 break;
             case SubProcess::class:
                 $sourceRef = $previousEl ? $previousEl->getId() : '';
@@ -126,27 +152,22 @@ class BpmnBuilder
                 if (empty($actualEl->getOutgoing())) { // tenho que criar um elemento de finalização e uma sequence pra ele
                     $endEventSubprocess = new EndEvent(new ProjectTask());
                     $endEventTargetRef = $endEventSubprocess->getId();
-                    $this->addSequence($sourceRef, $endEventTargetRef, $sequences);
+                    $outgoing = $this->addSequence($sourceRef, $endEventTargetRef, $sequences);
                     $actualEl->setOutgoing($endEventSubprocess);
                 }
-
                 // lembrar que subprocessos são identados no xml e não apenas sequenciais
+                $r = $actualEl->createArrayForXml(
+                    $incoming ? $incoming->getId() : ''
+                    , $outgoing ? $outgoing->getId() : ''
+                );
 
-                $sourceRef = $actualEl ? $actualEl->getId() : '';
-                $targetRef = $nextEl ? $nextEl->getId() : '';
-                if ( ! empty($sourceRef) && ! empty($targetRef))
-                    $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+                $k = key($r);
+                $this->rootXml[$k][] = $r[$k];
+
                 break;
             default:
                 throw new \Exception('Não existe a classe para o nodo');
         }
-
-        $r = $actualEl->createArrayForXml(
-            $incoming ? $incoming->getId() : ''
-            , $outgoing ? $outgoing->getId() : ''
-        );
-
-        return $r;
     }
 
     private function createSequencesNode(array &$xml, array $sequences): void
@@ -184,7 +205,7 @@ class BpmnBuilder
             }
         };
         array_walk($xml['task'], $fn);
-        array_walk($xml['endEvent'], $fn);
+//        array_walk($xml['endEvent'], $fn);
         array_walk($xml['startEvent'], $fn);
     }
 

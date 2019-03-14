@@ -161,6 +161,12 @@ class BpmnBuilder
                     , $outgoing ? $outgoing->getId() : ''
                 );
 
+                $tmpPrev = $actualEl;
+                $tmpActual = $nextEl;
+                $tmpNext = $this->getNextEl($nextEl);
+
+                $this->createNode($tmpPrev, $tmpActual, $tmpNext, $sequences);
+
                 $k = key($r);
                 $this->rootXml[$k][] = $r[$k];
 

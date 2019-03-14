@@ -33,28 +33,16 @@ class BpmnBuilder
 
     public function buildXml(): string
     {
-        $this->rootXml = $sequences = [];
+        $this->rootXml = $sequences = $rxml = [];
         $previousEl = $nextEl = null;
         $actualEl = $this->rootEl;
 
-//        do {
-        $rxml = [];
         $this->rootXml = $this->createNode($previousEl, $actualEl, $this->getNextEl($actualEl), $sequences, $rxml);
-
-//            $k = key($r);
-//            $this->rootXml[$k][] = $r[$k];
-//
-//            $nextEl = $this->getNextEl($actualEl);
-//
-//            $previousEl = $actualEl;
-//            $actualEl = $nextEl;
-//            $nextEl = $this->getNextEl($nextEl);
-
-//        } while ( ! empty($nextEl));
 
         $this->createSequencesNode($this->rootXml, $sequences);
 
 //        $this->normalizeIncomingOutgoing($this->rootXml, $sequences);
+        $this->rootXml = $this->normalizeStartEndEvent($this->rootXml);
 
         $processNode = [
             'process' => [
@@ -67,7 +55,7 @@ class BpmnBuilder
 
         $processNode['process'] = array_merge($processNode['process'], $this->rootXml);
 
-//        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
+        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
 
         try {
             $a = ArrayToXml::convert($processNode, [
@@ -81,7 +69,7 @@ class BpmnBuilder
                 ],
             ]);
         } catch (\DOMException $e) {
-            $a = 0;
+            throw $e;
         }
 
         return $this->normalizeXMLString($a);
@@ -244,7 +232,7 @@ class BpmnBuilder
             }
         };
         array_walk($xml['task'], $fn);
-//        array_walk($xml['endEvent'], $fn);
+        array_walk($xml['endEvent'], $fn);
         array_walk($xml['startEvent'], $fn);
     }
 
@@ -396,6 +384,10 @@ class BpmnBuilder
         return $el instanceof SubProcess
             ? $el->getSubprocess()
             : $el->getOutgoing();
+    }
+
+    private function normalizeStartEndEvent($rootXml): array
+    {
     }
 
 }

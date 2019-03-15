@@ -46,6 +46,8 @@ class BpmnMetadataBuilder
     }
 
     /**
+     * Cria a árvore binária
+     *
      * @return TypeElementAbstract
      * @throws ArrayEmptyException
      */
@@ -54,60 +56,62 @@ class BpmnMetadataBuilder
         if (empty($this->project->getTasks()))
             throw new ArrayEmptyException();
 
-        $previousElement = $this->rootEl = null;
+        $prevElement = $this->rootEl = null;
 
         $listTasks = $this->project->getTasks();
 
-        $countTasks = count($listTasks);
+        $iteratorTasks = new \ArrayIterator($listTasks);
 
-        array_walk($listTasks, function ($item, $k) use (&$previousElement, $countTasks) {
-            /** @var TypeElementAbstract $actualElement */
-            $actualElement = $this->createElement($countTasks, $item, $k, $previousElement);
+        while ($iteratorTasks->valid()) {
+            $curTask = $iteratorTasks->current();
 
             if (empty($this->rootEl)) {
-                $this->rootEl = $actualElement;
-                $previousElement = $actualElement->getOutgoing();
-            } else {
-                $previousElement = $actualElement;
+                $prevElement = StartEvent::createFromTask(new ProjectTask());
+                $this->rootEl = $prevElement;
             }
 
-        });
+            $curEl = $this->createElement($curTask, $prevElement);
+            $prevElement = $curEl;
+            $iteratorTasks->next();
+        }
+
+        $this->addEndEvent();
 
         return $this->rootEl;
     }
 
     /**
-     * @param int $countTasks
      * @param ProjectTask $task
-     * @param $key
      * @param TypeElementAbstract|null $previousElement
      * @return TypeElementInterface
      * @throws \Exception
      */
-    private function createElement(int $countTasks, ProjectTask $task, $key, ?TypeElementAbstract $previousElement): TypeElementInterface
+    private function createElement(ProjectTask $task, ?TypeElementAbstract $previousElement): TypeElementInterface
     {
-        if ($key === 0) {
+        if ($previousElement instanceof StartEvent) {
+            $el = TaskActivity::createFromTask($task);
+            $previousElement->setOutgoing($el);
+            return $el;
+        }
+        // cria um subProcesso
+        // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
+        if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) {
+            // significa que o previosElement é um subprocess
+            $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
             $startEvent = StartEvent::createFromTask(new ProjectTask());
             $taskActivity = TaskActivity::createFromTask($task);
             $startEvent->setOutgoing($taskActivity);
-            return $startEvent;
-        }
-
-        if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) { // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
-            // significa que o previosElement é um subprocess
-            $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
-            $taskActivity = TaskActivity::createFromTask($task);
-            $previousElement->setSubprocess($taskActivity);
+            $previousElement->setSubprocess($startEvent);
             return $taskActivity;
         }
-
+        // cria uma tarefa
         if ((int)$task->domQuery->find('OutlineLevel')->text() == (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) {
             // significa que deve criar apenas uma taskActivity pois está no mesmo nível de identação no ms-project
             $taskActivity = TaskActivity::createFromTask($task);
             $previousElement->setOutgoing($taskActivity);
             return $taskActivity;
         }
-
+        // cria uma tarefa como outgoing do ultimo subProcess
         if ((int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text() > (int)$task->domQuery->find('OutlineLevel')->text()) {
             $outlineLevelSearch = (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text();
             $prevOutgoing = $this->getPrevOutgoing($outlineLevelSearch);
@@ -159,17 +163,43 @@ class BpmnMetadataBuilder
         $prev = $this->rootEl;
         $current = $prev->getOutgoing();
         do {
-            if ((int)$current->projectTask->domQuery->find('OutlineLevel')->text() == $outlineLevelSearch) {
+            if (( ! $current instanceof StartEvent) && (int)$current->projectTask->domQuery->find('OutlineLevel')->text() == $outlineLevelSearch) {
                 $find = true;
                 $prevOutgoing = $prev;
             } else {
-                $prev = $current;
+                if (! $current instanceof StartEvent)
+                    $prev = $current;
                 $current = $current instanceof SubProcess
                     ? $current->getSubprocess()
                     : $current->getOutgoing();
             }
         } while (! $find);
         return $prevOutgoing;
+    }
+
+    private function addEndEvent(): void
+    {
+        $prev = null;
+        $cur = $this->rootEl;
+        do {
+            if ($cur instanceof SubProcess
+            || $cur instanceof TaskActivity) {
+                if (empty($cur->getOutgoing())) {
+                    $cur->setOutgoing(new EndEvent(new ProjectTask()));
+                } else {
+                    if ($cur instanceof SubProcess)
+                        $prev = $cur->getOutgoing();
+                }
+                $cur = $cur instanceof SubProcess ? $cur->getSubprocess() : $cur->getOutgoing();
+            } else {
+                if ($cur instanceof EndEvent) {
+                    $cur = $prev;
+                    $prev = null;
+                } else
+                    $cur = $cur->getOutgoing();
+            }
+
+        } while ( ! empty($cur));
     }
 
 }

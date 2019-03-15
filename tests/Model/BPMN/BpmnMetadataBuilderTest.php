@@ -105,6 +105,7 @@ class BpmnMetadataBuilderTest extends TestCase
                 ,'outgoing' => [
                     'type' => 'EndEvent'
                     ,'name' => ''
+                    ,'outgoing' => null
                 ]
                 ,'subprocess' => [
                     'type' => 'StartEvent'
@@ -115,6 +116,7 @@ class BpmnMetadataBuilderTest extends TestCase
                         ,'outgoing' => [
                             'type' => 'EndEvent'
                             ,'name' => ''
+                            ,'outgoing' => null
                         ]
                         ,'subprocess' => [
                             'type' => 'StartEvent'
@@ -128,6 +130,7 @@ class BpmnMetadataBuilderTest extends TestCase
                                     ,'outgoing' => [
                                         'type' => 'EndEvent'
                                         ,'name' => ''
+                                        ,'outgoing' => null
                                     ]
                                     ,'subprocess' => [
                                         'type' => 'StartEvent'
@@ -138,6 +141,7 @@ class BpmnMetadataBuilderTest extends TestCase
                                             ,'outgoing' => [
                                                 'type' => 'EndEvent'
                                                 ,'name' => ''
+                                                ,'outgoing' => null
                                             ]
                                         ]
                                     ]
@@ -157,6 +161,7 @@ class BpmnMetadataBuilderTest extends TestCase
                                                 ,'outgoing' => [
                                                     'type' => 'EndEvent'
                                                     ,'name' => ''
+                                                    ,'outgoing' => null
                                                 ]
                                             ]
                                         ]

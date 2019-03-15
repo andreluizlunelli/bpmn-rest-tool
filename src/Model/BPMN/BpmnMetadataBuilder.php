@@ -75,6 +75,8 @@ class BpmnMetadataBuilder
             $iteratorTasks->next();
         }
 
+        $this->addEndEvent();
+
         return $this->rootEl;
     }
 
@@ -91,8 +93,9 @@ class BpmnMetadataBuilder
             $previousElement->setOutgoing($el);
             return $el;
         }
-
-        if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) { // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
+        // cria um subProcesso
+        // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
+        if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) {
             // significa que o previosElement é um subprocess
             $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
             $startEvent = StartEvent::createFromTask(new ProjectTask());
@@ -101,14 +104,14 @@ class BpmnMetadataBuilder
             $previousElement->setSubprocess($startEvent);
             return $taskActivity;
         }
-
+        // cria uma tarefa
         if ((int)$task->domQuery->find('OutlineLevel')->text() == (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) {
             // significa que deve criar apenas uma taskActivity pois está no mesmo nível de identação no ms-project
             $taskActivity = TaskActivity::createFromTask($task);
             $previousElement->setOutgoing($taskActivity);
             return $taskActivity;
         }
-
+        // cria uma tarefa como outgoing do ultimo subProcess
         if ((int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text() > (int)$task->domQuery->find('OutlineLevel')->text()) {
             $outlineLevelSearch = (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text();
             $prevOutgoing = $this->getPrevOutgoing($outlineLevelSearch);
@@ -172,6 +175,31 @@ class BpmnMetadataBuilder
             }
         } while (! $find);
         return $prevOutgoing;
+    }
+
+    private function addEndEvent(): void
+    {
+        $prev = null;
+        $cur = $this->rootEl;
+        do {
+            if ($cur instanceof SubProcess
+            || $cur instanceof TaskActivity) {
+                if (empty($cur->getOutgoing())) {
+                    $cur->setOutgoing(new EndEvent(new ProjectTask()));
+                } else {
+                    if ($cur instanceof SubProcess)
+                        $prev = $cur->getOutgoing();
+                }
+                $cur = $cur instanceof SubProcess ? $cur->getSubprocess() : $cur->getOutgoing();
+            } else {
+                if ($cur instanceof EndEvent) {
+                    $cur = $prev;
+                    $prev = null;
+                } else
+                    $cur = $cur->getOutgoing();
+            }
+
+        } while ( ! empty($cur));
     }
 
 }

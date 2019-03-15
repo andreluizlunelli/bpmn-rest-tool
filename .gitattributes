@@ -1,1 +1,2 @@
 *.php linguist-detectable=true
+public/* linguist-detectable=false

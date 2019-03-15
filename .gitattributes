@@ -1,4 +1,1 @@
-public/webpack.config.js linguist-vendored
-public/server.js linguist-vendored
-public/tsconfig.json linguist-vendored
-public/package.json linguist-vendored
+public/* linguist-vendored

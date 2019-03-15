@@ -41,62 +41,6 @@ class BpmnMetadataBuilderTest extends TestCase
         $actual = $bpmn->buildMetadata();
 
         $expected = [
-            'type' => 'StartEvent' // único momento que existe o StartEvent nesse contexto
-            ,'name' => ''
-            ,'outgoing' => [
-                'type' => 'SubProcess'
-                ,'name' => 'Project Management for MS Website'
-                ,'outgoing' => null
-                ,'subprocess' => [
-                    'type' => 'SubProcess'
-                    ,'name' => 'Initiating'
-                    ,'outgoing' => null
-                    ,'subprocess' => [
-                        'type' => 'SubProcess'
-                        ,'name' => 'Develop Project Charter'
-                        ,'outgoing' => [
-                            'type' => 'SubProcess'
-                            ,'name' => 'Develop Preliminary Project Scope Statement'
-                            ,'outgoing' => null
-                            ,'subprocess' => [
-                                'type' => 'TaskActivity'
-                                ,'name' => 'Conduct Planning Workshop'
-                                ,'outgoing' => null
-                            ]
-                        ]
-                        ,'subprocess' => [
-                            'type' => 'TaskActivity'
-                            ,'name' => 'Identify Goals and Objectives'
-                            ,'outgoing' => [
-                                'type' => 'TaskActivity'
-                                ,'name' => 'Develop Strategies and Plans'
-                                ,'outgoing' => [
-                                    'type' => 'TaskActivity'
-                                    ,'name' => 'Research Previous Experience'
-                                    ,'outgoing' => null
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
-
-        self::assertEquals($expected, $actual->jsonSerialize());
-    }
-
-    public function testBuildMetadata2()
-    {
-        // OutlineLevel ele traz o nível de identação das tarefas pra identificar os subprocessos
-
-        $this->projectEntity = (new ProjectMapper())
-            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado.xml'));
-
-        $bpmn = new BpmnMetadataBuilder($this->projectEntity);
-
-        $actual = $bpmn->buildMetadata();
-
-        $expected = [
             'type' => 'StartEvent'
             ,'name' => ''
             ,'outgoing' => [

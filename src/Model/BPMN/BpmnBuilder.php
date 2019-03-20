@@ -42,7 +42,6 @@ class BpmnBuilder
         $this->createSequencesNode($this->rootXml, $sequences);
 
 //        $this->normalizeIncomingOutgoing($this->rootXml, $sequences);
-        $this->rootXml = $this->normalizeStartEndEvent($this->rootXml);
 
         $processNode = [
             'process' => [
@@ -55,7 +54,7 @@ class BpmnBuilder
 
         $processNode['process'] = array_merge($processNode['process'], $this->rootXml);
 
-        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
+//        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
 
         try {
             $a = ArrayToXml::convert($processNode, [
@@ -84,7 +83,7 @@ class BpmnBuilder
      * @return array
      * @throws \Exception
      */
-    private function createNode($previousEl = null, $actualEl, $nextEl = null, array &$sequences, array $rxml): array
+    private function createNode($previousEl = null, $actualEl, $nextEl = null, array &$sequences, array &$rxml): array
     {
         $incoming = $outgoing = null;
         switch (get_class($actualEl)) {
@@ -114,10 +113,14 @@ class BpmnBuilder
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
 
-                return $actualEl->createArrayForXml(
+                $r = $actualEl->createArrayForXml(
                     $incoming ? $incoming->getId() : ''
                     , $outgoing ? $outgoing->getId() : ''
                 );
+
+                $rxml = array_merge($rxml, $r);
+
+                return $rxml;
             case TaskActivity::class:
                 $sourceRef = $previousEl ? $previousEl->getId() : '';
                 $targetRef = $actualEl ? $actualEl->getId() : '';
@@ -176,18 +179,20 @@ class BpmnBuilder
                     , $outgoing ? $outgoing->getId() : ''
                 );
 
+                $mergeArr = array_merge($rxml, $r);
+
                 $tmpPrev = $actualEl;
                 $tmpActual = $nextEl;
                 $tmpNext = $this->getNextEl($nextEl);
 
                 $tmpR = ! empty($tmpActual)
-                    ? $this->createNode($tmpPrev, $tmpActual, $tmpNext, $sequences, $r)
+                    ? $this->createNode($tmpPrev, $tmpActual, $tmpNext, $sequences, $mergeArr['subProcess'])
                     : $r;
 
                 if ($previousEl instanceof StartEvent)
-                    $rxml['subProcess'] = current($tmpR);
+                    $rxml['subProcess'] = $tmpR;
                 else
-                    $rxml['subProcess'][key($tmpR)] = current($tmpR);
+                    $rxml['subProcess'][key($tmpR)] = $tmpR;
 
                 return $rxml;
                 break;
@@ -384,10 +389,6 @@ class BpmnBuilder
         return $el instanceof SubProcess
             ? $el->getSubprocess()
             : $el->getOutgoing();
-    }
-
-    private function normalizeStartEndEvent($rootXml): array
-    {
     }
 
 }

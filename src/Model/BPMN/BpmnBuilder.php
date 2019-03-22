@@ -172,6 +172,12 @@ class BpmnBuilder
                     $endEventTargetRef = $endEventSubprocess->getId();
                     $outgoing = $this->addSequence($sourceRef, $endEventTargetRef, $sequences);
                     $actualEl->setOutgoing($endEventSubprocess);
+                } else {
+                    $sourceRef = $actualEl ? $actualEl->getId() : '';
+                    $targetRef = $nextEl ? $nextEl->getId() : '';
+                    if ( ! empty($sourceRef) && ! empty($targetRef))
+                        $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+
                 }
                 // lembrar que subprocessos são identados no xml e não apenas sequenciais
                 $r = $actualEl->createArrayForXml(
@@ -189,10 +195,20 @@ class BpmnBuilder
                     ? $this->createNode($tmpPrev, $tmpActual, $tmpNext, $sequences, $mergeArr['subProcess'])
                     : $r;
 
-                if ($previousEl instanceof StartEvent)
-                    $rxml['subProcess'] = $tmpR;
-                else
-                    $rxml['subProcess'][key($tmpR)] = $tmpR;
+                $rxml['subProcess'][] = $tmpR;
+
+                if (! empty($actualEl->getOutgoing()) && $actualEl->getOutgoing() instanceof SubProcess) { // faltou percorrer o outgoing quando é subprocesso também
+
+                    $tmpPrev = $actualEl;
+                    $tmpActual = $actualEl->getOutgoing();
+                    $tmpNext = $this->getNextEl($tmpActual);
+
+                    $tmpR = ! empty($tmpActual)
+                        ? $this->createNode($tmpPrev, $tmpActual, $tmpNext, $sequences, $mergeArr['subProcess'])
+                        : $r;
+
+                    $rxml['subProcess'][] = $tmpR;
+                }
 
                 return $rxml;
                 break;

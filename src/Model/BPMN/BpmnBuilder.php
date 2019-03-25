@@ -167,11 +167,14 @@ class BpmnBuilder
                 if ( ! empty($sourceRef) && ! empty($targetRef))
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
 
-                if (empty($actualEl->getOutgoing())) { // tenho que criar um elemento de finalização e uma sequence pra ele
-                    $endEventSubprocess = new EndEvent(new ProjectTask());
-                    $endEventTargetRef = $endEventSubprocess->getId();
-                    $outgoing = $this->addSequence($sourceRef, $endEventTargetRef, $sequences);
-                    $actualEl->setOutgoing($endEventSubprocess);
+                $rEnd = null;
+                if ($actualEl->getOutgoing() instanceof EndEvent) { // tenho que criar um elemento de finalização e uma sequence pra ele
+//                    $endEventSubprocess = new EndEvent(new ProjectTask());
+//                    $endEventTargetRef = $endEventSubprocess->getId();
+//                    $outgoing = $this->addSequence($sourceRef, $endEventTargetRef, $sequences);
+//                    $actualEl->setOutgoing($endEventSubprocess);
+                    $a = [];
+                    $rEnd = $this->createNode($actualEl, $actualEl->getOutgoing(), null, $sequences, $a);
                 } else {
                     $sourceRef = $actualEl ? $actualEl->getId() : '';
                     $targetRef = $nextEl ? $nextEl->getId() : '';
@@ -196,8 +199,10 @@ class BpmnBuilder
                     : $r;
 
                 $rxml['subProcess'][] = $tmpR;
+                if ( ! empty($rEnd))
+                    $rxml['endEvent'] = current($rEnd);
 
-                if (! empty($actualEl->getOutgoing()) && $actualEl->getOutgoing() instanceof SubProcess) { // faltou percorrer o outgoing quando é subprocesso também
+                if (! empty($actualEl->getOutgoing()) && $actualEl->getOutgoing() instanceof SubProcess) {
 
                     $tmpPrev = $actualEl;
                     $tmpActual = $actualEl->getOutgoing();

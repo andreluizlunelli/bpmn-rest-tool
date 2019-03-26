@@ -169,10 +169,6 @@ class BpmnBuilder
 
                 $rEnd = null;
                 if ($actualEl->getOutgoing() instanceof EndEvent) { // tenho que criar um elemento de finalização e uma sequence pra ele
-//                    $endEventSubprocess = new EndEvent(new ProjectTask());
-//                    $endEventTargetRef = $endEventSubprocess->getId();
-//                    $outgoing = $this->addSequence($sourceRef, $endEventTargetRef, $sequences);
-//                    $actualEl->setOutgoing($endEventSubprocess);
                     $a = [];
                     $rEnd = $this->createNode($actualEl, $actualEl->getOutgoing(), null, $sequences, $a);
                 } else {
@@ -204,15 +200,40 @@ class BpmnBuilder
 
                 if (! empty($actualEl->getOutgoing()) && $actualEl->getOutgoing() instanceof SubProcess) {
 
-                    $tmpPrev = $actualEl;
-                    $tmpActual = $actualEl->getOutgoing();
+                    $tmpPrev = $actualEl->getOutgoing();
+                    $tmpActual = $this->getNextEl($actualEl->getOutgoing());
                     $tmpNext = $this->getNextEl($tmpActual);
 
-                    $tmpR = ! empty($tmpActual)
-                        ? $this->createNode($tmpPrev, $tmpActual, $tmpNext, $sequences, $mergeArr['subProcess'])
+                    $sourceRef = $tmpPrev ? $tmpPrev->getId() : '';
+                    $targetRef = $tmpActual ? $tmpActual->getId() : '';
+                    if ( ! empty($sourceRef) && ! empty($targetRef))
+                        $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                    $rEnd = null;
+                    if ($actualEl->getOutgoing() instanceof EndEvent) { // tenho que criar um elemento de finalização e uma sequence pra ele
+                        $a = [];
+                        $rEnd = $this->createNode($actualEl, $actualEl->getOutgoing(), null, $sequences, $a);
+                    } else {
+                        $sourceRef = $tmpActual ? $tmpActual->getId() : '';
+                        $targetRef = $tmpNext ? $tmpNext->getId() : '';
+                        if ( ! empty($sourceRef) && ! empty($targetRef))
+                            $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+
+                    }
+
+                    $r = $tmpPrev->createArrayForXml(
+                        $incoming ? $incoming->getId() : ''
+                        , $outgoing ? $outgoing->getId() : ''
+                    );
+
+                    $b = [];
+                    $tmpR = ! empty($tmpPrev)
+                        ? $this->createNode($tmpPrev, $tmpActual, $tmpNext, $sequences, $b)
                         : $r;
 
-                    $rxml['subProcess'][] = $tmpR;
+                    $teste = array_merge($r['subProcess'], $tmpR);
+
+                    $rxml['subProcess'][] = $teste;
                 }
 
                 return $rxml;

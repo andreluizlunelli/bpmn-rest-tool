@@ -265,7 +265,22 @@ class BpmnBuilder
         return $seq;
     }
 
+    /**
+     * Sequência de processamento
+     * startEvent
+     * sequenceFlow
+     * subProcess/task
+     * endEvent
+     *
+     * @param array $xml
+     * @return array
+     */
     private function createXmlLayoutShape(array $xml): array
+    {
+
+    }
+
+    private function _createXmlLayoutShape(array $xml): array
     {
         $xmlLayout = [];
 

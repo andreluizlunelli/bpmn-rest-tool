@@ -41,8 +41,6 @@ class BpmnBuilder
 
         $this->createSequencesNode($this->rootXml, $sequences);
 
-//        $this->normalizeIncomingOutgoing($this->rootXml, $sequences);
-
         $processNode = [
             'process' => [
                 '_attributes' => [
@@ -54,7 +52,7 @@ class BpmnBuilder
 
         $processNode['process'] = array_merge($processNode['process'], $this->rootXml);
 
-//        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
+        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
 
         try {
             $a = ArrayToXml::convert($processNode, [
@@ -265,22 +263,6 @@ class BpmnBuilder
         $seq = new Sequence($sourceRef, $targetRef);
         array_push($sequences, $seq);
         return $seq;
-    }
-
-    private function normalizeIncomingOutgoing(array &$xml, array $sequences): void
-    {
-        $fn = function (&$item, $k) use ($sequences) {
-            /** @var Sequence $s */
-            foreach ($sequences as $s) {
-                if ($item['_attributes']['id'] == $s->getSourceRef())
-                    $item['outgoing'] = $s->getId();
-                if ($item['_attributes']['id'] == $s->getTargetRef())
-                    $item['incoming'] = $s->getId();
-            }
-        };
-        array_walk($xml['task'], $fn);
-        array_walk($xml['endEvent'], $fn);
-        array_walk($xml['startEvent'], $fn);
     }
 
     private function createXmlLayoutShape(array $xml): array

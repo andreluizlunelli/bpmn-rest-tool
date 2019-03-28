@@ -132,18 +132,20 @@ class ShapeBuilder
                 , $_sub, $_task
             );
 
-            (new ShapeElement())->innerXml($subProcess['_attributes']['id'].'_di', $subProcess['_attributes']['id'].'_di', 50, 50, 100, 100);
+            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'] . '_di', 50, 50, 100, 100);
+            $this->pushShape($this->returnXml, $shape);
 
             $this->createNode($process);
         });
     }
 
-    private function createNodeListTask(?array $listTask): array
+    private function createNodeListTask(?array $listTask): void
     {
-        return array_map(function($task) {
-            return (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'].'_di', $task['_attributes']['id'], 50, 50, 100, 100);
-            // faltou add o sequenceFlow
-        }, $listTask);
+        array_walk($listTask, function($task) {
+            $shape = (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'] . '_di', $task['_attributes']['id'], 50, 50, 100, 100);
+
+            $this->pushShape($this->returnXml, $shape);
+        });
     }
 
     private function push(array &$array, array $var): void
@@ -161,21 +163,6 @@ class ShapeBuilder
     private function pushShape(array &$array, array $var): void
     {
         $array[ShapeElement::$keyShape][] = current($var);
-    }
-
-    private function arrayMerge(array $arr1, array $arr2): array
-    {
-        foreach ($arr2 as $item) {
-            $k = key($item);
-
-            if (EdgeElement::$keyShape == $k) {
-                $this->pushSequence($arr1, $item);
-            } elseif (ShapeElement::$keyShape == $k) {
-                $this->pushShape($arr1, $item);
-            } else
-                throw new \Exception('Erro no merge, não encontrou o tipo');
-        }
-        return $arr1;
     }
 
 }

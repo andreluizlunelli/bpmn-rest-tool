@@ -284,9 +284,9 @@ class BpmnBuilder
     {
         $a = [];
         $a['bpmndi:BPMNDiagram']['_attributes']['id'] = 'BpmnDiagram_1';
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml))->xml();
         $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['id'] = 'BpmnPlane_1';
         $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['bpmnElement'] = 'Process_1';
-        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml))->xml();
         return $a['bpmndi:BPMNDiagram'];
     }
 

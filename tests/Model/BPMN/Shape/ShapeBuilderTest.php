@@ -20,8 +20,6 @@ class ShapeBuilderTest extends TestCase
 
         $xml = $builder->xml();
 
-//        $xml = ['loco' => $xml];
-
         echo "\n";
         echo ArrayToXml::convert(
             $xml

@@ -35,4 +35,9 @@ class TaskActivity extends TypeElementAbstract
         return $xmlArray;
     }
 
+    public static function getNameKey(): string
+    {
+        return 'task';
+    }
+
 }

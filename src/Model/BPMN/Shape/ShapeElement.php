@@ -7,6 +7,9 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Shape;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawEnd;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawStart;
+
 class ShapeElement
 {
     /**
@@ -19,21 +22,23 @@ class ShapeElement
      */
     private $keyName;
 
+    public static $keyShape = 'bpmndi:BPMNShape';
+
     /**
      * ShapeElement constructor.
      * @param array $xml
      * @param string $keyName
      */
-    public function __construct(array $xml, string $keyName)
+    public function __construct(?array $xml = null, ?string $keyName = null)
     {
         $this->xml = $xml;
         $this->keyName = $keyName;
     }
 
-    protected function innerXml($id, $bpmnElement, $x, $y, $width, $height): array
+    public function innerXml($id, $bpmnElement, $x, $y, $width, $height): array
     {
         return [
-            'bpmndi:BPMNShape' => [
+            self::$keyShape => [
                 '_attributes' => [
                     'id' => $id
                     ,'bpmnElement' => $bpmnElement
@@ -50,7 +55,17 @@ class ShapeElement
         ];
     }
 
-    public function xml(): array
+    public function xmlFromRawStart(RawStart $rawStart): array
+    {
+        return $this->innerXml($rawStart->getId().'_di', $rawStart->getId(), 50, 50, 36, 36);
+    }
+
+    public function xmlFromRawEnd(RawEnd $rawEnd): array
+    {
+        return $this->innerXml($rawEnd->getId().'_di', $rawEnd->getId(), 50, 50, 36, 36);
+    }
+
+    public function xml(): array // só pode ser usado quando alimentado pelo construtor // depreciado
     {
         $startEvent = $this->xml[$this->keyName];
         $id = $startEvent['_attributes']['id'] ?? null;

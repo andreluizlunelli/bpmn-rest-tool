@@ -1,0 +1,181 @@
+<?php
+/**
+ * Criado por: andre.lunelli
+ * Date: 28/03/2019 - 08:42
+ */
+
+namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Shape;
+
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawEnd;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawStart;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawSubProcess;
+
+class ShapeBuilder
+{
+    /**
+     * @var array
+     */
+    private $xml;
+
+    /**
+     * @var array
+     */
+    private $sequences;
+
+    private $returnXml = [];
+
+    /**
+     * EdgeElement constructor.
+     * @param array $xml
+     * @throws \Exception
+     */
+    public function __construct(array $xml)
+    {
+        $this->xml = $xml;
+
+        if (empty($this->xml['sequenceFlow']))
+            throw new \Exception('xml não possue sequences');
+
+        $this->sequences = $this->xml['sequenceFlow'];
+        unset($this->xml['sequenceFlow']);
+    }
+
+    public function xml(): array
+    {
+        /* definir precedencia de processamento
+            primeiro:   startEvent
+            segundo:    sequenceFlow
+            terceiro:   subprocess
+            quarto:     task
+            quinto:     sequenceFlow
+            quinto:     endEvent
+        */
+
+        $_sub = $this->xml[SubProcess::getNameKey()] ?? null;
+        $_task = $this->xml[TaskActivity::getNameKey()] ?? null;
+
+        $process = new RawSubProcess(
+            '', ''
+            , $this->getRawStart($this->xml)
+            , $this->getRawEnd($this->xml)
+            , $_sub, $_task
+        );
+
+        $this->createNode($process);
+        return $this->returnXml;
+    }
+
+    private function createNode(RawSubProcess $process): void
+    {
+        // CRIA O START BPMNShape
+        $shapeStartXml = (new ShapeElement())->xmlFromRawStart($process->start);
+        $this->pushShape($this->returnXml, $shapeStartXml);
+
+        // CRIA O SEQUENCE_FLOW BPMNEdge
+        $sequence = $this->createSequenceFlow($process->start->getOutgoing());
+        $this->pushSequence($this->returnXml, $sequence);
+
+        /* CRIA O SUBPROCESS OU TASK BPMNShape */
+        if (! empty($process->listSubProcess))
+            $this->createNodeListSubProcess($process->listSubProcess);
+        else
+            $this->createNodeListTask($process->listTask);
+
+        // CRIA O END BPMNShape
+        $shapeEndXml = (new ShapeElement())->xmlFromRawEnd($process->end);
+        $this->pushShape($this->returnXml, $shapeEndXml);
+    }
+
+    private function getRawStart(array $xml): RawStart
+    {
+        $attr = $xml[StartEvent::getNameKey()];
+
+        return new RawStart($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['outgoing']);
+    }
+
+    // todo pode não existir
+    private function getRawEnd(array $xml): RawEnd
+    {
+        if ( ! array_key_exists(EndEvent::getNameKey(), $xml))
+            return new RawEnd('','','');
+        $attr = $xml[EndEvent::getNameKey()];
+
+        return new RawEnd($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['incoming']);
+    }
+
+    private function createSequenceFlow(string $outgoing): array
+    {
+        $search = array_map(function($item) {
+            return $item['_attributes']['id'];
+        }, $this->sequences);
+        $k = array_search($outgoing, $search);
+        $seq = $this->sequences[$k];
+        // todo: remover o $k encontrado da lista
+        return (new EdgeElement($seq))->xml();
+    }
+
+    private function createNodeListSubProcess(?array $listSubProcess): void
+    {
+        array_walk($listSubProcess, function($subProcess) {
+            $_sub = $subProcess[SubProcess::getNameKey()] ?? null;
+            $_task = $subProcess[TaskActivity::getNameKey()] ?? null;
+
+            $process = new RawSubProcess(
+                $subProcess['_attributes']['id']
+                , $subProcess['_attributes']['name']
+                , $this->getRawStart($subProcess)
+                , $this->getRawEnd($subProcess)
+                , $_sub, $_task
+            );
+
+            (new ShapeElement())->innerXml($subProcess['_attributes']['id'].'_di', $subProcess['_attributes']['id'].'_di', 50, 50, 100, 100);
+
+            $this->createNode($process);
+        });
+    }
+
+    private function createNodeListTask(?array $listTask): array
+    {
+        return array_map(function($task) {
+            return (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'].'_di', $task['_attributes']['id'], 50, 50, 100, 100);
+            // faltou add o sequenceFlow
+        }, $listTask);
+    }
+
+    private function push(array &$array, array $var): void
+    {
+        $length = count($array);
+
+        $array[$length] = $var;
+    }
+
+    private function pushSequence(array &$array, array $var): void
+    {
+        $array[EdgeElement::$keyShape][] = current($var);
+    }
+
+    private function pushShape(array &$array, array $var): void
+    {
+        $array[ShapeElement::$keyShape][] = current($var);
+    }
+
+    private function arrayMerge(array $arr1, array $arr2): array
+    {
+        foreach ($arr2 as $item) {
+            $k = key($item);
+
+            if (EdgeElement::$keyShape == $k) {
+                $this->pushSequence($arr1, $item);
+            } elseif (ShapeElement::$keyShape == $k) {
+                $this->pushShape($arr1, $item);
+            } else
+                throw new \Exception('Erro no merge, não encontrou o tipo');
+        }
+        return $arr1;
+    }
+
+}

@@ -14,6 +14,8 @@ class EdgeElement
      */
     private $xml;
 
+    public static $keyShape = 'bpmndi:BPMNEdge';
+
     /**
      * EdgeElement constructor.
      * @param array $xml
@@ -26,7 +28,7 @@ class EdgeElement
     protected function innerXml($id, $bpmnElement, array $x, array $y): array
     {
         return [
-            'bpmndi:BPMNEdge' => [
+            self::$keyShape => [
                 '_attributes' => [
                     'id' => $id
                     , 'bpmnElement' => $bpmnElement

@@ -7,6 +7,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\ShapeBuilder;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 use Spatie\ArrayToXml\ArrayToXml;
 
@@ -63,6 +64,8 @@ class BpmnBuilder
                     , 'xmlns:omgdi' => "http://www.omg.org/spec/DD/20100524/DI"
                     , 'xmlns:omgdc' => "http://www.omg.org/spec/DD/20100524/DC"
                     , 'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance"
+                    , 'xmlns:dc' => "http://www.omg.org/spec/DD/20100524/DC"
+                    , 'xmlns:di' => "http://www.omg.org/spec/DD/20100524/DI"
                 ],
             ]);
         } catch (\DOMException $e) {
@@ -274,10 +277,16 @@ class BpmnBuilder
      *
      * @param array $xml
      * @return array
+     * @throws \Exception
      */
     private function createXmlLayoutShape(array $xml): array
     {
-
+        $a = [];
+        $a['bpmndi:BPMNDiagram']['_attributes']['id'] = 'BpmnDiagram_1';
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['id'] = 'BpmnPlane_1';
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['bpmnElement'] = 'Process_1';
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml))->xml();
+        return $a['bpmndi:BPMNDiagram'];
     }
 
     private function _createXmlLayoutShape(array $xml): array

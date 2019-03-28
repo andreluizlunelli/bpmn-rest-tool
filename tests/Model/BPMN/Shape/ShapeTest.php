@@ -7,16 +7,18 @@
 
 namespace andreluizlunelli\TestBpmnRestTool\Model\BPMN\Shape;
 
-use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\ShapeStartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\EdgeElement;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\ShapeElement;
 use PHPUnit\Framework\TestCase;
 
 class ShapeTest extends TestCase
 {
     public function testStartShape()
     {
-        $test = json_decode(file_get_contents('teste.json'), true);
+        $xmlTest = json_decode(file_get_contents('teste.json'), true);
 
-        $shape = new ShapeStartEvent($test);
+        $shape = new ShapeElement($xmlTest, StartEvent::getNameKey());
 
         $xmlShape = $shape->xml();
 
@@ -38,6 +40,40 @@ class ShapeTest extends TestCase
         ];
 
         self::assertEquals($expected, $xmlShape);
+    }
+
+    public function testEdge()
+    {
+        $xmlTest = json_decode(file_get_contents('teste.json'), true);
+
+        $edge = new EdgeElement(current($xmlTest['sequenceFlow']));
+
+        $xmlEdge = $edge->xml();
+
+        $expected = [
+            'bpmndi:BPMNEdge' => [
+                '_attributes' => [
+                    'id' => 'sequenceFlow_5c9bfafc3da1c_di'
+                    ,'bpmnElement' => 'sequenceFlow_5c9bfafc3da1c'
+                ]
+                ,'di:waypoint' => [
+                    [
+                        '_attributes' => [
+                            'x' => 50
+                            , 'y' => 50
+                        ]
+                    ]
+                    , [
+                        '_attributes' => [
+                            'x' => 50
+                            , 'y' => 50
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        self::assertEquals($expected, $xmlEdge);
     }
 
 }

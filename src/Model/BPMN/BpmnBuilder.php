@@ -60,6 +60,7 @@ class BpmnBuilder
                 'rootElementName' => 'definitions'
                 , '_attributes' => [
                     'xmlns' => "http://www.omg.org/spec/BPMN/20100524/MODEL"
+                    , 'xmlns:bpmn' => "http://www.omg.org/spec/BPMN/20100524/MODEL"
                     , 'xmlns:bpmndi' => "http://www.omg.org/spec/BPMN/20100524/DI"
                     , 'xmlns:omgdi' => "http://www.omg.org/spec/DD/20100524/DI"
                     , 'xmlns:omgdc' => "http://www.omg.org/spec/DD/20100524/DC"
@@ -425,6 +426,30 @@ class BpmnBuilder
         $a = str_replace('</BPMNShape>', '</bpmndi:BPMNShape>', $a);
 
         $a = str_replace('<Bounds', '<omgdc:Bounds', $a);
+
+        $a = str_replace('<definitions', '<bpmn:definitions', $a);
+        $a = str_replace('</definitions>', '</bpmn:definitions>', $a);
+
+        $a = str_replace('<process', '<bpmn:process', $a);
+        $a = str_replace('</process>', '</bpmn:process>', $a);
+
+        $a = str_replace('<startEvent', '<bpmn:startEvent', $a);
+        $a = str_replace('</startEvent>', '</bpmn:startEvent>', $a);
+
+        $a = str_replace('<subProcess', '<bpmn:subProcess', $a);
+        $a = str_replace('</subProcess>', '</bpmn:subProcess>', $a);
+
+        $a = str_replace('<endEvent', '<bpmn:endEvent', $a);
+        $a = str_replace('</endEvent>', '</bpmn:endEvent>', $a);
+
+        $a = str_replace('<task', '<bpmn:task', $a);
+        $a = str_replace('</task>', '</bpmn:task>', $a);
+
+        $a = str_replace('<incoming', '<bpmn:incoming', $a);
+        $a = str_replace('</incoming>', '</bpmn:incoming>', $a);
+
+        $a = str_replace('<outgoing', '<bpmn:outgoing', $a);
+        $a = str_replace('</outgoing>', '</bpmn:outgoing>', $a);
 
         return $a;
     }

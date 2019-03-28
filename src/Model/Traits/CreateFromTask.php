@@ -18,4 +18,10 @@ trait CreateFromTask
         return new self($task);
     }
 
+    public static function getNameKey(): string
+    {
+        $arr = explode('\\', self::class);
+
+        return lcfirst( array_pop($arr) );
+    }
 }

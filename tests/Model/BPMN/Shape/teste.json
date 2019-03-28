@@ -1,0 +1,230 @@
+{
+    "endEvent": {
+        "_attributes": {
+            "id": "EndEvent_5c9bfafc35e7f",
+            "name": ""
+        },
+        "incoming": "sequenceFlow_5c9bfafc3df29"
+    },
+    "sequenceFlow": [
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc3da1c",
+                "sourceRef": "StartEvent_5c9bfafbd2bee",
+                "targetRef": "SubProcess_5c9bfafbaa9e8"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc3df29",
+                "sourceRef": "SubProcess_5c9bfafbaa9e8",
+                "targetRef": "EndEvent_5c9bfafc35e7f"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc3e3f8",
+                "sourceRef": "StartEvent_5c9bfafbdffad",
+                "targetRef": "SubProcess_5c9bfafbad081"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc3ea13",
+                "sourceRef": "SubProcess_5c9bfafbad081",
+                "targetRef": "EndEvent_5c9bfafc360ab"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc3f1cb",
+                "sourceRef": "StartEvent_5c9bfafbe4855",
+                "targetRef": "SubProcess_5c9bfafbaf31d"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc3f6ca",
+                "sourceRef": "SubProcess_5c9bfafbaf31d",
+                "targetRef": "StartEvent_5c9bfafbe8df0"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc3faac",
+                "sourceRef": "StartEvent_5c9bfafbe8df0",
+                "targetRef": "TaskActivity_5c9bfafbb0d03"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc4003b",
+                "sourceRef": "TaskActivity_5c9bfafbb0d03",
+                "targetRef": "TaskActivity_5c9bfafbb25c3"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc4071e",
+                "sourceRef": "TaskActivity_5c9bfafbb25c3",
+                "targetRef": "TaskActivity_5c9bfafbb4d92"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc40cde",
+                "sourceRef": "TaskActivity_5c9bfafbb4d92",
+                "targetRef": "EndEvent_5c9bfafc363d3"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc4177b",
+                "sourceRef": "SubProcess_5c9bfafbb6f1f",
+                "targetRef": "StartEvent_5c9bfafc31b9e"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc41a32",
+                "sourceRef": "StartEvent_5c9bfafc31b9e",
+                "targetRef": "TaskActivity_5c9bfafbb86ed"
+            }
+        },
+        {
+            "_attributes": {
+                "id": "sequenceFlow_5c9bfafc42539",
+                "sourceRef": "TaskActivity_5c9bfafbb86ed",
+                "targetRef": "EndEvent_5c9bfafc367e9"
+            }
+        }
+    ],
+    "startEvent": {
+        "_attributes": {
+            "id": "StartEvent_5c9bfafbd2bee",
+            "name": ""
+        },
+        "outgoing": "sequenceFlow_5c9bfafc3da1c"
+    },
+    "subProcess": [
+        {
+            "_attributes": {
+                "id": "SubProcess_5c9bfafbaa9e8",
+                "name": "Project Management for MS Website"
+            },
+            "endEvent": {
+                "_attributes": {
+                    "id": "EndEvent_5c9bfafc360ab",
+                    "name": ""
+                },
+                "incoming": "sequenceFlow_5c9bfafc3ea13"
+            },
+            "incoming": "sequenceFlow_5c9bfafc3da1c",
+            "startEvent": {
+                "_attributes": {
+                    "id": "StartEvent_5c9bfafbdffad",
+                    "name": ""
+                },
+                "outgoing": "sequenceFlow_5c9bfafc3e3f8"
+            },
+            "subProcess": [
+                {
+                    "_attributes": {
+                        "id": "SubProcess_5c9bfafbad081",
+                        "name": "Initiating"
+                    },
+                    "incoming": "sequenceFlow_5c9bfafc3e3f8",
+                    "startEvent": {
+                        "_attributes": {
+                            "id": "StartEvent_5c9bfafbe4855",
+                            "name": ""
+                        },
+                        "outgoing": "sequenceFlow_5c9bfafc3f1cb"
+                    },
+                    "subProcess": [
+                        {
+                            "_attributes": {
+                                "id": "SubProcess_5c9bfafbaf31d",
+                                "name": "Develop Project Charter"
+                            },
+                            "endEvent": {
+                                "_attributes": {
+                                    "id": "EndEvent_5c9bfafc363d3",
+                                    "name": ""
+                                },
+                                "incoming": "sequenceFlow_5c9bfafc40cde"
+                            },
+                            "incoming": "sequenceFlow_5c9bfafc3f1cb",
+                            "outgoing": "sequenceFlow_5c9bfafc3f6ca",
+                            "startEvent": {
+                                "_attributes": {
+                                    "id": "StartEvent_5c9bfafbe8df0",
+                                    "name": ""
+                                },
+                                "outgoing": "sequenceFlow_5c9bfafc3faac"
+                            },
+                            "task": [
+                                {
+                                    "_attributes": {
+                                        "id": "TaskActivity_5c9bfafbb0d03",
+                                        "name": "Identify Goals and Objectives"
+                                    },
+                                    "incoming": "sequenceFlow_5c9bfafc3faac",
+                                    "outgoing": "sequenceFlow_5c9bfafc4003b"
+                                },
+                                {
+                                    "_attributes": {
+                                        "id": "TaskActivity_5c9bfafbb25c3",
+                                        "name": "Develop Strategies and Plans"
+                                    },
+                                    "incoming": "sequenceFlow_5c9bfafc4003b",
+                                    "outgoing": "sequenceFlow_5c9bfafc4071e"
+                                },
+                                {
+                                    "_attributes": {
+                                        "id": "TaskActivity_5c9bfafbb4d92",
+                                        "name": "Research Previous Experience"
+                                    },
+                                    "incoming": "sequenceFlow_5c9bfafc4071e",
+                                    "outgoing": "sequenceFlow_5c9bfafc40cde"
+                                }
+                            ]
+                        },
+                        {
+                            "_attributes": {
+                                "id": "SubProcess_5c9bfafbb6f1f",
+                                "name": "Develop Preliminary Project Scope Statement"
+                            },
+                            "endEvent": {
+                                "_attributes": {
+                                    "id": "EndEvent_5c9bfafc367e9",
+                                    "name": ""
+                                },
+                                "incoming": "sequenceFlow_5c9bfafc42539"
+                            },
+                            "incoming": "sequenceFlow_5c9bfafc4177b",
+                            "outgoing": "sequenceFlow_5c9bfafc41a32",
+                            "startEvent": {
+                                "_attributes": {
+                                    "id": "StartEvent_5c9bfafc31b9e",
+                                    "name": ""
+                                },
+                                "outgoing": "sequenceFlow_5c9bfafc41a32"
+                            },
+                            "task": [
+                                {
+                                    "_attributes": {
+                                        "id": "TaskActivity_5c9bfafbb86ed",
+                                        "name": "Conduct Planning Workshop"
+                                    },
+                                    "incoming": "sequenceFlow_5c9bfafc41a32",
+                                    "outgoing": "sequenceFlow_5c9bfafc42539"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -63,4 +63,6 @@ abstract class TypeElementAbstract implements TypeElementInterface
         return array_pop($arr);
     }
 
+    public abstract static function getNameKey(): string;
+
 }

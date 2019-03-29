@@ -111,7 +111,6 @@ class ShapeBuilder
     private function createSequenceFlow(string $outgoing): array
     {
         $search = array_map(function(Sequence $item) {
-//            return $item['_attributes']['id'];
             return $item->getId();
         }, $this->sequences);
         $k = array_search($outgoing, $search);

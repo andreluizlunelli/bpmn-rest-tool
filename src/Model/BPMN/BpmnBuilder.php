@@ -92,7 +92,7 @@ class BpmnBuilder
                 $targetRef = $nextEl ? $nextEl->getId() : '';
                 if ( ! empty($sourceRef) && ! empty($targetRef)) {
                     $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
-                    $rxml = array_merge($rxml, $outgoing->createArrayForXml());
+                    $rxml['sequenceFlow'][] = current($outgoing->createArrayForXml());
                 }
 
                 $r = $actualEl->createArrayForXml(
@@ -112,8 +112,10 @@ class BpmnBuilder
             case EndEvent::class:
                 $sourceRef = $previousEl ? $previousEl->getId() : '';
                 $targetRef = $actualEl ? $actualEl->getId() : '';
-                if ( ! empty($sourceRef) && ! empty($targetRef))
+                if ( ! empty($sourceRef) && ! empty($targetRef)) {
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+                    $rxml['sequenceFlow'][] = current($incoming->createArrayForXml());
+                }
 
                 $r = $actualEl->createArrayForXml(
                     $incoming ? $incoming->getId() : ''
@@ -197,8 +199,11 @@ class BpmnBuilder
                     : $r;
 
                 $rxml['subProcess'][] = $tmpR;
-                if ( ! empty($rEnd))
-                    $rxml['endEvent'] = current($rEnd);
+                if ( ! empty($rEnd)) {
+                    if (!empty($rEnd['sequenceFlow']))
+                        $rxml['sequenceFlow'][] = $rEnd['sequenceFlow'];
+                    $rxml['endEvent'] = $rEnd['endEvent'];
+                }
 
                 if (! empty($actualEl->getOutgoing()) && $actualEl->getOutgoing() instanceof SubProcess) {
 

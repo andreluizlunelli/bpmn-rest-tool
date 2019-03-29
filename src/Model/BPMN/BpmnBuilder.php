@@ -40,8 +40,6 @@ class BpmnBuilder
 
         $this->rootXml = $this->createNode($previousEl, $actualEl, $this->getNextEl($actualEl), $sequences, $rxml);
 
-        $this->createSequencesNode($this->rootXml, $sequences);
-
         $processNode = [
             'process' => [
                 '_attributes' => [
@@ -53,7 +51,7 @@ class BpmnBuilder
 
         $processNode['process'] = array_merge($processNode['process'], $this->rootXml);
 
-        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml);
+        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml, $sequences);
 
         try {
             $a = ArrayToXml::convert($processNode, [
@@ -92,8 +90,10 @@ class BpmnBuilder
             case StartEvent::class:
                 $sourceRef = $actualEl ? $actualEl->getId() : '';
                 $targetRef = $nextEl ? $nextEl->getId() : '';
-                if ( ! empty($sourceRef) && ! empty($targetRef))
+                if ( ! empty($sourceRef) && ! empty($targetRef)) {
                     $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+                    $rxml = array_merge($rxml, $outgoing->createArrayForXml());
+                }
 
                 $r = $actualEl->createArrayForXml(
                     $incoming ? $incoming->getId() : ''
@@ -246,14 +246,6 @@ class BpmnBuilder
         return $r;
     }
 
-    private function createSequencesNode(array &$xml, array $sequences): void
-    {
-        array_walk($sequences, function ($item, $k) use (&$xml) {
-            /** @var Sequence $item */
-            return $xml['sequenceFlow'][] = $item->createArrayForXml()['sequenceFlow'];
-        });
-    }
-
     private function addSequence($sourceRef, $targetRef, &$sequences): Sequence
     {
         // verifica se já exite antes de dar um array push
@@ -277,16 +269,18 @@ class BpmnBuilder
      * endEvent
      *
      * @param array $xml
+     * @param array $sequences
      * @return array
      * @throws \Exception
      */
-    private function createXmlLayoutShape(array $xml): array
+    private function createXmlLayoutShape(array $xml, array $sequences): array
     {
         $a = [];
         $a['bpmndi:BPMNDiagram']['_attributes']['id'] = 'BpmnDiagram_1';
-        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml))->xml();
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml, $sequences))->xml();
         $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['id'] = 'BpmnPlane_1';
         $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['bpmnElement'] = 'Process_1';
+
         return $a['bpmndi:BPMNDiagram'];
     }
 
@@ -450,6 +444,8 @@ class BpmnBuilder
 
         $a = str_replace('<outgoing', '<bpmn:outgoing', $a);
         $a = str_replace('</outgoing>', '</bpmn:outgoing>', $a);
+
+        $a = str_replace('<sequenceFlow', '<bpmn:sequenceFlow', $a);
 
         return $a;
     }

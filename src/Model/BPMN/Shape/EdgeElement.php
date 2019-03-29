@@ -7,6 +7,8 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Shape;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
+
 class EdgeElement
 {
     /**
@@ -20,8 +22,10 @@ class EdgeElement
      * EdgeElement constructor.
      * @param array $xml
      */
-    public function __construct(array $xml)
+    public function __construct($xml)
     {
+        if ($xml instanceof Sequence)
+            $xml = current($xml->createArrayForXml());
         $this->xml = $xml;
     }
 

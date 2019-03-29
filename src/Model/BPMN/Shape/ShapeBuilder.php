@@ -10,6 +10,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawEnd;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawStart;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawSubProcess;
@@ -31,17 +32,17 @@ class ShapeBuilder
     /**
      * EdgeElement constructor.
      * @param array $xml
+     * @param $sequences
      * @throws \Exception
      */
-    public function __construct(array $xml)
+    public function __construct(array $xml, $sequences)
     {
         $this->xml = $xml;
 
-        if (empty($this->xml['sequenceFlow']))
+        if (empty($sequences))
             throw new \Exception('xml não possue sequences');
 
-        $this->sequences = $this->xml['sequenceFlow'];
-        unset($this->xml['sequenceFlow']);
+        $this->sequences = $sequences;
     }
 
     public function xml(): array
@@ -97,7 +98,7 @@ class ShapeBuilder
         return new RawStart($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['outgoing']);
     }
 
-    // todo pode não existir
+    // todo pode não existir, mas não deveria!
     private function getRawEnd(array $xml): RawEnd
     {
         if ( ! array_key_exists(EndEvent::getNameKey(), $xml))
@@ -109,8 +110,9 @@ class ShapeBuilder
 
     private function createSequenceFlow(string $outgoing): array
     {
-        $search = array_map(function($item) {
-            return $item['_attributes']['id'];
+        $search = array_map(function(Sequence $item) {
+//            return $item['_attributes']['id'];
+            return $item->getId();
         }, $this->sequences);
         $k = array_search($outgoing, $search);
         $seq = $this->sequences[$k];
@@ -132,7 +134,7 @@ class ShapeBuilder
                 , $_sub, $_task
             );
 
-            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100, true);
+            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100);
             $this->pushShape($this->returnXml, $shape);
 
             $this->createNode($process);

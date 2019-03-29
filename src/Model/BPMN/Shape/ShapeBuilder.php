@@ -132,7 +132,7 @@ class ShapeBuilder
                 , $_sub, $_task
             );
 
-            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'] . '_di', 50, 50, 100, 100);
+            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100);
             $this->pushShape($this->returnXml, $shape);
 
             $this->createNode($process);
@@ -146,13 +146,6 @@ class ShapeBuilder
 
             $this->pushShape($this->returnXml, $shape);
         });
-    }
-
-    private function push(array &$array, array $var): void
-    {
-        $length = count($array);
-
-        $array[$length] = $var;
     }
 
     private function pushSequence(array &$array, array $var): void

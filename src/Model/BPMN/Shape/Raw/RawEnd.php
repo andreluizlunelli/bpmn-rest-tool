@@ -20,4 +20,13 @@ class RawEnd
         $this->name = $name;
         $this->incoming = $incoming;
     }
+
+    /**
+     * @return string
+     */
+    public function getIncoming(): string
+    {
+        return $this->incoming;
+    }
+
 }

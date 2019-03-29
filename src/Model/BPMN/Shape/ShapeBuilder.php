@@ -89,6 +89,10 @@ class ShapeBuilder
         // CRIA O END BPMNShape
         $shapeEndXml = (new ShapeElement())->xmlFromRawEnd($process->end);
         $this->pushShape($this->returnXml, $shapeEndXml);
+
+        // CRIA O SEQUENCE_FLOW BPMNEdge
+        $sequence = $this->createSequenceFlow($process->end->getIncoming());
+        $this->pushSequence($this->returnXml, $sequence);
     }
 
     private function getRawStart(array $xml): RawStart

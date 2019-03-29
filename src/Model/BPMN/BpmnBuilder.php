@@ -128,8 +128,10 @@ class BpmnBuilder
             case TaskActivity::class:
                 $sourceRef = $previousEl ? $previousEl->getId() : '';
                 $targetRef = $actualEl ? $actualEl->getId() : '';
-                if ( ! empty($sourceRef) && ! empty($targetRef))
+                if ( ! empty($sourceRef) && ! empty($targetRef)) {
                     $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
+                    $rxml['sequenceFlow'][] = current($incoming->createArrayForXml());
+                }
 
                 $sourceRef = $actualEl ? $actualEl->getId() : '';
                 $targetRef = $nextEl ? $nextEl->getId() : '';
@@ -180,12 +182,19 @@ class BpmnBuilder
                     $targetRef = $nextEl ? $nextEl->getId() : '';
                     if ( ! empty($sourceRef) && ! empty($targetRef))
                         $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
-
                 }
+
+                if ( ! empty($rEnd['endEvent']['incoming'])) {
+                    $testeOutgoing = $rEnd['endEvent']['incoming'];
+                    $seq = Sequence::createFromArray(current($rEnd['sequenceFlow']));
+                    array_push($sequences, $seq);
+                } else
+                    $testeOutgoing = $outgoing ? $outgoing->getId() : '';
+
                 // lembrar que subprocessos são identados no xml e não apenas sequenciais
                 $r = $actualEl->createArrayForXml(
                     $incoming ? $incoming->getId() : ''
-                    , $outgoing ? $outgoing->getId() : ''
+                    , $testeOutgoing
                 );
 
                 $mergeArr = array_merge($rxml, $r);

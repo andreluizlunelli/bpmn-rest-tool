@@ -132,7 +132,7 @@ class ShapeBuilder
                 , $_sub, $_task
             );
 
-            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100);
+            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100, true);
             $this->pushShape($this->returnXml, $shape);
 
             $this->createNode($process);
@@ -145,6 +145,9 @@ class ShapeBuilder
             $shape = (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'] . '_di', $task['_attributes']['id'], 50, 50, 100, 100);
 
             $this->pushShape($this->returnXml, $shape);
+
+            $sequence = $this->createSequenceFlow($task['outgoing']);
+            $this->pushSequence($this->returnXml, $sequence);
         });
     }
 

@@ -7,6 +7,7 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Shape;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawEnd;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawStart;
 
@@ -35,13 +36,14 @@ class ShapeElement
         $this->keyName = $keyName;
     }
 
-    public function innerXml($id, $bpmnElement, $x, $y, $width, $height): array
+    public function innerXml($id, $bpmnElement, $x, $y, $width, $height, $isExpanded = false): array
     {
         return [
             self::$keyShape => [
                 '_attributes' => [
                     'id' => $id
                     ,'bpmnElement' => $bpmnElement
+                    ,'isExpanded' => 'false'//$isExpanded ? 'true' : 'false'
                 ]
                 ,'dc:Bounds' => [
                     '_attributes' => [

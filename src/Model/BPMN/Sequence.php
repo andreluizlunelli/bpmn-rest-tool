@@ -40,7 +40,7 @@ class Sequence implements CreateArrayForXml
     }
 
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
-    {
+    { //todo ?????????? pq passa o incoming e outgoing
         return [
             'sequenceFlow' => [
                 '_attributes' => [
@@ -50,6 +50,13 @@ class Sequence implements CreateArrayForXml
                 ]
             ]
         ];
+    }
+
+    public static function createFromArray(array $seqArray): self
+    {
+        $s = new self($seqArray['_attributes']['sourceRef'], $seqArray['_attributes']['targetRef']);
+        $s->id = $seqArray['_attributes']['id'];
+        return $s;
     }
 
     /**

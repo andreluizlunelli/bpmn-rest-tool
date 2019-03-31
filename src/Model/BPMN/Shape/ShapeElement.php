@@ -43,7 +43,7 @@ class ShapeElement
                 '_attributes' => [
                     'id' => $id
                     ,'bpmnElement' => $bpmnElement
-                    ,'isExpanded' => 'false'//$isExpanded ? 'true' : 'false'
+                    ,'isExpanded' => $isExpanded ? 'true' : 'false'
                 ]
                 ,'dc:Bounds' => [
                     '_attributes' => [

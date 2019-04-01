@@ -1,3 +1,6 @@
 {% for m in flashMessage.getMessage('error') %}
-    <div class="alert alert-danger" role="alert">{{ m }}</div>
+    <div class="alert alert-danger" role="alert">{{ m | raw }}</div>
+{% endfor %}
+{% for m in flashMessage.getMessage('info') %}
+    <div class="alert alert-info" role="alert">{{ m | raw }}</div>
 {% endfor %}

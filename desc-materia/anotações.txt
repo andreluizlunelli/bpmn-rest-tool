@@ -1,0 +1,11 @@
+* criar uma pesquisa
+* demostrar a relevância desse trabalho
+* criar um fluxograma com a arquitetura do projeto
+* botão para criar nova bpmn no projeto
+* wiki com imagens para submeter o arquivo do project corretamente
+* aviso de que não existe nenhuma bpmn para apresentar, incicando o local para submeter o arquivo
+
+Objetivo
+
+	* Estudo sobre o processo de migração de modelos de controle de projetos para processos
+	* O que é considerado "válido" para (entrega desse projeto? | estudo sobre migração de projeto para processo?) A BPMN? O Estudo? O Mapeamento?

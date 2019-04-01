@@ -76,12 +76,16 @@ class IndexController extends ControllerBase
 
     public function bpmnList(Request $request, Response $response, $args)
     {
+        $args['flashMessage'] = $this->message();
         $args['files'] = array_map(function (/** @var $item BpmnEntity*/ $item) {
             return ['name' => $item->getName()];
         }, $this->getUserLoggedin()
             ->getBpmnList()
             ->toArray()
         );
+
+        if (count($args['files']) < 1)
+            $this->message()->addMessageNow('info', "Você não possue nenhuma bpmn, clique <a class='alert-link' href='{$this->route()->pathFor('carregarXmlProject')}'>aqui</a> para começar");
 
         return $this->view()->render($response, './bpmn-list.twig', $args);
     }

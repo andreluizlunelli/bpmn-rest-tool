@@ -6,6 +6,7 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Xml;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
@@ -22,10 +23,10 @@ class BpmnXmlBuilder
         return $bpmnXml;
     }
 
-    private function innerCreateNode(TypeElementAbstract $el): BpmnXml
+    private function innerCreateNode(ParamEl $paramEl): BpmnXml
     {
-        $creator = $this->getCreator($el);
-        return $creator->create($el);
+        $creator = $this->getCreator($paramEl->getActualEl());
+        return $creator->create($paramEl);
     }
 
     private function getCreator(TypeElementAbstract $el): ElCreator
@@ -33,36 +34,41 @@ class BpmnXmlBuilder
         switch (get_class($el)) {
             case StartEvent::class: return new StartEventCreator(); break;
             case TaskActivity::class: return new TaskActivityCreator(); break;
+            case EndEvent::class: return new EndEventCreator(); break;
             default: throw new \Exception('nao achou o criador');
         }
     }
 
     private function behavior(ParamEl $_p): BpmnXml
     {
-        $bpmnXml = $this->innerCreateNode($_p->getActualEl());
+        $bpmnXml = $this->innerCreateNode($_p);
 
         $this->posBehavior($_p, $bpmnXml);
     }
 
+    /**
+     * Arranja a ordem do (anterior, atual, próximo) dentro do ParamEl
+     *
+     * @param ParamEl $_p
+     * @param BpmnXml $bpmnXml
+     * @return BpmnXml
+     * @throws \Exception
+     */
     private function posBehavior(ParamEl $_p, BpmnXml $bpmnXml): BpmnXml
     {
-        switch (get_class($_p->getActualEl())) {
-            case StartEvent::class:
-                $el = $_p->getActualEl();
-                // FAZ O MERGE ARRAY DO XML
-                $xml = $bpmnXml->getXml();
-                $nextEl = $el->getOutgoing();
-                $bpmnXmlNext = $this->behavior(new ParamEl($el, $nextEl, null));
-                $xml[$nextEl->getNameKey()] = $bpmnXmlNext->getXml();
-                $bpmnXml->setXml($xml);
-                // FAZ O MERGE ARRAY DO SEQUENCE
-                $sequences = $bpmnXml->getSequences();
-                $sequencesNext = $bpmnXmlNext->getSequences();
-                $sequences = array_merge($sequences, $sequencesNext);
-                $bpmnXml->setSequences($sequences);
-                break;
-            default: throw new \Exception('nao achou o criador');
-        }
+        $el = $_p->getActualEl();
+        // FAZ O MERGE ARRAY DO XML
+        $xml = $bpmnXml->getXml();
+        $nextEl = $el->getOutgoing();
+        $bpmnXmlNext = $this->behavior(new ParamEl($el, $nextEl, $nextEl->getOutgoing()));
+        $xml[$nextEl->getNameKey()] = $bpmnXmlNext->getXml();
+        $bpmnXml->setXml($xml);
+        // FAZ O MERGE ARRAY DO SEQUENCE
+        $sequences = $bpmnXml->getSequences();
+        $sequencesNext = $bpmnXmlNext->getSequences();
+        $sequences = array_merge($sequences, $sequencesNext);
+        $bpmnXml->setSequences($sequences);
+        return $bpmnXml;
     }
 
 }

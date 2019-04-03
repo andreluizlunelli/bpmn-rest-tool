@@ -6,14 +6,10 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Xml;
 
-use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
-use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
-
 class StartEventCreator extends ElCreator
 {
-
     /**
-     * @param TypeElementAbstract $el
+     * @param ParamEl $paramEl
      * @return BpmnXml
      * @throws \Exception
      */
@@ -24,20 +20,14 @@ class StartEventCreator extends ElCreator
         $sourceRef = $el ? $el->getId() : '';
         $targetRef = $outgoingEl ? $outgoingEl->getId() : '';
         if (empty($sourceRef) || empty($targetRef))
-            throw new \Exception('StartEvent precisa de sourceRef e targetRef');
+            throw new \Exception('StartEvent precisa de sourceRef e targetRef outgoing');
 
-        $outgoingSequence = $this->makeSequence($sourceRef, $targetRef);
+        $outgoingSequence = $this->addSequence($sourceRef, $targetRef);
 
         $r = $el->newCreateArrayForXml(null, $outgoingSequence);
+        $this->addSequenceFlowToArray($r, $outgoingSequence);
 
         return new BpmnXml($r, $this->sequences);
-    }
-
-    private function makeSequence(string $sourceRef, string $targetRef): Sequence
-    {
-        $outgoing = $this->addSequence($sourceRef, $targetRef);
-        $rxml['sequenceFlow'][] = current($outgoing->createArrayForXml());
-        return $outgoing;
     }
 
 }

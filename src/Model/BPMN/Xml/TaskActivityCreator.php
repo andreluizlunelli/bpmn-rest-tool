@@ -8,24 +8,33 @@ namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Xml;
 
 class TaskActivityCreator extends ElCreator
 {
+    /**
+     * @param ParamEl $paramEl
+     * @return BpmnXml
+     * @throws \Exception
+     */
     public function create(ParamEl $paramEl): BpmnXml
     {
+        $el = $paramEl->getActualEl();
         $sourceRef = $paramEl->getPrevEl() ? $paramEl->getPrevEl()->getId() : '';
-        $targetRef = $paramEl->getActualEl() ? $paramEl->getActualEl()->getId() : '';
-        if ( ! empty($sourceRef) && ! empty($targetRef)) {
-            $incoming = $this->addSequence($sourceRef, $targetRef, $sequences);
-            $rxml['sequenceFlow'][] = current($incoming->createArrayForXml());
-        }
+        $targetRef = $el ? $el->getId() : '';
+        if (empty($sourceRef) || empty($targetRef))
+            throw new \Exception('TaskActivityCreator precisa de sourceRef e targetRef de incoming');
 
-        $sourceRef = $actualEl ? $actualEl->getId() : '';
-        $targetRef = $nextEl ? $nextEl->getId() : '';
-        if ( ! empty($sourceRef) && ! empty($targetRef))
-            $outgoing = $this->addSequence($sourceRef, $targetRef, $sequences);
+        $incomingSequence = $this->addSequence($sourceRef, $targetRef);
 
-        $r = $actualEl->createArrayForXml(
-            $incoming ? $incoming->getId() : ''
-            , $outgoing ? $outgoing->getId() : ''
-        );
+        $sourceRef = $el ? $el->getId() : '';
+        $targetRef = $paramEl->getNextEl() ? $paramEl->getNextEl()->getId() : '';
+        if (empty($sourceRef) || empty($targetRef))
+            throw new \Exception('TaskActivityCreator precisa de sourceRef e targetRef de outgoing');
+
+        $outgoingSequence = $this->addSequence($sourceRef, $targetRef);
+
+        $r = $el->newCreateArrayForXml($incomingSequence, $outgoingSequence);
+        $this->addSequenceFlowToArray($r, $incomingSequence);
+        $this->addSequenceFlowToArray($r, $outgoingSequence);
+
+        return new BpmnXml($r, $this->sequences);
     }
 
 }

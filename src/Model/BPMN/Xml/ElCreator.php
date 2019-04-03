@@ -38,4 +38,9 @@ abstract class ElCreator
         return $this->sequences;
     }
 
+    protected function addSequenceFlowToArray(array &$r, Sequence $s): void
+    {
+        $r['sequenceFlow'][] = current($s->createArrayForXml());
+    }
+
 }

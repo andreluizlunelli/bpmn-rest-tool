@@ -8,7 +8,6 @@
 
 namespace andreluizlunelli\TestBpmnRestTool\Model\BPMN;
 
-use andreluizlunelli\BpmnRestTool\Model\BPMN\_Bpmn;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectEntity;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;

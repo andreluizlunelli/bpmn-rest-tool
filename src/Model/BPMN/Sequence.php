@@ -83,4 +83,9 @@ class Sequence implements CreateArrayForXml
         return $this->targetRef;
     }
 
+    public function newCreateArrayForXml(?Sequence $incoming, ?Sequence $outgoing): array
+    {
+        throw new \Exception('não usado');
+    }
+
 }

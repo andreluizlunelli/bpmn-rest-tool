@@ -15,15 +15,23 @@ class ProjectTask
 {
     use AttrElement;
 
+    private $outlineLevel;
+
     /**
      * @var DOMQuery
      */
     public $domQuery;
 
-    public function __construct(string $name = '')
+    public function __construct(string $name, int $outlineLevel)
     {
         $this->id = uniqid();
         $this->name = $name;
+        $this->outlineLevel = $outlineLevel;
+    }
+    
+    public function getOutlineLevel(): int
+    {
+        return $this->outlineLevel;
     }
 
 }

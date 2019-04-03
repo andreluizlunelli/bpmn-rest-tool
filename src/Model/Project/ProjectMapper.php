@@ -9,7 +9,6 @@
 namespace andreluizlunelli\BpmnRestTool\Model\Project;
 
 use SplFileObject;
-use DateTime;
 
 class ProjectMapper
 {
@@ -33,9 +32,10 @@ class ProjectMapper
             return $project;
 
         foreach ($query->find('Task') as $taskQuery) {
-            $pt = (new ProjectTask())
-                ->setName($taskQuery->find('Name')->text())
-            ;
+            $pt = new ProjectTask(
+                $taskQuery->find('Name')->text()
+                , (int)$taskQuery->find('OutlineLevel')->text()
+            );
             $pt->domQuery = clone $taskQuery;
             $project->addTask($pt);
         }

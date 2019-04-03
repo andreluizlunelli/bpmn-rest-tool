@@ -66,7 +66,7 @@ class BpmnMetadataBuilder
             $curTask = $iteratorTasks->current();
 
             if (empty($this->rootEl)) {
-                $prevElement = StartEvent::createFromTask(new ProjectTask());
+                $prevElement = StartEvent::createFromTask(new ProjectTask('', 0));
                 $this->rootEl = $prevElement;
             }
 
@@ -185,7 +185,7 @@ class BpmnMetadataBuilder
             if ($cur instanceof SubProcess
             || $cur instanceof TaskActivity) {
                 if (empty($cur->getOutgoing())) {
-                    $cur->setOutgoing(new EndEvent(new ProjectTask()));
+                    $cur->setOutgoing(new EndEvent(new ProjectTask('', 0)));
                 } else {
                     if ($cur instanceof SubProcess)
                         $prev = $cur->getOutgoing();

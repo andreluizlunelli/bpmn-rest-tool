@@ -98,7 +98,7 @@ class BpmnMetadataBuilder
         if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) {
             // significa que o previosElement é um subprocess
             $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
-            $startEvent = StartEvent::createFromTask(new ProjectTask());
+            $startEvent = StartEvent::createFromTask(new ProjectTask('', (int)$task->domQuery->find('OutlineLevel')->text()));
             $taskActivity = TaskActivity::createFromTask($task);
             $startEvent->setOutgoing($taskActivity);
             $previousElement->setSubprocess($startEvent);

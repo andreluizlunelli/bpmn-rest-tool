@@ -93,6 +93,14 @@ class Sequence implements CreateArrayForXml
     }
 
     /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return string
      */
     public function getSourceRef(): string

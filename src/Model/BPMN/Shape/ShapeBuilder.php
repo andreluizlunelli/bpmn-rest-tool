@@ -97,7 +97,7 @@ class ShapeBuilder
 
     private function getRawStart(array $xml): RawStart
     {
-        $attr = $xml[StartEvent::getNameKey()];
+        $attr = current($xml[StartEvent::getNameKey()]);
 
         return new RawStart($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['outgoing']);
     }
@@ -107,7 +107,7 @@ class ShapeBuilder
     {
         if ( ! array_key_exists(EndEvent::getNameKey(), $xml))
             return new RawEnd('','','');
-        $attr = $xml[EndEvent::getNameKey()];
+        $attr = current($xml[EndEvent::getNameKey()]);
 
         return new RawEnd($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['incoming']);
     }

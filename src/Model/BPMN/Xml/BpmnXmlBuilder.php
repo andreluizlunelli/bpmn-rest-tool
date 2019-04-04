@@ -13,12 +13,13 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 
 class BpmnXmlBuilder
 {
+    private $outlineLevelBuffer;
 
     public function build(TypeElementAbstract $root): BpmnXml
     {
-        $_p = new ParamEl(null, $root, $root->getOutgoing());
+        $paramEl = new ParamEl(null, $root, $root->getOutgoing());
 
-        $bpmnXml = $this->behavior($_p);
+        $bpmnXml = $this->behavior($paramEl);
 
         return $bpmnXml;
     }
@@ -39,32 +40,45 @@ class BpmnXmlBuilder
         }
     }
 
-    private function behavior(ParamEl $_p): BpmnXml
+    private function behavior(ParamEl $paramEl): BpmnXml
     {
-        $bpmnXml = $this->innerCreateNode($_p);
+        $bpmnXml = $this->innerCreateNode($paramEl);
 
-        $this->posBehavior($_p, $bpmnXml);
+        return $this->posBehavior($paramEl, $bpmnXml);
     }
 
     /**
      * Arranja a ordem do (anterior, atual, próximo) dentro do ParamEl
+     * faz merge do proximo elemento com elemento atual
      *
-     * @param ParamEl $_p
+     * TODO:     para identar corretamente os nodos criados
+     * TODO:     usa o outlineLevel que está dentro do projectTask para definir qual elemento vai ser o "buffer"
+     * TODO:     para fazer o "array_merge" dos nodos criados
+     * TODO:
+     * TODO:     QUANDO EU INSERIR UM SUBPROCESS É O MARCO DE UM NOVO OUTLINElEVEL
+     *
+     * @param ParamEl $paramEl
      * @param BpmnXml $bpmnXml
      * @return BpmnXml
      * @throws \Exception
      */
-    private function posBehavior(ParamEl $_p, BpmnXml $bpmnXml): BpmnXml
+    private function posBehavior(ParamEl $paramEl, BpmnXml $bpmnXml): BpmnXml
     {
-        $el = $_p->getActualEl();
+        $el = $paramEl->getActualEl();
         // FAZ O MERGE ARRAY DO XML
         $xml = $bpmnXml->getXml();
+        $sequences = $bpmnXml->getSequences();
+
+        if ($paramEl->getActualEl() instanceof EndEvent)
+            return $bpmnXml;
+
         $nextEl = $el->getOutgoing();
-        $bpmnXmlNext = $this->behavior(new ParamEl($el, $nextEl, $nextEl->getOutgoing()));
+       /*todo: se o actualEl for um EndEvent, não existe nextEl !! */
+        $bpmnXmlNext = $this->behavior(new ParamEl($el, $nextEl, $nextEl ? $nextEl->getOutgoing() : null));
         $xml[$nextEl->getNameKey()] = $bpmnXmlNext->getXml();
         $bpmnXml->setXml($xml);
         // FAZ O MERGE ARRAY DO SEQUENCE
-        $sequences = $bpmnXml->getSequences();
+
         $sequencesNext = $bpmnXmlNext->getSequences();
         $sequences = array_merge($sequences, $sequencesNext);
         $bpmnXml->setSequences($sequences);

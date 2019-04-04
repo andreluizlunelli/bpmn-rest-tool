@@ -8,6 +8,7 @@ namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Xml;
 
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
@@ -55,7 +56,6 @@ class BpmnXmlBuilder
      * TODO:     para identar corretamente os nodos criados
      * TODO:     usa o outlineLevel que está dentro do projectTask para definir qual elemento vai ser o "buffer"
      * TODO:     para fazer o "array_merge" dos nodos criados
-     * TODO:
      * TODO:     QUANDO EU INSERIR UM SUBPROCESS É O MARCO DE UM NOVO OUTLINElEVEL
      *
      * @param ParamEl $paramEl
@@ -65,17 +65,53 @@ class BpmnXmlBuilder
      */
     private function posBehavior(ParamEl $paramEl, BpmnXml $bpmnXml): BpmnXml
     {
+        $returnBpmnXml = null;
+
         $this->addToBuf($this->outlineLevelBuffer, $bpmnXml);
 
         if ($paramEl->getActualEl() instanceof EndEvent)
             return $bpmnXml;
 
-        $nextEl = $paramEl->getActualEl()->getOutgoing();
+        if ($paramEl->getActualEl() instanceof TaskActivity) {
+            $pTask = new ParamEl(
+                $paramEl->getActualEl()
+                , $paramEl->getActualEl()->getOutgoing()
+                , $paramEl->getActualEl()->getOutgoing()
+                    ? $paramEl->getActualEl()->getOutgoing()->getOutgoing() : null);
 
-        $nextBpmnXml = $this->behavior(new ParamEl($paramEl->getActualEl(), $nextEl, $nextEl ? $nextEl->getOutgoing() : null));
+            return $this->behavior($pTask);
+        }
 
-        return $nextBpmnXml;
+        if ($paramEl->getActualEl() instanceof SubProcess) {
+            $copyBuf = $this->outlineLevelBuffer;
+            $this->outlineLevelBuffer = [];
+
+            $pSubProcess = new ParamEl(
+                null
+                , $paramEl->getActualEl()->getOutgoing()
+                , $paramEl->getActualEl()->getOutgoing()->getOutgoing());
+
+            $subProcessCreator = new SubProcessCreator();
+            $bpmnXmlSubProcess = $subProcessCreator->create($pSubProcess);
+
+            $pStart = new ParamEl(
+                null
+                , $paramEl->getActualEl()->getSubprocess()
+                , $paramEl->getActualEl()->getSubprocess()->getOutgoing()
+            );
+
+            $this->behavior($pStart);
+
+            // todo
+            // tem que fazer o merge do outlineLevelBuffer com o bpmnXmlSubProcess
+            // depois fazer o merge do outlineLevelBuffer com o copyBuf
+            // depois passar o copyBuf para o outlineLevelBuffer
+        }
+
+        return $returnBpmnXml;
     }
+
+
 
     private function addToBuf(array &$buf, BpmnXml $bpmnXml): void
     {

@@ -40,7 +40,7 @@ abstract class ElCreator
 
     protected function addSequenceFlowToArray(array &$r, Sequence $s): void
     {
-        $r['sequenceFlow'][] = current($s->createArrayForXml());
+        $r['sequenceFlow'][] = current($s->toArrayXml());
     }
 
 }

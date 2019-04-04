@@ -95,10 +95,10 @@ class BpmnMetadataBuilder
         }
         // cria um subProcesso
         // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
-        if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) {
+        if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) == 1) {
             // significa que o previosElement é um subprocess
             $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
-            $startEvent = StartEvent::createFromTask(new ProjectTask('', (int)$task->domQuery->find('OutlineLevel')->text()));
+            $startEvent = StartEvent::createFromTask(new ProjectTask('', $task->getOutlineLevel()));
             $taskActivity = TaskActivity::createFromTask($task);
             $startEvent->setOutgoing($taskActivity);
             $previousElement->setSubprocess($startEvent);

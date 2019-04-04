@@ -72,7 +72,10 @@ class BpmnXmlBuilder
         if ($paramEl->getActualEl() instanceof EndEvent)
             return $bpmnXml;
 
-        if ($paramEl->getActualEl() instanceof TaskActivity) {
+
+        // se o next for subprocess tem que tratar antes do start event
+        if ($paramEl->getActualEl() instanceof StartEvent
+            || $paramEl->getActualEl() instanceof TaskActivity) {
             $pTask = new ParamEl(
                 $paramEl->getActualEl()
                 , $paramEl->getActualEl()->getOutgoing()

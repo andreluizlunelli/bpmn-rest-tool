@@ -8,6 +8,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\ShapeBuilder;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Xml\BpmnXmlBuilder;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 use Spatie\ArrayToXml\ArrayToXml;
 
@@ -38,7 +39,9 @@ class BpmnBuilder
         $previousEl = $nextEl = null;
         $actualEl = $this->rootEl;
 
-        $this->rootXml = $this->createNode($previousEl, $actualEl, $this->getNextEl($actualEl), $sequences, $rxml);
+//        $this->rootXml = $this->createNode($previousEl, $actualEl, $this->getNextEl($actualEl), $sequences, $rxml);
+        $bpmnXmlBuilder = new BpmnXmlBuilder();
+        $this->rootXml = $bpmnXmlBuilder->build();
 
         $processNode = [
             'process' => [

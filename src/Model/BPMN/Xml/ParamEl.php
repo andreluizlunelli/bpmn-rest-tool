@@ -41,7 +41,7 @@ class ParamEl
     /**
      * @return TypeElementAbstract
      */
-    public function getPrevEl(): TypeElementAbstract
+    public function getPrevEl(): ?TypeElementAbstract
     {
         return $this->prevEl;
     }
@@ -49,7 +49,7 @@ class ParamEl
     /**
      * @return TypeElementAbstract
      */
-    public function getActualEl(): TypeElementAbstract
+    public function getActualEl(): ?TypeElementAbstract
     {
         return $this->actualEl;
     }
@@ -57,7 +57,7 @@ class ParamEl
     /**
      * @return TypeElementAbstract
      */
-    public function getNextEl(): TypeElementAbstract
+    public function getNextEl(): ?TypeElementAbstract
     {
         return $this->nextEl;
     }

@@ -10,18 +10,19 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
 
 class BpmnXmlBuilder
 {
-    private $outlineLevelBuffer;
+    private $outlineLevelBuffer = [];
 
-    public function build(TypeElementAbstract $root): BpmnXml
+    public function build(TypeElementAbstract $root): array
     {
         $paramEl = new ParamEl(null, $root, $root->getOutgoing());
 
-        $bpmnXml = $this->behavior($paramEl);
+        $this->behavior($paramEl);
 
-        return $bpmnXml;
+        return $this->outlineLevelBuffer;
     }
 
     private function innerCreateNode(ParamEl $paramEl): BpmnXml
@@ -64,25 +65,40 @@ class BpmnXmlBuilder
      */
     private function posBehavior(ParamEl $paramEl, BpmnXml $bpmnXml): BpmnXml
     {
-        $el = $paramEl->getActualEl();
-        // FAZ O MERGE ARRAY DO XML
-        $xml = $bpmnXml->getXml();
-        $sequences = $bpmnXml->getSequences();
+        $this->addToBuf($this->outlineLevelBuffer, $bpmnXml);
 
         if ($paramEl->getActualEl() instanceof EndEvent)
             return $bpmnXml;
 
-        $nextEl = $el->getOutgoing();
-       /*todo: se o actualEl for um EndEvent, não existe nextEl !! */
-        $bpmnXmlNext = $this->behavior(new ParamEl($el, $nextEl, $nextEl ? $nextEl->getOutgoing() : null));
-        $xml[$nextEl->getNameKey()] = $bpmnXmlNext->getXml();
-        $bpmnXml->setXml($xml);
-        // FAZ O MERGE ARRAY DO SEQUENCE
+        $nextEl = $paramEl->getActualEl()->getOutgoing();
 
-        $sequencesNext = $bpmnXmlNext->getSequences();
-        $sequences = array_merge($sequences, $sequencesNext);
-        $bpmnXml->setSequences($sequences);
-        return $bpmnXml;
+        $nextBpmnXml = $this->behavior(new ParamEl($paramEl->getActualEl(), $nextEl, $nextEl ? $nextEl->getOutgoing() : null));
+
+        return $nextBpmnXml;
+    }
+
+    private function addToBuf(array &$buf, BpmnXml $bpmnXml): void
+    {
+        $key = $bpmnXml->getKey();
+        foreach ($bpmnXml->getSequences() as $s)
+            if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
+                $buf['sequenceFlow'][] = $s->getInnerElement();
+
+        $buf[$key][] = $bpmnXml->getInnerElement();
+    }
+
+    private function existSequenceFlow(Sequence $s, array $sequenceFlowRaw): bool
+    {
+        if (count($sequenceFlowRaw) < 1)
+            return false;
+
+        $inArray = array_map(function ($item) {
+            return $item['_attributes']['sourceRef'] . $item['_attributes']['targetRef'];
+        }, $sequenceFlowRaw);
+
+        $needle = $s->getSourceRef() . $s->getTargetRef();
+
+        return in_array($needle, $inArray);
     }
 
 }

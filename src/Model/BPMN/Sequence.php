@@ -39,6 +39,31 @@ class Sequence implements CreateArrayForXml
         $this->targetRef = $targetRef;
     }
 
+    public function toArrayXml(): array
+    {
+        return [
+            'sequenceFlow' => [
+                '_attributes' => [
+                    'id' => $this->id
+                    , 'sourceRef' => $this->sourceRef
+                    , 'targetRef' => $this->targetRef
+                ]
+            ]
+        ];
+    }
+
+    public function getInnerElement(): array
+    {
+        return current($this->toArrayXml());
+    }
+
+    /**
+     * @deprecated TODO REMOVER ESSA FUNÇÃO E REMOVER A ASSINATURA DA INTERFACE CreateArrayForXml
+     *
+     * @param string $incoming
+     * @param string $outgoing
+     * @return array
+     */
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     { //todo ?????????? pq passa o incoming e outgoing
         return [

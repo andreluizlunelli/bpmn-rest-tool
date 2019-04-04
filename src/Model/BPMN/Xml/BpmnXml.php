@@ -10,6 +10,7 @@ class BpmnXml
 {
     private $xml = [];
     private $sequences = [];
+    private $key;
 
     /**
      * BpmnXml constructor.
@@ -20,6 +21,7 @@ class BpmnXml
     {
         $this->xml = $xml;
         $this->sequences = $sequences;
+        $this->key = key($xml);
     }
 
     public function getXml(): array
@@ -50,6 +52,28 @@ class BpmnXml
     {
         $this->sequences = $sequences;
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getKey(): string
+    {
+        return $this->key;
+    }
+
+    /**
+     * @param string|null $key
+     * @return BpmnXml
+     */
+    public function setKey($key): self
+    {
+        $this->key = $key;
+    }
+
+    public function getInnerElement(): array
+    {
+        return $this->xml[$this->key];
     }
 
 }

@@ -11,6 +11,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\Xml\BpmnXmlBuilder;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectEntity;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 use PHPUnit\Framework\TestCase;
+use Spatie\ArrayToXml\ArrayToXml;
 
 class BpmnXmlBuilderTest extends TestCase
 {
@@ -43,12 +44,16 @@ class BpmnXmlBuilderTest extends TestCase
         $xmlBuilder = new BpmnXmlBuilder();
         $bpmnXml = $xmlBuilder->build($rootEl);
 
-        $this->assertBpmn($expectedXml, $bpmnXml->getXml());
+        $this->assertBpmn($expectedXml, $bpmnXml);
     }
 
     private function assertBpmn(array $expectedXml, array $actualXml): void
     {
         // remove os _atributos
+
+        echo ArrayToXml::convert($expectedXml);
+        echo "\n";
+        echo ArrayToXml::convert($actualXml);
 
         self::assertEquals($expectedXml, $actualXml);
     }

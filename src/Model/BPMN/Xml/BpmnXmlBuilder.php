@@ -73,8 +73,6 @@ class BpmnXmlBuilder
      */
     private function posBehavior(ParamEl $paramEl, BpmnXml $bpmnXml): BpmnXml
     {
-        $returnBpmnXml = null;
-
         if ($paramEl->getActualEl() instanceof SubProcess
             && $paramEl->getNextEl() instanceof EndEvent) { // significa que ele já foi processado e já está no $this->outlineLevelBuf e o proximo é um endEvent
             $pEnd = new ParamEl(
@@ -85,6 +83,15 @@ class BpmnXmlBuilder
             return $this->behavior($pEnd);
         }
 
+        if ($paramEl->getActualEl() instanceof SubProcess
+            && $paramEl->getNextEl() instanceof SubProcess) { // significa que ele já foi processado e já está no $this->outlineLevelBuf e o proximo é um SubProcess também
+            $pSub = new ParamEl(
+                $paramEl->getActualEl()
+                , $paramEl->getNextEl()
+                , $paramEl->getNextEl()->getOutgoing()
+            );
+            return $this->behavior($pSub);
+        }
 
         $this->addToBuf($this->outlineLevelBuffer, $bpmnXml);
 
@@ -103,8 +110,7 @@ class BpmnXmlBuilder
             return $this->behavior($pTask);
         }
 
-
-        return $returnBpmnXml;
+        throw new \Exception('Não fez nenhum processamento do posBehavior');
     }
 
     private function posBehaviorSubProcess(ParamEl $paramEl, BpmnXml $bpmnXml): BpmnXml

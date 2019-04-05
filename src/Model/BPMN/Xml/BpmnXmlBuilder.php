@@ -38,6 +38,7 @@ class BpmnXmlBuilder
             case StartEvent::class: return new StartEventCreator(); break;
             case TaskActivity::class: return new TaskActivityCreator(); break;
             case EndEvent::class: return new EndEventCreator(); break;
+            case SubProcess::class: return new SubProcessCreator(); break;
             default: throw new \Exception('nao achou o criador');
         }
     }
@@ -46,6 +47,8 @@ class BpmnXmlBuilder
     {
         $bpmnXml = $this->innerCreateNode($paramEl);
 
+        if ($paramEl->getActualEl() instanceof SubProcess)
+            $this->posBehaviorSubProcess($paramEl, $bpmnXml);
         return $this->posBehavior($paramEl, $bpmnXml);
     }
 
@@ -67,11 +70,21 @@ class BpmnXmlBuilder
     {
         $returnBpmnXml = null;
 
+        if ($paramEl->getActualEl() instanceof SubProcess
+            && $paramEl->getNextEl() instanceof EndEvent) { // significa que ele já foi processado e já está no $this->outlineLevelBuf e o proximo é um endEvent
+            $pEnd = new ParamEl(
+                $paramEl->getActualEl()
+                , $paramEl->getNextEl()
+                , null
+            );
+            return $this->behavior($pEnd);
+        }
+
+
         $this->addToBuf($this->outlineLevelBuffer, $bpmnXml);
 
         if ($paramEl->getActualEl() instanceof EndEvent)
             return $bpmnXml;
-
 
         // se o next for subprocess tem que tratar antes do start event
         if ($paramEl->getActualEl() instanceof StartEvent
@@ -85,43 +98,39 @@ class BpmnXmlBuilder
             return $this->behavior($pTask);
         }
 
-        if ($paramEl->getActualEl() instanceof SubProcess) {
-            $copyBuf = $this->outlineLevelBuffer;
-            $this->outlineLevelBuffer = [];
-
-            $pSubProcess = new ParamEl(
-                null
-                , $paramEl->getActualEl()->getOutgoing()
-                , $paramEl->getActualEl()->getOutgoing()->getOutgoing());
-
-            $subProcessCreator = new SubProcessCreator();
-            $bpmnXmlSubProcess = $subProcessCreator->create($pSubProcess);
-
-            $pStart = new ParamEl(
-                null
-                , $paramEl->getActualEl()->getSubprocess()
-                , $paramEl->getActualEl()->getSubprocess()->getOutgoing()
-            );
-
-            $this->behavior($pStart);
-
-            // todo
-            // tem que fazer o merge do outlineLevelBuffer com o bpmnXmlSubProcess
-            // depois fazer o merge do outlineLevelBuffer com o copyBuf
-            // depois passar o copyBuf para o outlineLevelBuffer
-        }
 
         return $returnBpmnXml;
     }
 
+    private function posBehaviorSubProcess(ParamEl $paramEl, BpmnXml $bpmnXml): BpmnXml
+    {
+        $copyBuf = $this->outlineLevelBuffer;
+        $this->outlineLevelBuffer = [];
 
+        $pSubProcess = new ParamEl(
+            null
+            , $paramEl->getActualEl()->getSubProcess()
+            , $paramEl->getActualEl()->getSubProcess()->getOutgoing()
+        );
+
+        $ig = $this->behavior($pSubProcess); // ignoro o retorno pois o conteudo está em outlineLevelBuffer
+
+        $buf = $this->addSubProcessToBuf($copyBuf, $this->outlineLevelBuffer, $bpmnXml);
+        $this->outlineLevelBuffer = $buf;
+        return $ig; // todo.. posBehavior* podem ser void
+    }
 
     private function addToBuf(array &$buf, BpmnXml $bpmnXml): void
     {
         $key = $bpmnXml->getKey();
-        foreach ($bpmnXml->getSequences() as $s)
+        foreach ($bpmnXml->getSequences() as $s) {
             if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
                 $buf['sequenceFlow'][] = $s->getInnerElement();
+            else {
+                $a = 0;
+            }
+
+        }
 
         $buf[$key][] = $bpmnXml->getInnerElement();
     }
@@ -138,6 +147,19 @@ class BpmnXmlBuilder
         $needle = $s->getSourceRef() . $s->getTargetRef();
 
         return in_array($needle, $inArray);
+    }
+
+    private function addSubProcessToBuf(array $copyBuf, array $outlineLevelBuffer, BpmnXml $subProcess): array
+    {
+        foreach ($subProcess->getSequences() as $s)
+            if ( ! $this->existSequenceFlow($s, $copyBuf['sequenceFlow'] ?? []))
+                $copyBuf['sequenceFlow'][] = $s->getInnerElement();
+
+        $tmp = array_merge($subProcess->getInnerElement(), $outlineLevelBuffer);
+
+        $copyBuf[SubProcess::getNameKey()][] = $tmp;
+
+        return $copyBuf;
     }
 
 }

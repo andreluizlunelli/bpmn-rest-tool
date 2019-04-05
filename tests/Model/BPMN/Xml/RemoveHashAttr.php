@@ -14,6 +14,7 @@ trait RemoveHashAttr
         self::removeAllIds('StartEvent_', $string);
         self::removeAllIds('TaskActivity_', $string);
         self::removeAllIds('EndEvent_', $string);
+        self::removeAllIds('SubProcess_', $string);
         return $string;
     }
 

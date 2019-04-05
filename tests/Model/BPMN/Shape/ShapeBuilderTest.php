@@ -14,17 +14,8 @@ class ShapeBuilderTest extends TestCase
 {
     public function testa()
     {
-        $xmlTest = json_decode(file_get_contents('teste.json'), true);
-
-        $builder = new ShapeBuilder($xmlTest);
-
-        $xml = $builder->xml();
-
-        echo "\n";
-        echo ArrayToXml::convert(
-            $xml
-            ,'BPMNDiagram'
-        );
-        echo "\n";
+//        new ShapeBuilder()
     }
+
+
 }

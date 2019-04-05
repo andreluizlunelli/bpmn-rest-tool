@@ -35,14 +35,11 @@ class BpmnBuilder
 
     public function buildXml(): string
     {
-        $this->rootXml = $sequences = $rxml = [];
-        $previousEl = $nextEl = null;
-        $actualEl = $this->rootEl;
-
-//        $this->rootXml = $this->createNode($previousEl, $actualEl, $this->getNextEl($actualEl), $sequences, $rxml);
+        $this->rootXml = [];
         $bpmnXmlBuilder = new BpmnXmlBuilder();
         $this->rootXml = $bpmnXmlBuilder->build($this->rootEl);
-        $sequences = $this->rawToSequencesArray($this->rootXml['sequenceFlow']);
+        $getAllSequences = new GetAllSequences($this->rootXml);
+        $sequences = $getAllSequences->all();
 
         $processNode = [
             'process' => [

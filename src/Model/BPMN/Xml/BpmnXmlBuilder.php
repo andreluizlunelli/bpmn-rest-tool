@@ -17,6 +17,11 @@ class BpmnXmlBuilder
 {
     private $outlineLevelBuffer = [];
 
+    /**
+     * Retorna o XML <process> array montado
+     * @param TypeElementAbstract $root
+     * @return array
+     */
     public function build(TypeElementAbstract $root): array
     {
         $paramEl = new ParamEl(null, $root, $root->getOutgoing());

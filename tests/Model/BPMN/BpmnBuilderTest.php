@@ -60,5 +60,22 @@ class BpmnBuilderTest extends TestCase
         echo $xml;
         echo "\n";
     }
+    public function teste2()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado_teste2.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
 
 }

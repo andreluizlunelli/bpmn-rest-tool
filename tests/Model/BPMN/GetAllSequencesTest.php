@@ -4,7 +4,7 @@
  * Date: 05/04/2019 - 14:10
  */
 
-namespace andreluizlunelli\TestBpmnRestTool\Model\BPMN\Shape;
+namespace andreluizlunelli\TestBpmnRestTool\Model\BPMN;
 
 use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\GetAllSequences;
@@ -17,7 +17,7 @@ class GetAllSequencesTest extends TestCase
     public function teste()
     {
         $projectEntity = (new ProjectMapper())
-            ->map(new \SplFileObject('../../../bpmn_xml/Project management planModificado_teste2.xml'));
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado_teste2.xml'));
 
         $bpmn = new BpmnMetadataBuilder($projectEntity);
 

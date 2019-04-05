@@ -33,12 +33,6 @@ class GetAllSequences
      */
     public function all(): array
     {
-//        return array_map(function ($item) {
-//            $sequence = new Sequence($item['_attributes']['sourceRef'], $item['_attributes']['targetRef']);
-//            $sequence->setId($item['_attributes']['id']);
-//            return $sequence;
-//        }, $rawArraySequences);
-
         return $this->allRecursive($this->processXml);
     }
 

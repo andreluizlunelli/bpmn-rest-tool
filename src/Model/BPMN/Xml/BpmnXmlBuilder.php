@@ -93,6 +93,16 @@ class BpmnXmlBuilder
             return $this->behavior($pSub);
         }
 
+        if ($paramEl->getActualEl() instanceof SubProcess
+            && $paramEl->getNextEl() instanceof TaskActivity) {
+            $pSub = new ParamEl(
+                $paramEl->getActualEl()
+                , $paramEl->getNextEl()
+                , $paramEl->getNextEl()->getOutgoing()
+            );
+            return $this->behavior($pSub);
+        }
+
         $this->addToBuf($this->outlineLevelBuffer, $bpmnXml);
 
         if ($paramEl->getActualEl() instanceof EndEvent)
@@ -118,9 +128,10 @@ class BpmnXmlBuilder
         $copyBuf = $this->outlineLevelBuffer;
         $this->outlineLevelBuffer = [];
 
+        $prev = $paramEl->getActualEl() instanceof SubProcess ? $paramEl->getActualEl() : null;
 
         $pSubProcess = new ParamEl(
-            null
+            $prev
             , $paramEl->getActualEl()->getSubProcess()
             , $paramEl->getActualEl()->getSubProcess()->getOutgoing()
         );

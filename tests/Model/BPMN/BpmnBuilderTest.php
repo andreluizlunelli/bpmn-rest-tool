@@ -133,4 +133,40 @@ class BpmnBuilderTest extends TestCase
         echo "\n";
     }
 
+    public function teste_()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management plan - Copia.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
+    public function testeTodasTasks()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management plan.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
 }

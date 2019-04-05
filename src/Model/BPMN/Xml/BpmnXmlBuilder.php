@@ -124,12 +124,13 @@ class BpmnXmlBuilder
     {
         $key = $bpmnXml->getKey();
         foreach ($bpmnXml->getSequences() as $s) {
-            if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
-                $buf['sequenceFlow'][] = $s->getInnerElement();
-            else {
-                $a = 0;
-            }
+//            if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
+//                $buf['sequenceFlow'][] = $s->getInnerElement();
+//            else {
+//                $a = 0;
+//            }
 
+            $buf['sequenceFlow'][] = $s->getInnerElement();
         }
 
         $buf[$key][] = $bpmnXml->getInnerElement();
@@ -151,9 +152,10 @@ class BpmnXmlBuilder
 
     private function addSubProcessToBuf(array $copyBuf, array $outlineLevelBuffer, BpmnXml $subProcess): array
     {
-        foreach ($subProcess->getSequences() as $s)
-            if ( ! $this->existSequenceFlow($s, $copyBuf['sequenceFlow'] ?? []))
-                $copyBuf['sequenceFlow'][] = $s->getInnerElement();
+        foreach ($subProcess->getSequences() as $s) {
+//            if ( ! $this->existSequenceFlow($s, $copyBuf['sequenceFlow'] ?? []))
+            $copyBuf['sequenceFlow'][] = $s->getInnerElement();
+        }
 
         $tmp = array_merge($subProcess->getInnerElement(), $outlineLevelBuffer);
 
@@ -161,5 +163,12 @@ class BpmnXmlBuilder
 
         return $copyBuf;
     }
+
+
+    /* TODO
+     * o incoming que sai do StartEvent ou do Subprocesso anterior, tem que ser o incoming dentro do projeto
+     * o outgoing seque pelo mesmo caminho
+     */
+
 
 }

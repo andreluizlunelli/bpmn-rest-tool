@@ -118,6 +118,7 @@ class BpmnXmlBuilder
         $copyBuf = $this->outlineLevelBuffer;
         $this->outlineLevelBuffer = [];
 
+
         $pSubProcess = new ParamEl(
             null
             , $paramEl->getActualEl()->getSubProcess()
@@ -136,11 +137,6 @@ class BpmnXmlBuilder
         $key = $bpmnXml->getKey();
         foreach ($bpmnXml->getSequences() as $s) {
 //            if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
-//                $buf['sequenceFlow'][] = $s->getInnerElement();
-//            else {
-//                $a = 0;
-//            }
-
             $buf['sequenceFlow'][] = $s->getInnerElement();
         }
 

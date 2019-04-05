@@ -140,6 +140,9 @@ class ShapeBuilder
             $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100);
             $this->pushShape($this->returnXml, $shape);
 
+            $sequence = $this->createSequenceFlow($subProcess['incoming']);
+            $this->pushSequence($this->returnXml, $sequence);
+
             $this->createNode($process);
         });
     }

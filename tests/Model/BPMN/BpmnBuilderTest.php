@@ -154,7 +154,7 @@ class BpmnBuilderTest extends TestCase
     public function testeTodasTasks()
     {
         $projectEntity = (new ProjectMapper())
-            ->map(new \SplFileObject('../../bpmn_xml/Project management plan.xml'));
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planNovaTentativa.xml'));
 
         $bpmn = new BpmnMetadataBuilder($projectEntity);
 

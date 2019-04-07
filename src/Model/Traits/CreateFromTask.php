@@ -8,12 +8,12 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\Traits;
 
-use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementInterface;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 
 trait CreateFromTask
 {
-    public static function createFromTask(ProjectTask $task): TypeElementInterface
+    public static function createFromTask(ProjectTask $task): TypeElementAbstract
     {
         return new self($task);
     }

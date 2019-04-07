@@ -26,6 +26,11 @@ abstract class TypeElementAbstract implements TypeElementInterface
      */
     public $projectTask;
 
+    /**
+     * @var TypeElementAbstract
+     */
+    private $prevEl;
+
     public function __construct(ProjectTask $projectTask, ?self $outgoing = null)
     {
         $this->projectTask = $projectTask;
@@ -85,6 +90,22 @@ abstract class TypeElementAbstract implements TypeElementInterface
             $xmlArray[$key]['incoming'] = $incoming->getId();
 
         return $xmlArray;
+    }
+
+    /**
+     * @return TypeElementAbstract
+     */
+    public function getPrevEl(): ?TypeElementAbstract
+    {
+        return $this->prevEl;
+    }
+
+    /**
+     * @param TypeElementAbstract $prevEl
+     */
+    public function setPrevEl(TypeElementAbstract $prevEl): void
+    {
+        $this->prevEl = $prevEl;
     }
 
 }

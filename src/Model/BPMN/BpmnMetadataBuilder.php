@@ -98,7 +98,7 @@ class BpmnMetadataBuilder
         // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
         if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) == 1) {
             // significa que o previosElement é um subprocess
-            $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
+            $previousElement = $this->changeTypeTaskToSubProcess($previousElement);
             $startEvent = StartEvent::createFromTask(new ProjectTask('', $task->getOutlineLevel()));
             $startEvent->setPrevEl($previousElement);
             $taskActivity = TaskActivity::createFromTask($task);
@@ -126,37 +126,66 @@ class BpmnMetadataBuilder
         }
         
         if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) < -1) {
-            $outlineLevelSearch = $task->getOutlineLevel();
-            $prevOutgoing = $this->getElOutLevel($outlineLevelSearch);
-            $taskActivity = TaskActivity::createFromTask($task);
-            $taskActivity->setPrevEl($prevOutgoing);
-            $prevOutgoing->setOutgoing($taskActivity);
-            return $taskActivity;
+            $taskEl = TaskActivity::createFromTask($task);
+            return $this->addTaskToOutgoingSubprocess($taskEl);
         }
 
         throw new \Exception('Não foi possivel criar o elemento');
     }
 
-    private function changeTypeTaskActivityToSubProcess2(TypeElementAbstract $changeElement): SubProcess
+    private function addTaskToOutgoingSubprocess(TaskActivity $task): TaskActivity
     {
-        $subProcess = $this->createSubProcessFromTaskActivity($changeElement);
-        $outlineNumber = $subProcess->projectTask->domQuery->find('OutlineNumber')->text();
-        $prevEl = &$this->getParentOutLevel($subProcess);
-        $find = $prevEl->getOutgoing();
-        while ( ! is_null($find->getOutgoing()))
-            $find = &$find->getOutgoing();
+        $outlineLevelSearch = $task->projectTask->getOutlineLevel();
+        $prevOutgoing = $this->getElOutLevel($outlineLevelSearch);
 
-        $find = &$subProcess;
-        return $subProcess;
+        $find = $this->rootEl;
+        $outlineNumber = $prevOutgoing->projectTask->domQuery->find('OutlineNumber')->text();
+        $explodeOutline = explode('.', $outlineNumber);
+
+        // TODO usa o $outlineLevelSearch para saber quandos sub
+
+
+        if ($explodeOutline[0] !== '0') {
+            for ($j=0; $j<$outlineLevelSearch; $j++) {
+                $find = $find->getOutgoing();
+                $find = $find->getSubprocess();
+                foreach ($explodeOutline as $n) {
+                    for ($i=0; $i<(int)$n; $i++) {
+                        $prevTemp = $find;
+                        $find = $find->getOutgoing();
+                    }
+                }
+            }
+        }
+        $task->setPrevEl($find);
+        $find->setOutgoing($task);
+        $prevTemp->setOutgoing($find);
+        return $task;
     }
 
-    /**
-     * @param string $outlineNumber ex: 1.1.1
-     * @return TypeElementAbstract
-     */
-    private function &getElementByOutlineNumber(string $outlineNumber): TypeElementAbstract
+    private function changeTypeTaskToSubProcess(TaskActivity $changeElement): SubProcess
     {
-        $explode = explode('.', $outlineNumber);
+        $find = $this->rootEl;
+        $outlineNumber = $changeElement->projectTask->domQuery->find('OutlineNumber')->text();
+        $explodeOutline = explode('.', $outlineNumber);
+
+        if ($explodeOutline[0] !== '0') {
+            foreach ($explodeOutline as $n) {
+                if ($find instanceof StartEvent)
+                    $find = $find->getOutgoing();
+
+                for ($i = 0; $i < (int) $n; $i++) {
+                    if ($find instanceof SubProcess)
+                        $find = $find->getSubprocess();
+                    else
+                        $find = $find->getOutgoing();
+                }
+            }
+        }
+
+        $subProcess = $this->createSubProcessFromTaskActivity($changeElement);
+        $find->setOutgoing($subProcess);
+        return $subProcess;
     }
 
     private function createSubProcessFromTaskActivity(TypeElementAbstract &$changeElement): SubProcess
@@ -164,39 +193,6 @@ class BpmnMetadataBuilder
         $subProcess = new SubProcess($changeElement->projectTask, $changeElement->getOutgoing());
         $subProcess->setId($changeElement->getId());
         $subProcess->setPrevEl($changeElement->getPrevEl());
-        return $subProcess;
-    }
-
-    private function changeTypeTaskActivityToSubProcess(TaskActivity $changeElement): SubProcess
-    {
-        $prev = $this->rootEl;
-        $outgoing = $prev->getOutgoing();
-        $find = false;
-        $subProcess = null;
-        do {
-            if ($outgoing->projectTask->getId() == $changeElement->projectTask->getId()) {
-                $find = true;
-                $subProcess = new SubProcess($changeElement->projectTask, $outgoing->getOutgoing());
-                if ($prev instanceof SubProcess) {
-                    if ($changeElement->projectTask->domQuery->find('OutlineLevel')->text()
-                    == $prev->projectTask->domQuery->find('OutlineLevel')->text())
-                        $prev->setOutgoing($subProcess);
-                    else
-                        $prev->setSubprocess($subProcess);
-                }
-                else
-                    $prev->setOutgoing($subProcess);
-            } else {
-                $prev = $outgoing;
-                $outgoing = $outgoing instanceof SubProcess
-                    ? $outgoing->getSubprocess()
-                    : $outgoing->getOutgoing();
-                if (empty($outgoing)) {
-                    $prev = $this->getPrevOutgoing((int)$prev->projectTask->domQuery->find('OutlineLevel')->text());
-                    $outgoing = $prev->getOutgoing();
-                }
-            }
-        } while (! $find);
         return $subProcess;
     }
 
@@ -243,31 +239,6 @@ class BpmnMetadataBuilder
         } while (true);
     }
 
-    private function getPrevOutLevel(int $outlineLevelSearch): TypeElementAbstract
-    {
-        $levelEl = $this->rootEl;
-        do {
-            if ( ! $levelEl)
-                throw new \Exception('não achou o prev outlevel');
-
-            if ($levelEl->projectTask->getOutlineLevel() != $outlineLevelSearch) {
-                if ( ! $levelEl instanceof SubProcess)
-                    $levelEl = $levelEl->getOutgoing();
-                else
-                    $levelEl = $levelEl->getSubprocess();
-                continue;
-            }
-
-            $prevEl = null;
-            while ($levelEl->getOutgoing() != null) {
-                $prevEl = $levelEl;
-                $levelEl = $levelEl->getOutgoing();
-            }
-            return $prevEl;
-
-        } while (true);
-    }
-
     private function addEndEvent(): void
     {
         $prev = null;
@@ -293,11 +264,36 @@ class BpmnMetadataBuilder
         } while ( ! empty($cur));
     }
 
+    private function getPrevOutLevel(int $outlineLevelSearch): TypeElementAbstract
+    {
+        $levelEl = $this->rootEl;
+        do {
+            if ( ! $levelEl)
+                throw new \Exception('não achou o prev outlevel');
+
+            if ($levelEl->projectTask->getOutlineLevel() != $outlineLevelSearch) {
+                if ( ! $levelEl instanceof SubProcess)
+                    $levelEl = $levelEl->getOutgoing();
+                else
+                    $levelEl = $levelEl->getSubprocess();
+                continue;
+            }
+
+            $prevEl = null;
+            while ($levelEl->getOutgoing() != null) {
+                $prevEl = $levelEl;
+                $levelEl = $levelEl->getOutgoing();
+            }
+            return $prevEl;
+
+        } while (true);
+    }
+
     /**
      * @param TypeElementAbstract $taskOrSubprocess pode ser TaskActivity ou SubProcess
      * @return StartEvent
      */
-    private function &getParentOutLevel(TypeElementAbstract &$taskOrSubprocess): StartEvent
+    private function getParentOutLevel(TypeElementAbstract $taskOrSubprocess): StartEvent
     {
         $find = $taskOrSubprocess->getPrevEl();
         try {

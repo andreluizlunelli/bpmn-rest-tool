@@ -75,7 +75,7 @@ class BpmnMetadataBuilder
             $iteratorTasks->next();
         }
 
-        $this->addEndEvent();
+        $this->addEndEvent2($this->rootEl);
 
         return $this->rootEl;
     }
@@ -153,7 +153,6 @@ class BpmnMetadataBuilder
             }
 
         }
-
 
         $task->setPrevEl($prev);
         $prev->setOutgoing($task);
@@ -239,6 +238,30 @@ class BpmnMetadataBuilder
             return $levelEl;
 
         } while (true);
+    }
+
+    private function addEndEvent2(TypeElementAbstract &$cur): void
+    {
+        $tmpCur = $cur;
+        if ($tmpCur instanceof StartEvent)
+            $tmpCur = $tmpCur->getOutgoing();
+        if ($tmpCur instanceof TaskActivity)
+            if ($tmpCur->getOutgoing() == null)
+                $tmpCur->setOutgoing(new EndEvent(new ProjectTask('', $tmpCur->projectTask->getOutlineLevel())));
+            else{
+                $tmpTask = $tmpCur->getOutgoing();
+                $this->addEndEvent2($tmpTask);
+            }
+        if ($tmpCur instanceof SubProcess) {
+            if ($tmpCur->getOutgoing() == null)
+                $tmpCur->setOutgoing(new EndEvent(new ProjectTask('', $tmpCur->projectTask->getOutlineLevel())));
+
+            $tmpStart = $tmpCur->getSubprocess();
+            $this->addEndEvent2($tmpStart);
+
+            $tmpSub = $tmpCur->getOutgoing();
+            $this->addEndEvent2($tmpSub);
+        }
     }
 
     private function addEndEvent(): void

@@ -221,7 +221,7 @@ class BpmnMetadataBuilderTest extends TestCase
                                 'type' => 'StartEvent'
                                 , 'name' => ''
                                 , 'outgoing' => [
-                                    'type' => 'SubProject'
+                                    'type' => 'SubProcess'
                                     , 'name' => 'Set Up Project Environment'
                                     , 'outgoing' => [
                                         'type' => 'SubProcess'

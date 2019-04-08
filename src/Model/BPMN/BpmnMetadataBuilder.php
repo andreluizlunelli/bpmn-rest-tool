@@ -124,7 +124,7 @@ class BpmnMetadataBuilder
             $prevOutgoing->setOutgoing($taskActivity);
             return $taskActivity;
         }
-        
+
         if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) < -1) {
             $taskEl = TaskActivity::createFromTask($task);
             return $this->addTaskToOutgoingSubprocess($taskEl);
@@ -135,31 +135,28 @@ class BpmnMetadataBuilder
 
     private function addTaskToOutgoingSubprocess(TaskActivity $task): TaskActivity
     {
-        $outlineLevelSearch = $task->projectTask->getOutlineLevel();
-        $prevOutgoing = $this->getElOutLevel($outlineLevelSearch);
-
+        $prev = null;
         $find = $this->rootEl;
-        $outlineNumber = $prevOutgoing->projectTask->domQuery->find('OutlineNumber')->text();
+        $outlineNumber = $task->projectTask->domQuery->find('OutlineNumber')->text();
+        $outLineLevel = $task->projectTask->getOutlineLevel();
         $explodeOutline = explode('.', $outlineNumber);
 
-        // TODO usa o $outlineLevelSearch para saber quandos sub
-
-
-        if ($explodeOutline[0] !== '0') {
-            for ($j=0; $j<$outlineLevelSearch; $j++) {
+        for ($i=0; $i<$outLineLevel; $i++) {
+            if ($find instanceof StartEvent)
                 $find = $find->getOutgoing();
+            if ($find instanceof SubProcess)
                 $find = $find->getSubprocess();
-                foreach ($explodeOutline as $n) {
-                    for ($i=0; $i<(int)$n; $i++) {
-                        $prevTemp = $find;
-                        $find = $find->getOutgoing();
-                    }
-                }
+
+            for ($j=0; $j<(int)$explodeOutline[0]; $j++) {
+                $prev = $find;
+                $find = $find->getOutgoing();
             }
+
         }
-        $task->setPrevEl($find);
-        $find->setOutgoing($task);
-        $prevTemp->setOutgoing($find);
+
+
+        $task->setPrevEl($prev);
+        $prev->setOutgoing($task);
         return $task;
     }
 
@@ -167,24 +164,29 @@ class BpmnMetadataBuilder
     {
         $find = $this->rootEl;
         $outlineNumber = $changeElement->projectTask->domQuery->find('OutlineNumber')->text();
+        $outLineLevel = $changeElement->projectTask->getOutlineLevel();
         $explodeOutline = explode('.', $outlineNumber);
 
-        if ($explodeOutline[0] !== '0') {
+        if ($explodeOutline[0] != '0') {
             foreach ($explodeOutline as $n) {
                 if ($find instanceof StartEvent)
                     $find = $find->getOutgoing();
-
-                for ($i = 0; $i < (int) $n; $i++) {
-                    if ($find instanceof SubProcess)
-                        $find = $find->getSubprocess();
-                    else
-                        $find = $find->getOutgoing();
+                if ($find instanceof SubProcess)
+                    $find = $find->getSubprocess();
+                for ($i=0; $i<(int)$n; $i++) {
+                    $prev = $find;
+                    $find = $find->getOutgoing();
                 }
             }
         }
 
-        $subProcess = $this->createSubProcessFromTaskActivity($changeElement);
-        $find->setOutgoing($subProcess);
+        if (isset($prev)) {
+            $subProcess = $this->createSubProcessFromTaskActivity($changeElement);
+            $prev->setOutgoing($subProcess);
+        } else {
+            $subProcess = $this->createSubProcessFromTaskActivity($changeElement);
+            $find->setOutgoing($subProcess);
+        }
         return $subProcess;
     }
 

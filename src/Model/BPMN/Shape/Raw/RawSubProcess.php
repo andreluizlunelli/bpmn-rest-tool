@@ -58,5 +58,4 @@ class RawSubProcess
         $this->listTask = $listTask;
     }
 
-
 }

@@ -62,6 +62,8 @@ class BpmnMetadataBuilder
 
         $iteratorTasks = new \ArrayIterator($listTasks);
 
+        $lastSubprocess = null;
+
         while ($iteratorTasks->valid()) {
             $curTask = $iteratorTasks->current();
 
@@ -70,7 +72,7 @@ class BpmnMetadataBuilder
                 $this->rootEl = $prevElement;
             }
 
-            $curEl = $this->createElement($curTask, $prevElement);
+            $curEl = $this->createElement($curTask, $prevElement, $lastSubprocess);
             $prevElement = $curEl;
             $iteratorTasks->next();
         }
@@ -83,10 +85,11 @@ class BpmnMetadataBuilder
     /**
      * @param ProjectTask $task
      * @param TypeElementAbstract|null $previousElement
+     * @param TypeElementAbstract|null $lastSubprocess
      * @return TypeElementAbstract
      * @throws \Exception
      */
-    private function createElement(ProjectTask $task, ?TypeElementAbstract $previousElement): TypeElementAbstract
+    private function createElement(ProjectTask $task, ?TypeElementAbstract $previousElement, ?TypeElementAbstract &$lastSubprocess): TypeElementAbstract
     {
         if ($previousElement instanceof StartEvent) {
             $el = TaskActivity::createFromTask($task);
@@ -99,6 +102,7 @@ class BpmnMetadataBuilder
         if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) == 1) {
             // significa que o previosElement é um subprocess
             $previousElement = $this->changeTypeTaskToSubProcess($previousElement);
+            $lastSubprocess = $previousElement;
             $startEvent = StartEvent::createFromTask(new ProjectTask('', $task->getOutlineLevel()));
             $startEvent->setPrevEl($previousElement);
             $taskActivity = TaskActivity::createFromTask($task);
@@ -117,15 +121,13 @@ class BpmnMetadataBuilder
         }
         // cria uma tarefa como outgoing do ultimo subProcess
         if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) == -1) {
-            $outlineLevelSearch = $previousElement->projectTask->getOutlineLevel();
-            $prevOutgoing = $this->getPrevOutgoing($outlineLevelSearch);
             $taskActivity = TaskActivity::createFromTask($task);
-            $taskActivity->setPrevEl($prevOutgoing);
-            $prevOutgoing->setOutgoing($taskActivity);
+            $taskActivity->setPrevEl($lastSubprocess);
+            $lastSubprocess->setOutgoing($taskActivity);
             return $taskActivity;
         }
 
-        if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) < -1) {
+        if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) < 0) {
             $taskEl = TaskActivity::createFromTask($task);
             return $this->addTaskToOutgoingSubprocess($taskEl);
         }
@@ -197,27 +199,6 @@ class BpmnMetadataBuilder
         return $subProcess;
     }
 
-    private function getPrevOutgoing(int $outlineLevelSearch): TypeElementAbstract
-    {
-        $find = false;
-        $prevOutgoing = null;
-        $prev = $this->rootEl;
-        $current = $prev->getOutgoing();
-        do {
-            if (( ! $current instanceof StartEvent) && $current->projectTask->getOutlineLevel() == $outlineLevelSearch) {
-                $find = true;
-                $prevOutgoing = $prev;
-            } else {
-                if (! $current instanceof StartEvent)
-                    $prev = $current;
-                $current = $current instanceof SubProcess
-                    ? $current->getSubprocess()
-                    : $current->getOutgoing();
-            }
-        } while (! $find);
-        return $prevOutgoing;
-    }
-
     private function getElOutLevel(int $outlineLevelSearch): TypeElementAbstract
     {
         $levelEl = $this->rootEl;
@@ -262,31 +243,6 @@ class BpmnMetadataBuilder
             $tmpSub = $tmpCur->getOutgoing();
             $this->addEndEvent2($tmpSub);
         }
-    }
-
-    private function addEndEvent(): void
-    {
-        $prev = null;
-        $cur = $this->rootEl;
-        do {
-            if ($cur instanceof SubProcess
-            || $cur instanceof TaskActivity) {
-                if (empty($cur->getOutgoing())) {
-                    $cur->setOutgoing(new EndEvent(new ProjectTask('', 0)));
-                } else {
-                    if ($cur instanceof SubProcess)
-                        $prev = $cur->getOutgoing();
-                }
-                $cur = $cur instanceof SubProcess ? $cur->getSubprocess() : $cur->getOutgoing();
-            } else {
-                if ($cur instanceof EndEvent) {
-                    $cur = $prev;
-                    $prev = null;
-                } else
-                    $cur = $cur->getOutgoing();
-            }
-
-        } while ( ! empty($cur));
     }
 
     private function getPrevOutLevel(int $outlineLevelSearch): TypeElementAbstract

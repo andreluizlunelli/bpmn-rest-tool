@@ -1,30 +1,31 @@
 <?php
 /**
  * Criado por: andre.lunelli
- * Date: 28/03/2019 - 08:42
+ * Date: 08/04/2019 - 16:21
  */
 
 namespace andreluizlunelli\TestBpmnRestTool\Model\BPMN\Shape;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\GetAllSequences;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\ShapeBuilder;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Xml\BpmnXmlBuilder;
+use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use PHPUnit\Framework\TestCase;
-use Spatie\ArrayToXml\ArrayToXml;
 
 class ShapeBuilderTest extends TestCase
 {
-    public function testa()
+    public function testeLayout()
     {
-        $xmlTest = json_decode(file_get_contents('teste.json'), true);
-
-        $builder = new ShapeBuilder($xmlTest);
-
-        $xml = $builder->xml();
-
-        echo "\n";
-        echo ArrayToXml::convert(
-            $xml
-            ,'BPMNDiagram'
-        );
-        echo "\n";
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../../bpmn_xml/Project management planNovaTentativa.xml'));
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+        $bpmnXmlBuilder = new BpmnXmlBuilder();
+        $rootXml = $bpmnXmlBuilder->build($bpmn->buildMetadata());
+        $getAllSequences = new GetAllSequences($rootXml);
+        $sequences = $getAllSequences->all();
+        $shapeBuilder = new ShapeBuilder($rootXml, $sequences);
+        $xmlArray = $shapeBuilder->xml();
     }
+
 }

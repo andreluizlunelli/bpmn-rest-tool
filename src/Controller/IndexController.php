@@ -79,15 +79,25 @@ class IndexController extends ControllerBase
         $args['flashMessage'] = $this->message();
         $args['files'] = array_map(function (/** @var $item BpmnEntity*/ $item) {
             return ['name' => $item->getName()];
-        }, $this->getUserLoggedin()
+        }, $this->ordenarDataMaior($this->getUserLoggedin()
             ->getBpmnList()
             ->toArray()
-        );
+        ));
 
         if (count($args['files']) < 1)
             $this->message()->addMessageNow('info', "Você não possue nenhuma bpmn, clique <a class='alert-link' href='{$this->route()->pathFor('carregarXmlProject')}'>aqui</a> para começar");
 
         return $this->view()->render($response, './bpmn-list.twig', $args);
+    }
+
+    private function ordenarDataMaior(array $bpmnList): array
+    {
+        uasort($bpmnList, function (BpmnEntity $a, BpmnEntity $b) {
+            if ($a->getCreatedAt() == $b->getCreatedAt())
+                return 0;
+            return ($a->getCreatedAt() > $b->getCreatedAt()) ? -1 : 1;
+        });
+        return $bpmnList;
     }
 
 }

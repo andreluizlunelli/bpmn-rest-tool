@@ -39,6 +39,31 @@ class Sequence implements CreateArrayForXml
         $this->targetRef = $targetRef;
     }
 
+    public function toArrayXml(): array
+    {
+        return [
+            'sequenceFlow' => [
+                '_attributes' => [
+                    'id' => $this->id
+                    , 'sourceRef' => $this->sourceRef
+                    , 'targetRef' => $this->targetRef
+                ]
+            ]
+        ];
+    }
+
+    public function getInnerElement(): array
+    {
+        return current($this->toArrayXml());
+    }
+
+    /**
+     * @deprecated TODO REMOVER ESSA FUNÇÃO E REMOVER A ASSINATURA DA INTERFACE CreateArrayForXml
+     *
+     * @param string $incoming
+     * @param string $outgoing
+     * @return array
+     */
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array
     { //todo ?????????? pq passa o incoming e outgoing
         return [
@@ -68,6 +93,14 @@ class Sequence implements CreateArrayForXml
     }
 
     /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return string
      */
     public function getSourceRef(): string
@@ -81,6 +114,11 @@ class Sequence implements CreateArrayForXml
     public function getTargetRef(): string
     {
         return $this->targetRef;
+    }
+
+    public function newCreateArrayForXml(?Sequence $incoming, ?Sequence $outgoing): array
+    {
+        throw new \Exception('não usado');
     }
 
 }

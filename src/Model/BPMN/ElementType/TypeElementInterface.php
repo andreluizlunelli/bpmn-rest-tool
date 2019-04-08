@@ -12,6 +12,6 @@ use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 
 interface TypeElementInterface extends \JsonSerializable, CreateArrayForXml
 {
-    public static function createFromTask(ProjectTask $task): TypeElementInterface;
+    public static function createFromTask(ProjectTask $task): TypeElementAbstract;
 
 }

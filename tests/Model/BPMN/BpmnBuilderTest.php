@@ -43,4 +43,130 @@ class BpmnBuilderTest extends TestCase
         echo "\n";
     }
 
+    public function teste1()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado_teste1.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
+    public function teste2()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado_teste2.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
+    public function teste3()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado_teste3.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
+    public function teste4()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado_teste4.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
+    public function teste5()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planModificado_teste5.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
+    public function teste_()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management plan - Copia.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
+    public function testeTodasTasks()
+    {
+        $projectEntity = (new ProjectMapper())
+            ->map(new \SplFileObject('../../bpmn_xml/Project management planNovaTentativa.xml'));
+
+        $bpmn = new BpmnMetadataBuilder($projectEntity);
+
+        $this->rootEl = $bpmn->buildMetadata();
+
+        $builder = new BpmnBuilder($this->rootEl);
+
+        $xml = $builder->buildXml();
+
+        echo "\n";
+        echo $xml;
+        echo "\n";
+    }
+
 }

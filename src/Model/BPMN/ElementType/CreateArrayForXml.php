@@ -8,7 +8,10 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
+
 interface CreateArrayForXml
 {
     public function createArrayForXml(string $incoming = '', string $outgoing = ''): array;
+    public function newCreateArrayForXml(?Sequence $incoming , ?Sequence $outgoing ): array;
 }

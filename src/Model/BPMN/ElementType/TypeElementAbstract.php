@@ -8,6 +8,7 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType;
 
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 use andreluizlunelli\BpmnRestTool\Model\Traits\AttrElement;
 
@@ -24,6 +25,11 @@ abstract class TypeElementAbstract implements TypeElementInterface
      * @var ProjectTask
      */
     public $projectTask;
+
+    /**
+     * @var TypeElementAbstract
+     */
+    private $prevEl;
 
     public function __construct(ProjectTask $projectTask, ?self $outgoing = null)
     {
@@ -64,5 +70,42 @@ abstract class TypeElementAbstract implements TypeElementInterface
     }
 
     public abstract static function getNameKey(): string;
+
+    public function newCreateArrayForXml(?Sequence $incoming, ?Sequence $outgoing): array
+    {
+        $key = lcfirst($this->getNameWithoutNamespace());
+        $xmlArray = [
+            $key => [
+                '_attributes' => [
+                    'id' => $this->id
+                    , 'name' => $this->name
+                ]
+            ]
+        ];
+
+        if ( ! empty($outgoing))
+            $xmlArray[$key]['outgoing'] = $outgoing->getId();
+
+        if ( ! empty($incoming))
+            $xmlArray[$key]['incoming'] = $incoming->getId();
+
+        return $xmlArray;
+    }
+
+    /**
+     * @return TypeElementAbstract
+     */
+    public function getPrevEl(): ?TypeElementAbstract
+    {
+        return $this->prevEl;
+    }
+
+    /**
+     * @param TypeElementAbstract $prevEl
+     */
+    public function setPrevEl(TypeElementAbstract $prevEl): void
+    {
+        $this->prevEl = $prevEl;
+    }
 
 }

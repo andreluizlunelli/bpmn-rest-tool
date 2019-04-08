@@ -62,20 +62,22 @@ class BpmnMetadataBuilder
 
         $iteratorTasks = new \ArrayIterator($listTasks);
 
+        $lastSubprocess = null;
+
         while ($iteratorTasks->valid()) {
             $curTask = $iteratorTasks->current();
 
             if (empty($this->rootEl)) {
-                $prevElement = StartEvent::createFromTask(new ProjectTask());
+                $prevElement = StartEvent::createFromTask(new ProjectTask('', 0));
                 $this->rootEl = $prevElement;
             }
 
-            $curEl = $this->createElement($curTask, $prevElement);
+            $curEl = $this->createElement($curTask, $prevElement, $lastSubprocess);
             $prevElement = $curEl;
             $iteratorTasks->next();
         }
 
-        $this->addEndEvent();
+        $this->addEndEvent($this->rootEl);
 
         return $this->rootEl;
     }
@@ -83,123 +85,142 @@ class BpmnMetadataBuilder
     /**
      * @param ProjectTask $task
      * @param TypeElementAbstract|null $previousElement
-     * @return TypeElementInterface
+     * @param TypeElementAbstract|null $lastSubprocess
+     * @return TypeElementAbstract
      * @throws \Exception
      */
-    private function createElement(ProjectTask $task, ?TypeElementAbstract $previousElement): TypeElementInterface
+    private function createElement(ProjectTask $task, ?TypeElementAbstract $previousElement, ?TypeElementAbstract &$lastSubprocess): TypeElementAbstract
     {
         if ($previousElement instanceof StartEvent) {
             $el = TaskActivity::createFromTask($task);
+            $el->setPrevEl($previousElement);
             $previousElement->setOutgoing($el);
             return $el;
         }
         // cria um subProcesso
         // esse if aqui tem que dar == 1, pra não associar com OutlineLevel com mais de um nível. bagunçando então a identação definida no project
-        if (((int)$task->domQuery->find('OutlineLevel')->text() - (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) == 1) {
+        if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) == 1) {
             // significa que o previosElement é um subprocess
-            $previousElement = $this->changeTypeTaskActivityToSubProcess($previousElement);
-            $startEvent = StartEvent::createFromTask(new ProjectTask());
+            $previousElement = $this->changeTypeTaskToSubProcess($previousElement);
+            $lastSubprocess = $previousElement;
+            $startEvent = StartEvent::createFromTask(new ProjectTask('', $task->getOutlineLevel()));
+            $startEvent->setPrevEl($previousElement);
             $taskActivity = TaskActivity::createFromTask($task);
+            $taskActivity->setPrevEl($startEvent);
             $startEvent->setOutgoing($taskActivity);
             $previousElement->setSubprocess($startEvent);
             return $taskActivity;
         }
         // cria uma tarefa
-        if ((int)$task->domQuery->find('OutlineLevel')->text() == (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text()) {
+        if ($task->getOutlineLevel() == $previousElement->projectTask->getOutlineLevel()) {
             // significa que deve criar apenas uma taskActivity pois está no mesmo nível de identação no ms-project
             $taskActivity = TaskActivity::createFromTask($task);
+            $taskActivity->setPrevEl($previousElement);
             $previousElement->setOutgoing($taskActivity);
             return $taskActivity;
         }
         // cria uma tarefa como outgoing do ultimo subProcess
-        if ((int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text() > (int)$task->domQuery->find('OutlineLevel')->text()) {
-            $outlineLevelSearch = (int)$previousElement->projectTask->domQuery->find('OutlineLevel')->text();
-            $prevOutgoing = $this->getPrevOutgoing($outlineLevelSearch);
+        if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) == -1) {
             $taskActivity = TaskActivity::createFromTask($task);
-            $prevOutgoing->setOutgoing($taskActivity);
+            $taskActivity->setPrevEl($lastSubprocess);
+            $lastSubprocess->setOutgoing($taskActivity);
             return $taskActivity;
+        }
+
+        if (($task->getOutlineLevel() - $previousElement->projectTask->getOutlineLevel()) < 0) {
+            $taskEl = TaskActivity::createFromTask($task);
+            return $this->addTaskToOutgoingSubprocess($taskEl);
         }
 
         throw new \Exception('Não foi possivel criar o elemento');
     }
 
-    private function changeTypeTaskActivityToSubProcess(TaskActivity $changeElement): SubProcess
+    private function addTaskToOutgoingSubprocess(TaskActivity $task): TaskActivity
     {
-        $prev = $this->rootEl;
-        $outgoing = $prev->getOutgoing();
-        $find = false;
-        $subProcess = null;
-        do {
-            if ($outgoing->projectTask->getId() == $changeElement->projectTask->getId()) {
-                $find = true;
-                $subProcess = new SubProcess($changeElement->projectTask, $outgoing->getOutgoing());
-                if ($prev instanceof SubProcess) {
-                    if ($changeElement->projectTask->domQuery->find('OutlineLevel')->text()
-                    == $prev->projectTask->domQuery->find('OutlineLevel')->text())
-                        $prev->setOutgoing($subProcess);
-                    else
-                        $prev->setSubprocess($subProcess);
-                }
-                else
-                    $prev->setOutgoing($subProcess);
-            } else {
-                $prev = $outgoing;
-                $outgoing = $outgoing instanceof SubProcess
-                    ? $outgoing->getSubprocess()
-                    : $outgoing->getOutgoing();
-                if (empty($outgoing)) {
-                    $prev = $this->getPrevOutgoing((int)$prev->projectTask->domQuery->find('OutlineLevel')->text());
-                    $outgoing = $prev->getOutgoing();
+        $prev = null;
+        $find = $this->rootEl;
+        $outlineNumber = $task->projectTask->domQuery->find('OutlineNumber')->text();
+        $outLineLevel = $task->projectTask->getOutlineLevel();
+        $explodeOutline = explode('.', $outlineNumber);
+
+        for ($i=0; $i<$outLineLevel; $i++) {
+            if ($find instanceof StartEvent)
+                $find = $find->getOutgoing();
+            if ($find instanceof SubProcess)
+                $find = $find->getSubprocess();
+
+            for ($j=0; $j<(int)$explodeOutline[0]; $j++) {
+                $prev = $find;
+                $find = $find->getOutgoing();
+            }
+
+        }
+
+        $task->setPrevEl($prev);
+        $prev->setOutgoing($task);
+        return $task;
+    }
+
+    private function changeTypeTaskToSubProcess(TaskActivity $changeElement): SubProcess
+    {
+        $find = $this->rootEl;
+        $outlineNumber = $changeElement->projectTask->domQuery->find('OutlineNumber')->text();
+        $outLineLevel = $changeElement->projectTask->getOutlineLevel();
+        $explodeOutline = explode('.', $outlineNumber);
+
+        if ($explodeOutline[0] != '0') {
+            foreach ($explodeOutline as $n) {
+                if ($find instanceof StartEvent)
+                    $find = $find->getOutgoing();
+                if ($find instanceof SubProcess)
+                    $find = $find->getSubprocess();
+                for ($i=0; $i<(int)$n; $i++) {
+                    $prev = $find;
+                    $find = $find->getOutgoing();
                 }
             }
-        } while (! $find);
+        }
+
+        if (isset($prev)) {
+            $subProcess = $this->createSubProcessFromTaskActivity($changeElement);
+            $prev->setOutgoing($subProcess);
+        } else {
+            $subProcess = $this->createSubProcessFromTaskActivity($changeElement);
+            $find->setOutgoing($subProcess);
+        }
         return $subProcess;
     }
 
-    private function getPrevOutgoing(int $outlineLevelSearch): TypeElementAbstract
+    private function createSubProcessFromTaskActivity(TypeElementAbstract &$changeElement): SubProcess
     {
-        $find = false;
-        $prevOutgoing = null;
-        $prev = $this->rootEl;
-        $current = $prev->getOutgoing();
-        do {
-            if (( ! $current instanceof StartEvent) && (int)$current->projectTask->domQuery->find('OutlineLevel')->text() == $outlineLevelSearch) {
-                $find = true;
-                $prevOutgoing = $prev;
-            } else {
-                if (! $current instanceof StartEvent)
-                    $prev = $current;
-                $current = $current instanceof SubProcess
-                    ? $current->getSubprocess()
-                    : $current->getOutgoing();
-            }
-        } while (! $find);
-        return $prevOutgoing;
+        $subProcess = new SubProcess($changeElement->projectTask, $changeElement->getOutgoing());
+        $subProcess->setId($changeElement->getId());
+        $subProcess->setPrevEl($changeElement->getPrevEl());
+        return $subProcess;
     }
 
-    private function addEndEvent(): void
+    private function addEndEvent(TypeElementAbstract &$cur): void
     {
-        $prev = null;
-        $cur = $this->rootEl;
-        do {
-            if ($cur instanceof SubProcess
-            || $cur instanceof TaskActivity) {
-                if (empty($cur->getOutgoing())) {
-                    $cur->setOutgoing(new EndEvent(new ProjectTask()));
-                } else {
-                    if ($cur instanceof SubProcess)
-                        $prev = $cur->getOutgoing();
-                }
-                $cur = $cur instanceof SubProcess ? $cur->getSubprocess() : $cur->getOutgoing();
-            } else {
-                if ($cur instanceof EndEvent) {
-                    $cur = $prev;
-                    $prev = null;
-                } else
-                    $cur = $cur->getOutgoing();
+        $tmpCur = $cur;
+        if ($tmpCur instanceof StartEvent)
+            $tmpCur = $tmpCur->getOutgoing();
+        if ($tmpCur instanceof TaskActivity)
+            if ($tmpCur->getOutgoing() == null)
+                $tmpCur->setOutgoing(new EndEvent(new ProjectTask('', $tmpCur->projectTask->getOutlineLevel())));
+            else{
+                $tmpTask = $tmpCur->getOutgoing();
+                $this->addEndEvent($tmpTask);
             }
+        if ($tmpCur instanceof SubProcess) {
+            if ($tmpCur->getOutgoing() == null)
+                $tmpCur->setOutgoing(new EndEvent(new ProjectTask('', $tmpCur->projectTask->getOutlineLevel())));
 
-        } while ( ! empty($cur));
+            $tmpStart = $tmpCur->getSubprocess();
+            $this->addEndEvent($tmpStart);
+
+            $tmpSub = $tmpCur->getOutgoing();
+            $this->addEndEvent($tmpSub);
+        }
     }
 
 }

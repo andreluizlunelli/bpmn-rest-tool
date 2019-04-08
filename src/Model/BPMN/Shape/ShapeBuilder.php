@@ -97,7 +97,7 @@ class ShapeBuilder
 
     private function getRawStart(array $xml): RawStart
     {
-        $attr = $xml[StartEvent::getNameKey()];
+        $attr = current($xml[StartEvent::getNameKey()]);
 
         return new RawStart($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['outgoing']);
     }
@@ -107,7 +107,7 @@ class ShapeBuilder
     {
         if ( ! array_key_exists(EndEvent::getNameKey(), $xml))
             return new RawEnd('','','');
-        $attr = $xml[EndEvent::getNameKey()];
+        $attr = current($xml[EndEvent::getNameKey()]);
 
         return new RawEnd($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['incoming']);
     }
@@ -139,6 +139,9 @@ class ShapeBuilder
 
             $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100);
             $this->pushShape($this->returnXml, $shape);
+
+            $sequence = $this->createSequenceFlow($subProcess['incoming']);
+            $this->pushSequence($this->returnXml, $sequence);
 
             $this->createNode($process);
         });

@@ -8,6 +8,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\ShapeBuilder;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Xml\BpmnXmlBuilder;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 use Spatie\ArrayToXml\ArrayToXml;
 
@@ -34,11 +35,11 @@ class BpmnBuilder
 
     public function buildXml(): string
     {
-        $this->rootXml = $sequences = $rxml = [];
-        $previousEl = $nextEl = null;
-        $actualEl = $this->rootEl;
-
-        $this->rootXml = $this->createNode($previousEl, $actualEl, $this->getNextEl($actualEl), $sequences, $rxml);
+        $this->rootXml = [];
+        $bpmnXmlBuilder = new BpmnXmlBuilder();
+        $this->rootXml = $bpmnXmlBuilder->build($this->rootEl);
+        $getAllSequences = new GetAllSequences($this->rootXml);
+        $sequences = $getAllSequences->all();
 
         $processNode = [
             'process' => [
@@ -450,9 +451,6 @@ class BpmnBuilder
         $a = str_replace('<endEvent', '<bpmn:endEvent', $a);
         $a = str_replace('</endEvent>', '</bpmn:endEvent>', $a);
 
-        $a = str_replace('<task', '<bpmn:task', $a);
-        $a = str_replace('</task>', '</bpmn:task>', $a);
-
         $a = str_replace('<incoming', '<bpmn:incoming', $a);
         $a = str_replace('</incoming>', '</bpmn:incoming>', $a);
 
@@ -460,6 +458,9 @@ class BpmnBuilder
         $a = str_replace('</outgoing>', '</bpmn:outgoing>', $a);
 
         $a = str_replace('<sequenceFlow', '<bpmn:sequenceFlow', $a);
+
+        $a = str_replace('<taskActivity', '<bpmn:task', $a);
+        $a = str_replace('</taskActivity>', '</bpmn:task>', $a);
 
         return $a;
     }
@@ -472,6 +473,15 @@ class BpmnBuilder
         return $el instanceof SubProcess
             ? $el->getSubprocess()
             : $el->getOutgoing();
+    }
+
+    private function rawToSequencesArray(array $rawArraySequences): array
+    {
+        return array_map(function ($item) {
+            $sequence = new Sequence($item['_attributes']['sourceRef'], $item['_attributes']['targetRef']);
+            $sequence->setId($item['_attributes']['id']);
+            return $sequence;
+        }, $rawArraySequences);
     }
 
 }

@@ -143,6 +143,9 @@ class ShapeBuilder
             $sequence = $this->createSequenceFlow($subProcess['incoming']);
             $this->pushSequence($this->returnXml, $sequence);
 
+            /**
+             * TODO a cada createNode empilhar a quantiade da altura que resultou o subprocesso ai, altera
+             */
             $this->createNode($process);
         });
     }

@@ -40,13 +40,13 @@ class ShapeElement
     public function xmlFromRawStart(RawStart $rawStart, CalcShape $calcShape): array
     {
         $p = $calcShape->getxyStartEvent();
-        return $this->innerXml($rawStart->getId().'_di', $rawStart->getId(), $p->getX(), $p->getY(), 36, 36);
+        return $this->innerXml($rawStart->getId().'_di', $rawStart->getId(), $p->getX(), $p->getY(), CalcShape::$elStartEvent['w'], CalcShape::$elStartEvent['h']);
     }
 
     public function xmlFromRawEnd(RawEnd $rawEnd, CalcShape $calcShape): array
     {
         $p = $calcShape->getxyEndEvent();
-        return $this->innerXml($rawEnd->getId().'_di', $rawEnd->getId(), $p->getX(), $p->getY(), 36, 36);
+        return $this->innerXml($rawEnd->getId().'_di', $rawEnd->getId(), $p->getX(), $p->getY(), CalcShape::$elEndEvent['w'], CalcShape::$elEndEvent['h']);
     }
 
 }

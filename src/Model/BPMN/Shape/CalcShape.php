@@ -9,6 +9,7 @@ namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Shape;
 
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\EndEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
 
 class CalcShape
@@ -25,14 +26,24 @@ class CalcShape
 
     private $elStack = [];
 
-    private $elStartEvent = [
-        'x' => 36
-        ,'y' => 36
+    public static $elStartEvent = [
+        'w' => 36
+        ,'h' => 36
     ];
 
-    private $elEndEvent = [
-        'x' => 36
-        ,'y' => 36
+    public static $elEndEvent = [
+        'w' => 36
+        ,'h' => 36
+    ];
+
+    public static $elTask = [
+        'w' => 100
+        ,'h' => 100
+    ];
+
+    public static $elSequence = [
+        'w' => 1
+        ,'h' => 0
     ];
 
     /**
@@ -40,7 +51,7 @@ class CalcShape
      * @param int $x
      * @param int $y
      */
-    public function __construct(int $x = 100, int $y = 100)
+    public function __construct(int $x = 300, int $y = 25)
     {
         $this->x = $x;
         $this->y = $y;
@@ -48,42 +59,44 @@ class CalcShape
 
     public function getxyStartEvent(): P
     {
-        $incx = 50;
-
-        $this->x += $incx;
-
+        $p = new P($this->x, $this->y);
+        $this->y += self::$elStartEvent['h'];
         array_push($this->elStack, StartEvent::class);
 
-        return new P($this->x, $this->y);
+        return $p;
     }
 
     public function getxyEndEvent(): P
     {
-        $incx = 50;
-
-        $this->x += $incx;
-
+        $p = new P($this->x, $this->y);
+        $this->y += self::$elEndEvent['h'];
         array_push($this->elStack, EndEvent::class);
 
-        return new P($this->x, $this->y);
+        return $p;
     }
 
     public function getxySequence(): array
     {
-        $incx = 25;
-
         $px = ['x' => $this->x, 'y' => $this->y];
 
-        $this->x += $incx;
+        $this->y += self::$elSequence['h'];
 
         $py = ['x' => $this->x, 'y' => $this->y];
 
         array_push($this->elStack, Sequence::class);
 
         return [
-            [$px['x'], $px['y']]
-            ,[$py['x'], $py['y']]
+            [$px['x'], $py['x']]
+            ,[$px['y'], $py['y']]
         ];
+    }
+
+    public function getxyTask(): P
+    {
+        $p = new P($this->x, $this->y);
+        $this->y += self::$elTask['h'];
+        array_push($this->elStack, TaskActivity::class);
+        return $p;
     }
 
 }

@@ -127,7 +127,7 @@ class ShapeBuilder
         $k = array_search($outgoing, $search);
         $seq = $this->sequences[$k];
         // todo: remover o $k encontrado da lista
-        return (new EdgeElement($seq))->xml();
+        return (new EdgeElement($seq))->xml($this->calcShape);
     }
 
     private function createNodeListSubProcess(?array $listSubProcess): void
@@ -144,7 +144,7 @@ class ShapeBuilder
                 , $_sub, $_task
             );
 
-            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100);
+            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100, true);
             $this->pushShape($this->returnXml, $shape);
 
             $sequence = $this->createSequenceFlow($subProcess['incoming']);
@@ -160,7 +160,10 @@ class ShapeBuilder
     private function createNodeListTask(?array $listTask): void
     {
         array_walk($listTask, function($task) {
-            $shape = (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'] . '_di', $task['_attributes']['id'], 50, 50, 100, 100);
+
+            $p = $this->calcShape->getxyTask();
+
+            $shape = (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'] . '_di', $task['_attributes']['id'], $p->getX(), $p->getY(), CalcShape::$elTask['w'], CalcShape::$elTask['h']);
 
             $this->pushShape($this->returnXml, $shape);
 

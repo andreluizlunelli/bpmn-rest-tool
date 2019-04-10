@@ -37,14 +37,16 @@ class ShapeElement
         ];
     }
 
-    public function xmlFromRawStart(RawStart $rawStart): array
+    public function xmlFromRawStart(RawStart $rawStart, CalcShape $calcShape): array
     {
-        return $this->innerXml($rawStart->getId().'_di', $rawStart->getId(), 50, 50, 36, 36);
+        $p = $calcShape->getxyStartEvent();
+        return $this->innerXml($rawStart->getId().'_di', $rawStart->getId(), $p->getX(), $p->getY(), 36, 36);
     }
 
-    public function xmlFromRawEnd(RawEnd $rawEnd): array
+    public function xmlFromRawEnd(RawEnd $rawEnd, CalcShape $calcShape): array
     {
-        return $this->innerXml($rawEnd->getId().'_di', $rawEnd->getId(), 50, 50, 36, 36);
+        $p = $calcShape->getxyEndEvent();
+        return $this->innerXml($rawEnd->getId().'_di', $rawEnd->getId(), $p->getX(), $p->getY(), 36, 36);
     }
 
 }

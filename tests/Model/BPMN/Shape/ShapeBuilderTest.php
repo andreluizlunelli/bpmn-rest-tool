@@ -24,7 +24,8 @@ class ShapeBuilderTest extends TestCase
         $rootXml = $bpmnXmlBuilder->build($bpmn->buildMetadata());
         $getAllSequences = new GetAllSequences($rootXml);
         $sequences = $getAllSequences->all();
-        $shapeBuilder = new ShapeBuilder($rootXml, $sequences);
+        $calcShape = new CalcShape();
+        $shapeBuilder = new ShapeBuilder($rootXml, $sequences, $calcShape);
         $xmlArray = $shapeBuilder->xml();
     }
 

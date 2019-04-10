@@ -27,15 +27,21 @@ class ShapeBuilder
      */
     private $sequences;
 
+    /**
+     * @var CalcShape
+     */
+    private $calcShape;
+
     private $returnXml = [];
 
     /**
      * EdgeElement constructor.
      * @param array $xml
      * @param $sequences
+     * @param CalcShape $calcShape
      * @throws \Exception
      */
-    public function __construct(array $xml, $sequences)
+    public function __construct(array $xml, $sequences, CalcShape $calcShape)
     {
         $this->xml = $xml;
 
@@ -43,6 +49,7 @@ class ShapeBuilder
             throw new \Exception('xml não possue sequences');
 
         $this->sequences = $sequences;
+        $this->calcShape = $calcShape;
     }
 
     public function xml(): array
@@ -73,7 +80,7 @@ class ShapeBuilder
     private function createNode(RawSubProcess $process): void
     {
         // CRIA O START BPMNShape
-        $shapeStartXml = (new ShapeElement())->xmlFromRawStart($process->start);
+        $shapeStartXml = (new ShapeElement())->xmlFromRawStart($process->start, $this->calcShape);
         $this->pushShape($this->returnXml, $shapeStartXml);
 
         // CRIA O SEQUENCE_FLOW BPMNEdge
@@ -87,7 +94,7 @@ class ShapeBuilder
             $this->createNodeListTask($process->listTask);
 
         // CRIA O END BPMNShape
-        $shapeEndXml = (new ShapeElement())->xmlFromRawEnd($process->end);
+        $shapeEndXml = (new ShapeElement())->xmlFromRawEnd($process->end, $this->calcShape);
         $this->pushShape($this->returnXml, $shapeEndXml);
 
         // CRIA O SEQUENCE_FLOW BPMNEdge

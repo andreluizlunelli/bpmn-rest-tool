@@ -7,7 +7,6 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\BPMN\Shape;
 
-use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawEnd;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\Raw\RawStart;
 

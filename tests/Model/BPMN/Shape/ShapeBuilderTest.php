@@ -19,7 +19,7 @@ class ShapeBuilderTest extends TestCase
     public function testeLayout()
     {
         $projectEntity = (new ProjectMapper())
-            ->map(new \SplFileObject('../../../bpmn_xml/Project management planModificado_teste1.xml'));
+            ->map(new \SplFileObject('../../../bpmn_xml/Project management planModificado_teste2.xml'));
 
         /*
         $bpmn = new BpmnMetadataBuilder($projectEntity);

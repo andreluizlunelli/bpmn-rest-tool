@@ -150,9 +150,7 @@ class ShapeBuilder
 
             $this->createNode($process, $newCalcShape);
 
-            $y = $p->getY() + $newCalcShape->getY();
-
-            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], $p->getX(), $p->getY(), CalcShape::$elSubprocess['w'], $y, true);
+            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], $p->getX(), $p->getY(), CalcShape::$elSubprocess['w'], $newCalcShape->getY()-$prevCalc->getY(), true);
             $this->pushShape($this->returnXml, $shape);
 
             $sequence = $this->createSequenceFlow($subProcess['incoming'], $newCalcShape);

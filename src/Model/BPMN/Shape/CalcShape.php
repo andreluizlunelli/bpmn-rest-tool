@@ -43,7 +43,7 @@ class CalcShape
 
     public static $elSequence = [
         'w' => 1
-        ,'h' => 0
+        ,'h' => 25
     ];
 
     /**

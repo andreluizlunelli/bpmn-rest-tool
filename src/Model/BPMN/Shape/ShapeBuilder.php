@@ -93,13 +93,9 @@ class ShapeBuilder
         else
             $this->createNodeListTask($process->listTask);
 
-        // CRIA O END BPMNShape
+        // CRIA O END BPMNShape o sequenceFlow anterior já é criado pelo createNodeListTask()
         $shapeEndXml = (new ShapeElement())->xmlFromRawEnd($process->end, $this->calcShape);
         $this->pushShape($this->returnXml, $shapeEndXml);
-
-        // CRIA O SEQUENCE_FLOW BPMNEdge
-        $sequence = $this->createSequenceFlow($process->end->getIncoming());
-        $this->pushSequence($this->returnXml, $sequence);
     }
 
     private function getRawStart(array $xml): RawStart

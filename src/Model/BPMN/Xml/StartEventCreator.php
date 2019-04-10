@@ -27,7 +27,7 @@ class StartEventCreator extends ElCreator
         $r = $el->newCreateArrayForXml(null, $outgoingSequence);
         $this->addSequenceFlowToArray($r, $outgoingSequence);
 
-        return new BpmnXml($r, $this->sequences);
+        return new BpmnXml($r, self::$sequences);
     }
 
 }

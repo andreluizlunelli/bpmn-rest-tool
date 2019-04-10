@@ -147,7 +147,7 @@ class BpmnXmlBuilder
     {
         $key = $bpmnXml->getKey();
         foreach ($bpmnXml->getSequences() as $s) {
-//            if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
+            if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
             $buf['sequenceFlow'][] = $s->getInnerElement();
         }
 
@@ -171,7 +171,7 @@ class BpmnXmlBuilder
     private function addSubProcessToBuf(array $copyBuf, array $outlineLevelBuffer, BpmnXml $subProcess): array
     {
         foreach ($subProcess->getSequences() as $s) {
-//            if ( ! $this->existSequenceFlow($s, $copyBuf['sequenceFlow'] ?? []))
+            if ( ! $this->existSequenceFlow($s, $copyBuf['sequenceFlow'] ?? []))
             $copyBuf['sequenceFlow'][] = $s->getInnerElement();
         }
 

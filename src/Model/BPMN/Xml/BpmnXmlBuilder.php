@@ -148,7 +148,7 @@ class BpmnXmlBuilder
         $key = $bpmnXml->getKey();
         foreach ($bpmnXml->getSequences() as $s) {
             if ( ! $this->existSequenceFlow($s, $buf['sequenceFlow'] ?? []))
-            $buf['sequenceFlow'][] = $s->getInnerElement();
+                $buf['sequenceFlow'][] = $s->getInnerElement();
         }
 
         $buf[$key][] = $bpmnXml->getInnerElement();
@@ -172,7 +172,7 @@ class BpmnXmlBuilder
     {
         foreach ($subProcess->getSequences() as $s) {
             if ( ! $this->existSequenceFlow($s, $copyBuf['sequenceFlow'] ?? []))
-            $copyBuf['sequenceFlow'][] = $s->getInnerElement();
+                $copyBuf['sequenceFlow'][] = $s->getInnerElement();
         }
 
         $tmp = array_merge($subProcess->getInnerElement(), $outlineLevelBuffer);

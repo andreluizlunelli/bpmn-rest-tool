@@ -11,20 +11,20 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\Sequence;
 abstract class ElCreator
 {
     protected $xml = [];
-    protected static $sequences = [];
+    protected $sequences = [];
     abstract public function create(ParamEl $paramEl): BpmnXml;
 
     protected function addSequence($sourceRef, $targetRef): Sequence
     {
         // verifica se já exite antes de dar um array push
         /** @var Sequence $s */
-        foreach (self::$sequences as $s)
+        foreach ($this->sequences as $s)
             if (($s->getSourceRef() == $sourceRef)
                 && ($s->getTargetRef() == $targetRef))
                 return $s;
 
         $seq = new Sequence($sourceRef, $targetRef);
-        array_push(self::$sequences, $seq);
+        array_push($this->sequences, $seq);
         return $seq;
     }
 
@@ -35,7 +35,7 @@ abstract class ElCreator
 
     public function getSequences(): array
     {
-        return self::$sequences;
+        return $this->sequences;
     }
 
     protected function addSequenceFlowToArray(array &$r, Sequence $s): void

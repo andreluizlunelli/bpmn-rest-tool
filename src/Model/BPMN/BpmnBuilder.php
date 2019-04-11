@@ -7,6 +7,7 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\CalcShape;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Shape\ShapeBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\Xml\BpmnXmlBuilder;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
@@ -292,7 +293,7 @@ class BpmnBuilder
     {
         $a = [];
         $a['bpmndi:BPMNDiagram']['_attributes']['id'] = 'BpmnDiagram_1';
-        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml, $sequences))->xml();
+        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml, $sequences, new CalcShape()))->xml();
         $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['id'] = 'BpmnPlane_1';
         $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['bpmnElement'] = 'Process_1';
 

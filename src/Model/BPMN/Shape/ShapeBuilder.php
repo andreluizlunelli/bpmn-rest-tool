@@ -27,15 +27,21 @@ class ShapeBuilder
      */
     private $sequences;
 
+    /**
+     * @var CalcShape
+     */
+    private $calcShapeFirst;
+
     private $returnXml = [];
 
     /**
      * EdgeElement constructor.
      * @param array $xml
      * @param $sequences
+     * @param CalcShape $calcShape
      * @throws \Exception
      */
-    public function __construct(array $xml, $sequences)
+    public function __construct(array $xml, $sequences, CalcShape $calcShape)
     {
         $this->xml = $xml;
 
@@ -43,6 +49,7 @@ class ShapeBuilder
             throw new \Exception('xml não possue sequences');
 
         $this->sequences = $sequences;
+        $this->calcShapeFirst = $calcShape;
     }
 
     public function xml(): array
@@ -66,33 +73,29 @@ class ShapeBuilder
             , $_sub, $_task
         );
 
-        $this->createNode($process);
+        $this->createNode($process, $this->calcShapeFirst);
         return $this->returnXml;
     }
 
-    private function createNode(RawSubProcess $process): void
+    private function createNode(RawSubProcess $process, CalcShape &$calcShape): void
     {
         // CRIA O START BPMNShape
-        $shapeStartXml = (new ShapeElement())->xmlFromRawStart($process->start);
+        $shapeStartXml = (new ShapeElement())->xmlFromRawStart($process->start, $calcShape);
         $this->pushShape($this->returnXml, $shapeStartXml);
 
         // CRIA O SEQUENCE_FLOW BPMNEdge
-        $sequence = $this->createSequenceFlow($process->start->getOutgoing());
+        $sequence = $this->createSequenceFlow($process->start->getOutgoing(), $calcShape);
         $this->pushSequence($this->returnXml, $sequence);
 
         /* CRIA O SUBPROCESS OU TASK BPMNShape */
         if (! empty($process->listSubProcess))
-            $this->createNodeListSubProcess($process->listSubProcess);
+            $this->createNodeListSubProcess($process->listSubProcess, $calcShape);
         else
-            $this->createNodeListTask($process->listTask);
+            $this->createNodeListTask($process->listTask, $calcShape);
 
-        // CRIA O END BPMNShape
-        $shapeEndXml = (new ShapeElement())->xmlFromRawEnd($process->end);
+        // CRIA O END BPMNShape o sequenceFlow anterior já é criado pelo createNodeListTask()
+        $shapeEndXml = (new ShapeElement())->xmlFromRawEnd($process->end, $calcShape);
         $this->pushShape($this->returnXml, $shapeEndXml);
-
-        // CRIA O SEQUENCE_FLOW BPMNEdge
-        $sequence = $this->createSequenceFlow($process->end->getIncoming());
-        $this->pushSequence($this->returnXml, $sequence);
     }
 
     private function getRawStart(array $xml): RawStart
@@ -102,7 +105,6 @@ class ShapeBuilder
         return new RawStart($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['outgoing']);
     }
 
-    // todo pode não existir, mas não deveria!
     private function getRawEnd(array $xml): RawEnd
     {
         if ( ! array_key_exists(EndEvent::getNameKey(), $xml))
@@ -112,20 +114,23 @@ class ShapeBuilder
         return new RawEnd($attr['_attributes']['id'], $attr['_attributes']['name'], $attr['incoming']);
     }
 
-    private function createSequenceFlow(string $outgoing): array
+    private function createSequenceFlow(string $outgoing, CalcShape $calcShape): array
     {
         $search = array_map(function(Sequence $item) {
             return $item->getId();
         }, $this->sequences);
         $k = array_search($outgoing, $search);
         $seq = $this->sequences[$k];
-        // todo: remover o $k encontrado da lista
-        return (new EdgeElement($seq))->xml();
+        return (new EdgeElement($seq))->xml($calcShape);
     }
 
-    private function createNodeListSubProcess(?array $listSubProcess): void
+    private function createNodeListSubProcess(?array $listSubProcess, CalcShape &$calcShape): void
     {
-        array_walk($listSubProcess, function($subProcess) {
+        $listCalcShape = [new CalcShape($calcShape->getX(), $calcShape->getY())];
+        array_walk($listSubProcess, function($subProcess) use (&$listCalcShape) {
+            /** @var CalcShape $prevCalc */
+            $prevCalc = end($listCalcShape);
+
             $_sub = $subProcess[SubProcess::getNameKey()] ?? null;
             $_task = $subProcess[TaskActivity::getNameKey()] ?? null;
 
@@ -137,24 +142,49 @@ class ShapeBuilder
                 , $_sub, $_task
             );
 
-            $shape = (new ShapeElement())->innerXml($subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id'], 50, 50, 100, 100);
+            $p = $prevCalc->getxySubprocess();
+
+            $espacoTitulo = 50;
+            $newCalcShape = new CalcShape($prevCalc->getX(), $prevCalc->getY() + $espacoTitulo);
+
+            array_push($listCalcShape, $newCalcShape);
+
+            $this->createNode($process, $newCalcShape);
+
+            $shape = (new ShapeElement())->innerXml(
+                $subProcess['_attributes']['id'] . '_di', $subProcess['_attributes']['id']
+                , $p->getX() - CalcShape::$sumWSubprocess/2
+                , $p->getY()
+                , CalcShape::$elSubprocess['w'] + CalcShape::$sumWSubprocess
+                , $newCalcShape->getY()-$prevCalc->getY()
+                , true);
             $this->pushShape($this->returnXml, $shape);
 
-            $sequence = $this->createSequenceFlow($subProcess['incoming']);
+            $sequence = $this->createSequenceFlow($subProcess['incoming'], $newCalcShape);
             $this->pushSequence($this->returnXml, $sequence);
 
-            $this->createNode($process);
+            $newCalcShape->setY($newCalcShape->getY() - CalcShape::$elSequence['h']);
+            $sequence = $this->createSequenceFlow($subProcess['outgoing'], $newCalcShape);
+            $this->pushSequence($this->returnXml, $sequence);
         });
+        CalcShape::$sumWSubprocess += CalcShape::$incWSubprocess;
+        /** @var CalcShape $end */
+        $end = end($listCalcShape);
+        $calcShape->setX($end->getX());
+        $calcShape->setY($end->getY());
     }
 
-    private function createNodeListTask(?array $listTask): void
+    private function createNodeListTask(?array $listTask, CalcShape &$calcShape): void
     {
-        array_walk($listTask, function($task) {
-            $shape = (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'] . '_di', $task['_attributes']['id'], 50, 50, 100, 100);
+        array_walk($listTask, function($task) use (&$calcShape) {
+
+            $p = $calcShape->getxyTask();
+
+            $shape = (new ShapeElement($task, TaskActivity::getNameKey()))->innerXml($task['_attributes']['id'] . '_di', $task['_attributes']['id'], $p->getX(), $p->getY(), CalcShape::$elTask['w'], CalcShape::$elTask['h']);
 
             $this->pushShape($this->returnXml, $shape);
 
-            $sequence = $this->createSequenceFlow($task['outgoing']);
+            $sequence = $this->createSequenceFlow($task['outgoing'], $calcShape);
             $this->pushSequence($this->returnXml, $sequence);
         });
     }

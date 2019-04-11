@@ -25,7 +25,7 @@ class EdgeElement
     public function __construct($xml)
     {
         if ($xml instanceof Sequence)
-            $xml = current($xml->createArrayForXml());
+            $xml = current($xml->toArrayXml());
         $this->xml = $xml;
     }
 
@@ -55,13 +55,15 @@ class EdgeElement
         ];
     }
 
-    public function xml(): array
+    public function xml(CalcShape $calcShape): array
     {
         $id = $this->xml['_attributes']['id'] ?? null;
         if (empty($id))
             throw new \Exception('Falta o id');
 
-        return $this->innerXml($id.'_di', $id, [50,50], [50,50]);
+        $p = $calcShape->getxySequence();
+
+        return $this->innerXml($id.'_di', $id, $p[0], $p[1]);
     }
 
 

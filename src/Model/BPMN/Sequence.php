@@ -58,7 +58,7 @@ class Sequence implements CreateArrayForXml
     }
 
     /**
-     * @deprecated TODO REMOVER ESSA FUNÇÃO E REMOVER A ASSINATURA DA INTERFACE CreateArrayForXml
+     * @deprecated usar o toArrayXml TODO REMOVER ESSA FUNÇÃO E REMOVER A ASSINATURA DA INTERFACE CreateArrayForXml
      *
      * @param string $incoming
      * @param string $outgoing

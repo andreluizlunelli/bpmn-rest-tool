@@ -56,6 +56,9 @@ class CalcShape
         ,'recuoCentro' => 18
     ];
 
+    public static $sumWSubprocess = 0;
+    public static $incWSubprocess = 50;
+
     /**
      * CalcShape constructor.
      * @param int $x
@@ -103,7 +106,7 @@ class CalcShape
     {
         $p = new P($this->x, $this->y);
         $this->y += self::$elStartEvent['h'];
-        array_push(self::$elStack, StartEvent::class . "     " . $this->y);
+        array_push(self::$elStack, StartEvent::class . "     y:" . $this->y . ' x:' . $this->x);
 
         return $p;
     }
@@ -112,7 +115,7 @@ class CalcShape
     {
         $p = new P($this->x, $this->y);
         $this->y += self::$elEndEvent['h'] + 10;
-        array_push(self::$elStack, EndEvent::class . "     " . $this->y);
+        array_push(self::$elStack, EndEvent::class . "     y:" . $this->y . ' x:' . $this->x);
 
         return $p;
     }
@@ -125,7 +128,7 @@ class CalcShape
 
         $py = ['x' => $this->x + self::$elSequence['recuoCentro'], 'y' => $this->y];
 
-        array_push(self::$elStack, Sequence::class . "     " . $this->y);
+        array_push(self::$elStack, Sequence::class . "     y:" . $this->y . ' x:' . $this->x);
 
         return [
             [$px['x'], $py['x']]
@@ -137,7 +140,7 @@ class CalcShape
     {
         $p = new P($this->x - (self::$elTask['w']/2) + self::$elSequence['recuoCentro'], $this->y);
         $this->y += self::$elTask['h'];
-        array_push(self::$elStack, TaskActivity::class . "     " . $this->y);
+        array_push(self::$elStack, TaskActivity::class . "     y:" . $this->y . ' x:' . $this->x);
         return $p;
     }
 
@@ -145,7 +148,8 @@ class CalcShape
     {
         $p = new P($this->x - (self::$elSubprocess['w']/2) + self::$elSequence['recuoCentro'], $this->y);
         $this->y += self::$elSubprocess['h'];
-        array_push(self::$elStack, SubProcess::class . "     " . $this->y);
+
+        array_push(self::$elStack, SubProcess::class . "     y:" . $this->y . ' x:' . $this->x);
         return $p;
     }
 

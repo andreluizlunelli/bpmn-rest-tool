@@ -144,7 +144,7 @@ class ShapeBuilder
 
             $p = $prevCalc->getxySubprocess();
 
-            $newCalcShape = new CalcShape($prevCalc->getX(), $prevCalc->getY());
+            $newCalcShape = new CalcShape($prevCalc->getX(), $prevCalc->getY() + 50);
 
             array_push($listCalcShape, $newCalcShape);
 
@@ -162,6 +162,7 @@ class ShapeBuilder
             $sequence = $this->createSequenceFlow($subProcess['incoming'], $newCalcShape);
             $this->pushSequence($this->returnXml, $sequence);
 
+            $newCalcShape->setY($newCalcShape->getY() - CalcShape::$elSequence['h']);
             $sequence = $this->createSequenceFlow($subProcess['outgoing'], $newCalcShape);
             $this->pushSequence($this->returnXml, $sequence);
         });

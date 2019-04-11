@@ -61,11 +61,6 @@ class BpmnXmlBuilder
      * Arranja a ordem do (anterior, atual, próximo) dentro do ParamEl
      * faz merge do proximo elemento com elemento atual
      *
-     * TODO:     para identar corretamente os nodos criados
-     * TODO:     usa o outlineLevel que está dentro do projectTask para definir qual elemento vai ser o "buffer"
-     * TODO:     para fazer o "array_merge" dos nodos criados
-     * TODO:     QUANDO EU INSERIR UM SUBPROCESS É O MARCO DE UM NOVO OUTLINElEVEL
-     *
      * @param ParamEl $paramEl
      * @param BpmnXml $bpmnXml
      * @return BpmnXml
@@ -140,7 +135,7 @@ class BpmnXmlBuilder
 
         $buf = $this->addSubProcessToBuf($copyBuf, $this->outlineLevelBuffer, $bpmnXml);
         $this->outlineLevelBuffer = $buf;
-        return $ig; // todo.. posBehavior* podem ser void
+        return $ig;
     }
 
     private function addToBuf(array &$buf, BpmnXml $bpmnXml): void
@@ -181,12 +176,5 @@ class BpmnXmlBuilder
 
         return $copyBuf;
     }
-
-
-    /* TODO
-     * o incoming que sai do StartEvent ou do Subprocesso anterior, tem que ser o incoming dentro do projeto
-     * o outgoing seque pelo mesmo caminho
-     */
-
 
 }

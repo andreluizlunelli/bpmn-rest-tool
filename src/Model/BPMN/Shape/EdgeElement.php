@@ -25,7 +25,7 @@ class EdgeElement
     public function __construct($xml)
     {
         if ($xml instanceof Sequence)
-            $xml = current($xml->createArrayForXml());
+            $xml = current($xml->toArrayXml());
         $this->xml = $xml;
     }
 

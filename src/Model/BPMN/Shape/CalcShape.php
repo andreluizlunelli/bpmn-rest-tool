@@ -25,6 +25,9 @@ class CalcShape
      */
     private $y = 0;
 
+    /**
+     * @var array utilizado para debug
+     */
     private static $elStack = [];
 
     public static $elStartEvent = [
@@ -50,6 +53,7 @@ class CalcShape
     public static $elSequence = [
         'w' => 1
         ,'h' => 25
+        ,'recuoCentro' => 18
     ];
 
     /**
@@ -107,7 +111,7 @@ class CalcShape
     public function getxyEndEvent(): P
     {
         $p = new P($this->x, $this->y);
-        $this->y += self::$elEndEvent['h'];
+        $this->y += self::$elEndEvent['h'] + 10;
         array_push(self::$elStack, EndEvent::class . "     " . $this->y);
 
         return $p;
@@ -115,11 +119,11 @@ class CalcShape
 
     public function getxySequence(): array
     {
-        $px = ['x' => $this->x, 'y' => $this->y];
+        $px = ['x' => $this->x + self::$elSequence['recuoCentro'], 'y' => $this->y];
 
         $this->y += self::$elSequence['h'];
 
-        $py = ['x' => $this->x, 'y' => $this->y];
+        $py = ['x' => $this->x + self::$elSequence['recuoCentro'], 'y' => $this->y];
 
         array_push(self::$elStack, Sequence::class . "     " . $this->y);
 
@@ -131,7 +135,7 @@ class CalcShape
 
     public function getxyTask(): P
     {
-        $p = new P($this->x, $this->y);
+        $p = new P($this->x - (self::$elTask['w']/2) + self::$elSequence['recuoCentro'], $this->y);
         $this->y += self::$elTask['h'];
         array_push(self::$elStack, TaskActivity::class . "     " . $this->y);
         return $p;
@@ -139,7 +143,7 @@ class CalcShape
 
     public function getxySubprocess(): P
     {
-        $p = new P($this->x, $this->y);
+        $p = new P($this->x - (self::$elSubprocess['w']/2) + self::$elSequence['recuoCentro'], $this->y);
         $this->y += self::$elSubprocess['h'];
         array_push(self::$elStack, SubProcess::class . "     " . $this->y);
         return $p;

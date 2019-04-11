@@ -127,7 +127,6 @@ class ShapeBuilder
     private function createNodeListSubProcess(?array $listSubProcess, CalcShape &$calcShape): void
     {
         $listCalcShape = [new CalcShape($calcShape->getX(), $calcShape->getY())];
-        CalcShape::$sumWSubprocess = 0;
         array_walk($listSubProcess, function($subProcess) use (&$listCalcShape) {
             /** @var CalcShape $prevCalc */
             $prevCalc = end($listCalcShape);
@@ -161,8 +160,6 @@ class ShapeBuilder
                 , true);
             $this->pushShape($this->returnXml, $shape);
 
-            CalcShape::$sumWSubprocess += CalcShape::$incWSubprocess;
-
             $sequence = $this->createSequenceFlow($subProcess['incoming'], $newCalcShape);
             $this->pushSequence($this->returnXml, $sequence);
 
@@ -170,6 +167,7 @@ class ShapeBuilder
             $sequence = $this->createSequenceFlow($subProcess['outgoing'], $newCalcShape);
             $this->pushSequence($this->returnXml, $sequence);
         });
+        CalcShape::$sumWSubprocess += CalcShape::$incWSubprocess;
         /** @var CalcShape $end */
         $end = end($listCalcShape);
         $calcShape->setX($end->getX());

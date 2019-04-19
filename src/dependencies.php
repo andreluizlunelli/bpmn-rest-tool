@@ -2,6 +2,7 @@
 // DIC configuration
 
 use andreluizlunelli\BpmnRestTool\Model\Twig\ViewFunctions;
+use andreluizlunelli\BpmnRestTool\System\Database;
 use Zend\Session\Config\SessionConfig;
 use Zend\Session\SessionManager;
 use Zend\Session\Storage\SessionArrayStorage;
@@ -29,7 +30,7 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
-$container['em'] = \andreluizlunelli\BpmnRestTool\System\Database::getEntityManager();
+$container['em'] = Database::getEntityManager();
 
 $container['SessionManager'] = function ($c) {
     $sessionManager = new SessionManager(new SessionConfig(), new SessionArrayStorage());

@@ -52,8 +52,10 @@ class BpmnBuilder
         ];
 
         $processNode['process'] = array_merge($processNode['process'], $this->rootXml);
-
-        $processNode['bpmndi:BPMNDiagram'] = $this->createXmlLayoutShape($this->rootXml, $sequences);
+        $processNode['bpmndi:BPMNDiagram']['_attributes']['id'] = 'BpmnDiagram_1';
+        $processNode['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($this->rootXml, $sequences, new CalcShape()))->xml();
+        $processNode['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['id'] = 'BpmnPlane_1';
+        $processNode['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['bpmnElement'] = 'Process_1';
 
         try {
             $a = ArrayToXml::convert($processNode, [
@@ -74,29 +76,6 @@ class BpmnBuilder
         }
 
         return $this->normalizeXMLString($a);
-    }
-
-    /**
-     * Sequência de processamento
-     * startEvent
-     * sequenceFlow
-     * subProcess/task
-     * endEvent
-     *
-     * @param array $xml
-     * @param array $sequences
-     * @return array
-     * @throws \Exception
-     */
-    private function createXmlLayoutShape(array $xml, array $sequences): array
-    {
-        $a = [];
-        $a['bpmndi:BPMNDiagram']['_attributes']['id'] = 'BpmnDiagram_1';
-        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane'] = (new ShapeBuilder($xml, $sequences, new CalcShape()))->xml();
-        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['id'] = 'BpmnPlane_1';
-        $a['bpmndi:BPMNDiagram']['bpmndi:BPMNPlane']['_attributes']['bpmnElement'] = 'Process_1';
-
-        return $a['bpmndi:BPMNDiagram'];
     }
 
     private function normalizeXMLString(string $a): string

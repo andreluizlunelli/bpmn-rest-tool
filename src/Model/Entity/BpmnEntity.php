@@ -8,6 +8,8 @@
 
 namespace andreluizlunelli\BpmnRestTool\Model\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use JsonSerializable;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -44,14 +46,16 @@ class BpmnEntity implements JsonSerializable, ToArray
     private $fileInformed;
 
     /**
-     * @var string
-     * @ORM\Column(type="text", nullable=true)
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="BpmnPiece", mappedBy="bpmn", cascade={"persist"})
      */
-    private $generatedFile;
+    private $generatedPieces;
 
     public function __construct()
     {
         $this->createdAt = new DateTime('now');
+        $this->generatedPieces = new ArrayCollection();
     }
 
     public function toArray(): array
@@ -72,7 +76,6 @@ class BpmnEntity implements JsonSerializable, ToArray
     {
         return [
             'fileInformed' => $this->fileInformed
-            ,'generatedFile' => $this->generatedFile
             ,'name' => $this->name
         ];
     }
@@ -116,24 +119,6 @@ class BpmnEntity implements JsonSerializable, ToArray
     /**
      * @return string
      */
-    public function getGeneratedFile(): string
-    {
-        return $this->generatedFile;
-    }
-
-    /**
-     * @param string $generatedFile
-     * @return BpmnEntity
-     */
-    public function setGeneratedFile(string $generatedFile): self
-    {
-        $this->generatedFile = $generatedFile;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
@@ -149,5 +134,18 @@ class BpmnEntity implements JsonSerializable, ToArray
         return $this;
     }
 
+    public function addBpmnPiece(BpmnPiece $piece): self
+    {
+        $this->generatedPieces->add($piece);
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getGeneratedPieces(): Collection
+    {
+        return $this->generatedPieces;
+    }
 
 }

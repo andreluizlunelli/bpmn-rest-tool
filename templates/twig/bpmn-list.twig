@@ -2,12 +2,13 @@
 
 {% block content %}{{ parent() }}
 <div class="container">
+    {% for f in files %}
     <ul class="list-group mt-3">
-        {% for f in files %}
+
             {% for b in f.pieces %}
                 <li class="list-group-item"><a href="{{ path_for('bpmn', {bpmn: f.name, subProcess: b.name}) }}">{{ b.name }}</a></li>
             {% endfor %}
-        {% endfor %}
     </ul>
+    {% endfor %}
 </div>
 {% endblock %}

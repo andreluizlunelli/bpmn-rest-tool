@@ -42,7 +42,15 @@
   background: $msproject;
 }
 .list-group-item {
+
+  &:first-child {
+    a {
+      margin-left: 0;
+    }
+  }
+
   a {
+    margin-left: 18px;
     overflow-wrap: break-word;
     word-wrap: break-word;
 
@@ -57,5 +65,6 @@
     -moz-hyphens: auto;
     -webkit-hyphens: auto;
     hyphens: auto;
+
   }
 }

@@ -4,7 +4,9 @@
 <div class="container">
     <ul class="list-group mt-3">
         {% for f in files %}
-            <li class="list-group-item"><a href="{{ path_for('bpmn', {fileName: f.name}) }}">{{ f.name }}</a></li>
+            {% for b in f.pieces %}
+                <li class="list-group-item"><a href="{{ path_for('bpmn', {bpmn: f.name, subProcess: b.name}) }}">{{ b.name }}</a></li>
+            {% endfor %}
         {% endfor %}
     </ul>
 </div>

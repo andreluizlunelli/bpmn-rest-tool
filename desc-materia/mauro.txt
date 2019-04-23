@@ -3,3 +3,25 @@
 * dar um split de todo subprocesso para poder acessalo individualmente
 * adicionar a lista com uma identação para poder acessar os subprocessos individualmente
 * por também quando enviar o arquivo que tem a restrição de um subprocesso ser precedido por uma task e vice versa
+
+por tílulo do subprocesso no title da pág e visivel na pag
+
+mostrar o nome do arquivo originário
+
+Falar
+diagrama de caso de uso|diagrama de atividades
+
+estrutura de arquivo gerada do project o .xml
+
+Fundamentação da Bpmn
+    parte do resumo
+
+estrutura da biblioteca js utilizada
+
+como foi feito o mapeamento project -> bpmn
+
+arquitetura do sistema
+
+exemplo de uso da ferramenta com cópia de tela
+
+mer

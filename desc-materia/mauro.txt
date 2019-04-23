@@ -1,0 +1,5 @@
+* trazer o título do nodo que deu erro
+* loader quando envia o arquivo
+* dar um split de todo subprocesso para poder acessalo individualmente
+* adicionar a lista com uma identação para poder acessar os subprocessos individualmente
+* por também quando enviar o arquivo que tem a restrição de um subprocesso ser precedido por uma task e vice versa

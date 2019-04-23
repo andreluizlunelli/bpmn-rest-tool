@@ -9,8 +9,8 @@ $app->any('/logout', lc::class.':logout')->setName('logout');
 
 $app->group('/', function () use ($app) {
     $app->get('', ic::class.':bpmnList')->setName('index');
-    $app->get('bpmn/{fileName}', ic::class.':bpmn')->setName('bpmn');
-    $app->get('bpmn/{fileName}/fetch', ic::class.':fetchBpmn')->setName('fetchBpmn');
+    $app->get('bpmn/{bpmn}/{subProcess}', ic::class.':bpmn')->setName('bpmn');
+    $app->get('bpmn/{bpmn}/{subProcess}/fetch', ic::class.':fetchBpmn')->setName('fetchBpmn');
     $app->get('carregar-xml-project', ic::class.':carregarXmlProject')->setName('carregarXmlProject');
     $app->post('carregar-xml-project', ic::class.':postCarregarXmlProject')->setName('postCarregarXmlProject');
 })

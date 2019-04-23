@@ -153,4 +153,9 @@ class CalcShape
         return $p;
     }
 
+    public static function clearSumWidth()
+    {
+        self::$sumWSubprocess = 0;
+        self::$incWSubprocess = 50;
+    }
 }

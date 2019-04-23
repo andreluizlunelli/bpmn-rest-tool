@@ -4,7 +4,10 @@ namespace andreluizlunelli\BpmnRestTool\Controller;
 
 use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\SplitSubprocess\BpmnBuilderSplitSubprocess;
+use andreluizlunelli\BpmnRestTool\Model\BPMN\SplitSubprocess\GetAllElementTypeSubprocess;
 use andreluizlunelli\BpmnRestTool\Model\Entity\BpmnEntity;
+use andreluizlunelli\BpmnRestTool\Model\Entity\BpmnPiece;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\Http\Body;
@@ -31,17 +34,25 @@ class IndexController extends ControllerBase
 
                 $splFile = new \SplFileObject(getcwd() . '/public/project-informado/' . $f->getClientFilename());
                 $projectEntity = (new ProjectMapper())->map($splFile);
-                $bpmn = new BpmnMetadataBuilder($projectEntity);
-                $builder = new BpmnBuilder($bpmn->buildMetadata());
-                $xml = $builder->buildXml();
-
-                $bpmnEntity = (new BpmnEntity())
-                    ->setFileInformed(file_get_contents($splFile->getPathname()))
-                    ->setGeneratedFile($xml)
-                    ->setName(uniqid() . "-" . pathinfo($f->getClientFilename())['filename']);
+                $metadataBuilder = new BpmnMetadataBuilder($projectEntity);
+                $allSubProcess = (new GetAllElementTypeSubprocess($metadataBuilder->buildMetadata()))->all();
+                $builder = new BpmnBuilderSplitSubprocess();
+                $listXmlPieces = $builder->buildXmlsSplited($allSubProcess);
 
                 $user = $this->getUserLoggedin();
-                $user->addBpmn($bpmnEntity);
+                $bpmn = (new BpmnEntity())
+                    ->setUser($user)
+                    ->setFileInformed(file_get_contents($splFile->getPathname()))
+                    ->setName(uniqid() . "-" . pathinfo($f->getClientFilename())['filename']);
+                ;
+
+                /** @var BpmnPiece $piece */
+                foreach ($listXmlPieces as $piece) {
+                    $bpmn->addBpmnPiece($piece->setBpmn($bpmn));
+                }
+
+                $user->addBpmn($bpmn);
+
                 $this->em()->persist($user);
                 $this->em()->flush();
             } finally {
@@ -56,17 +67,24 @@ class IndexController extends ControllerBase
 
     public function fetchBpmn(Request $request, Response $response, $args)
     {
-        $fileName = $args['fileName'];
+        $bpmn = $args['bpmn'];
+        $subProcess = $args['subProcess'];
 
         $user = $this->getUserLoggedin();
 
-        $bpmnEntityCollection = $user->getBpmnList()->filter(function (/** @var BpmnEntity $item */ $item) use ($fileName) {
-            return $fileName === $item->getName() ? $item : false;
+        $bpmnEntityCollection = $user->getBpmnList()->filter(function (/** @var BpmnEntity $item */ $item) use ($bpmn) {
+            return $bpmn === $item->getName() ? $item : false;
+        });
+
+        $bpmnEntity = $bpmnEntityCollection->first();
+
+        $bpmnSubprocessCollection = $bpmnEntity->getGeneratedPieces()->filter(function (/** @var BpmnPiece $item */ $item) use ($subProcess) {
+            return $subProcess === explode(', Dt.início', $item->getName())[0] ? $item : false;
         });
 
         return $response
             ->withStatus(200)
-            ->write($bpmnEntityCollection->first()->getGeneratedFile());
+            ->write($bpmnSubprocessCollection->first()->getXml());
     }
 
     public function bpmn(Request $request, Response $response, $args)
@@ -78,7 +96,14 @@ class IndexController extends ControllerBase
     {
         $args['flashMessage'] = $this->message();
         $args['files'] = array_map(function (/** @var $item BpmnEntity*/ $item) {
-            return ['name' => $item->getName()];
+            return [
+                'name' => $item->getName()
+                , 'pieces' => array_map(function ($p) {
+                    return [
+                        'name' => explode(', Dt.início', $p->getName())[0]
+                    ];
+                }, array_reverse($item->getGeneratedPieces()->toArray()))
+            ];
         }, $this->ordenarDataMaior($this->getUserLoggedin()
             ->getBpmnList()
             ->toArray()

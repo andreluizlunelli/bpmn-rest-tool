@@ -2,7 +2,6 @@
 
 namespace andreluizlunelli\BpmnRestTool\Controller;
 
-use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\BpmnMetadataBuilder;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\SplitSubprocess\BpmnBuilderSplitSubprocess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\SplitSubprocess\GetAllElementTypeSubprocess;
@@ -10,7 +9,6 @@ use andreluizlunelli\BpmnRestTool\Model\Entity\BpmnEntity;
 use andreluizlunelli\BpmnRestTool\Model\Entity\BpmnPiece;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectMapper;
 use Psr\Http\Message\UploadedFileInterface;
-use Slim\Http\Body;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -96,12 +94,15 @@ class IndexController extends ControllerBase
     {
         $args['flashMessage'] = $this->message();
         $args['files'] = array_map(function (/** @var $item BpmnEntity*/ $item) {
+            $b = true;
             return [
                 'name' => $item->getName()
-                , 'pieces' => array_map(function ($p) {
-                    return [
-                        'name' => explode(', Dt.início', $p->getName())[0]
+                , 'pieces' => array_map(function ($p) use (&$b, $item) {
+                    $a = [
+                        'name' => explode(', Dt.início', $p->getName())[0] . '  <small>' . (($b) ? $item->getName() : '') . '</small>'
                     ];
+                    $b = false;
+                    return $a;
                 }, array_reverse($item->getGeneratedPieces()->toArray()))
             ];
         }, $this->ordenarDataMaior($this->getUserLoggedin()

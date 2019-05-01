@@ -1,6 +1,8 @@
 {% extends './layout/layout-standard.twig' %}
-
+{% block title %}{{ title }}{% endblock %}
 {% block content %}{{ parent() }}
+    <span style="position: absolute;top: 72px;right: 348px;">{{ title }}</span>
+
     <div class="content" id="js-drop-zone">
 
         <div class="message intro">

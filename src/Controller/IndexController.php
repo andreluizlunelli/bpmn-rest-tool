@@ -18,12 +18,20 @@ class IndexController extends ControllerBase
 
     public function carregarXmlProject(Request $request, Response $response, $args)
     {
+        $args['flashMessage'] = $this->message();
         return $this->view()->render($response, './enviar.twig', $args);
     }
 
     public function postCarregarXmlProject(Request $request, Response $response, $args)
     {
         $files = $request->getUploadedFiles();
+
+        if (count($files) == 0
+            || current($files)->getSize() == 0
+            || explode('.', current($files)->getClientFilename())[1] != 'xml') {
+            $this->message()->addMessage('error', 'Envie um arquivo válido extensão .xml');
+            return $response->withRedirect($this->route()->pathFor('carregarXmlProject'));
+        }
 
         /** @var UploadedFileInterface $f */
         foreach ($files as $f) {
@@ -87,6 +95,7 @@ class IndexController extends ControllerBase
 
     public function bpmn(Request $request, Response $response, $args)
     {
+        $args['title'] = $request->getAttribute('subProcess');
         return $this->view()->render($response, './bpmn.twig', $args);
     }
 
@@ -99,7 +108,8 @@ class IndexController extends ControllerBase
                 'name' => $item->getName()
                 , 'pieces' => array_map(function ($p) use (&$b, $item) {
                     $a = [
-                        'name' => explode(', Dt.início', $p->getName())[0] . '  <small>' . (($b) ? $item->getName() : '') . '</small>'
+                        'name' => explode(', Dt.início', $p->getName())[0]
+                        ,'file' => (($b) ? $item->getName() : '')
                     ];
                     $b = false;
                     return $a;

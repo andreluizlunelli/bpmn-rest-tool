@@ -1,11 +1,10 @@
 {% extends './layout/layout-standard.twig' %}
-
 {% block content %}{{ parent() }}
 <div class="container">
     {% for f in files %}
     <ul class="list-group mt-3">
         {% for b in f.pieces %}
-            <li class="list-group-item"><a href="{{ path_for('bpmn', {bpmn: f.name, subProcess: b.name}) }}">{{ b.name | raw }}</a></li>
+            <li class="list-group-item"><a href="{{ path_for('bpmn', {bpmn: f.name, subProcess: b.name}) }}">{{ b.name }} <small style="float: right;line-height: inherit;" class="badge badge-secondary">{{ b.file }}</small></a></li>
         {% endfor %}
     </ul>
     {% endfor %}

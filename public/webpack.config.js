@@ -13,7 +13,8 @@ const config = {
         login: './app/styles/login.scss',
         bpmnstyle: './app/styles/bpmnstyle.scss',
         bpmn: './app/bpmn/bpmn.js',
-        index: './app/index.ts'
+        index: './app/index.ts',
+        view: './app/view.ts'
     },
     output: {
         path: path.join(__dirname, 'dist'),

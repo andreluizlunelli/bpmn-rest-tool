@@ -2,9 +2,7 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}{{ parent() }}
     <span style="position: absolute;top: 72px;right: 348px;">{{ title }}</span>
-
     <div class="content" id="js-drop-zone">
-
         <div class="message intro">
             <div class="note">
                 {#Drop BPMN diagram from your desktop or <a id="js-create-diagram" href>create a new diagram</a> to get started.#}
@@ -25,22 +23,18 @@
 
         <div class="canvas" id="js-canvas"></div>
     </div>
-
-    {#<ul class="buttons">#}
-        {#<li>#}
-            {#download#}
-        {#</li>#}
-        {#<li>#}
-            {#<a id="js-download-diagram" href title="download BPMN diagram">#}
-                {#BPMN diagram#}
-            {#</a>#}
-        {#</li>#}
-        {#<li>#}
-            {#<a id="js-download-svg" href title="download as SVG image">#}
-                {#SVG image#}
-            {#</a>#}
-        {#</li>#}
-    {#</ul>#}
+    <ul class="buttons">
+        <li>
+            <a id="js-download-diagram" href title="download BPMN diagram">
+                Salvar diagrama bpmn
+            </a>
+        </li>
+        <li>
+            <a id="js-download-svg" href title="download as SVG image">
+                Salvar imagem svg
+            </a>
+        </li>
+    </ul>
     </div>
 {% endblock %}
 {% block style %}

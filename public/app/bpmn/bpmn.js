@@ -139,13 +139,28 @@ $(function() {
     var exportArtifacts = debounce(function() {
 
         saveSVG(function(err, svg) {
-            setEncoded(downloadSvgLink, 'diagram.svg', err ? null : svg);
+            setEncoded(downloadSvgLink, document.querySelector('title').innerText+'.svg', err ? null : svg);
         });
 
         saveDiagram(function(err, xml) {
-            setEncoded(downloadLink, 'diagram.bpmn', err ? null : xml);
+            setEncoded(downloadLink, document.querySelector('title').innerText+'.bpmn', err ? null : xml);
         });
     }, 500);
 
     modeler.on('commandStack.changed', exportArtifacts);
+    // modeler.on('attach', exportArtifacts);
+    // modeler.on('commandStack.canExecute', exportArtifacts);
+    // modeler.on('commandStack.connection.layout.executed', exportArtifacts);
+    // modeler.on('canvas.init', exportArtifacts);
+
+    downloadLink.click(() => {
+        saveDiagram(function(err, xml) {
+            setEncoded(downloadLink, document.querySelector('title').innerText+'.bpmn', err ? null : xml);
+        });
+    });
+    downloadSvgLink.click(() => {
+        saveSVG(function(err, svg) {
+            setEncoded(downloadSvgLink, document.querySelector('title').innerText+'.svg', err ? null : svg);
+        });
+    });
 });

@@ -33,8 +33,9 @@ class ProjectMapper
             return $project;
 
         foreach ($query->find('Task') as $taskQuery) {
+            $startDate = (new DateTime())->createFromFormat(self::DATE_FORMAT_READ, $taskQuery->find('Start')->text());
             $pt = new ProjectTask(
-                $taskQuery->find('Name')->text() . ', Dt.início ' . (new DateTime())->createFromFormat('Y-m-d\TH:i:s', $taskQuery->find('Start')->text())->format('d/m/Y')
+                $taskQuery->find('Name')->text() . ', Dt.início ' . $startDate->format('d/m/Y')
                 , (int)$taskQuery->find('OutlineLevel')->text()
             );
             $pt->domQuery = clone $taskQuery;

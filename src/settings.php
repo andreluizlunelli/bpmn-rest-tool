@@ -1,7 +1,7 @@
 <?php
 return [
     'settings' => [
-        'base_assets' => 'http://localhost:8081',
+        'base_assets' => '', // http://localhost:8081, quando usar o comando: webpack start
         'date_formats' => [
             'date_time_format' => 'Y-m-d H:i:s'
         ],

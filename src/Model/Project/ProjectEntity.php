@@ -7,7 +7,6 @@
  */
 namespace andreluizlunelli\BpmnRestTool\Model\Project;
 
-use DateTime;
 use QueryPath\DOMQuery;
 
 class ProjectEntity

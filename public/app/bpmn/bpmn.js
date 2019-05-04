@@ -148,10 +148,6 @@ $(function() {
     }, 500);
 
     modeler.on('commandStack.changed', exportArtifacts);
-    // modeler.on('attach', exportArtifacts);
-    // modeler.on('commandStack.canExecute', exportArtifacts);
-    // modeler.on('commandStack.connection.layout.executed', exportArtifacts);
-    // modeler.on('canvas.init', exportArtifacts);
 
     downloadLink.click(() => {
         saveDiagram(function(err, xml) {

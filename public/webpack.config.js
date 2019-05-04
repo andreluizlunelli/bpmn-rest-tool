@@ -41,7 +41,7 @@ const config = {
         minimize: false,
         minimizer: [
             new Uglifyjs({
-                sourceMap: true
+                sourceMap: false
             })
         ]
     },
@@ -73,7 +73,7 @@ const config = {
                 use: [{
                     loader: 'css-loader',
                     options: {
-                        minimize: false
+                        minimize: true
                     }
                 },{
                     loader: 'sass-loader'

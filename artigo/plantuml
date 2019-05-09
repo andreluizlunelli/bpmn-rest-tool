@@ -1,0 +1,484 @@
+@startuml
+namespace andreluizlunelli.BpmnRestTool.Cmd  {
+	class CmdUser << class >> {
+		+<u>call</u>()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Controller  {
+	class ControllerBase << class >> {
+		#container
+		--
+		+__construct()
+		#em()
+		#view()
+		#route()
+		#message()
+		#errorMessage()
+	}
+	class IndexController << class >> {
+		+carregarXmlProject()
+		+postCarregarXmlProject()
+		+fetchBpmn()
+		+bpmn()
+		+bpmnList()
+		-ordenarDataMaior()
+	}
+	class LoginController << class >> {
+		+login()
+		+logout()
+	}
+	class UserLoggedin << (T,#FF7700) trait >> {
+		+getUserLoggedin()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Exception  {
+	class ArrayEmptyException << class >> {
+		+__construct()
+	}
+}
+	class Exception << class >> {
+	}
+	interface JsonSerializable << interface >> {
+	}
+	class Twig_Extension << class >> {
+	}
+namespace andreluizlunelli.BpmnRestTool.Middleware  {
+	class AuthorizationMiddleware << class >> {
+		+__invoke()
+	}
+	interface MiddlewareInterface << interface >> {
+		+__invoke()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.Authorization  {
+	class AuthorizationUser << class >> {
+		-em
+		-sessionManager
+		--
+		+__construct()
+		+getUser()
+		+start()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.BPMN  {
+	class BpmnBuilder << class >> {
+		-rootEl
+		-rootXml
+		--
+		+__construct()
+		+buildXml()
+		-normalizeXMLString()
+	}
+	class BpmnMetadataBuilder << class >> {
+		-project
+		-rootEl
+		--
+		+__construct()
+		+buildMetadata()
+		-createElement()
+		-addTaskToOutgoingSubprocess()
+		-changeTypeTaskToSubProcess()
+		-createSubProcessFromTaskActivity()
+		-addEndEvent()
+	}
+	class GetAllSequences << class >> {
+		-processXml
+		--
+		+__construct()
+		+all()
+		-allRecursive()
+		-transformSequence()
+	}
+	class Sequence << class >> {
+		-id
+		-sourceRef
+		-targetRef
+		--
+		+__construct()
+		+toArrayXml()
+		+getInnerElement()
+		+createArrayForXml()
+		+<u>createFromArray</u>()
+		+getId()
+		+setId()
+		+getSourceRef()
+		+getTargetRef()
+		+newCreateArrayForXml()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType  {
+	interface CreateArrayForXml << interface >> {
+		+createArrayForXml()
+		+newCreateArrayForXml()
+	}
+	class EndEvent << class >> {
+		+createArrayForXml()
+	}
+	abstract TypeElementAbstract << abstract >> {
+		#outgoing
+		+projectTask
+		-prevEl
+		--
+		+__construct()
+		+jsonSerialize()
+		+getOutgoing()
+		+setOutgoing()
+		#getNameWithoutNamespace()
+		+<u>getNameKey</u>()
+		+newCreateArrayForXml()
+		+getPrevEl()
+		+setPrevEl()
+	}
+	interface TypeElementInterface << interface >> {
+		+<u>createFromTask</u>()
+	}
+	class StartEvent << class >> {
+		+createArrayForXml()
+	}
+	class SubProcess << class >> {
+		-subprocess
+		--
+		+createArrayForXml()
+		+getSubprocess()
+		+setSubprocess()
+		+jsonSerialize()
+	}
+	class TaskActivity << class >> {
+		+createArrayForXml()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.BPMN.Shape  {
+	class CalcShape << class >> {
+		-x
+		-y
+		-elStack
+		+elStartEvent
+		+elEndEvent
+		+elTask
+		+elSubprocess
+		+elSequence
+		+sumWSubprocess
+		+incWSubprocess
+		--
+		+__construct()
+		+getX()
+		+getY()
+		+setX()
+		+setY()
+		+getxyStartEvent()
+		+getxyEndEvent()
+		+getxySequence()
+		+getxyTask()
+		+getxySubprocess()
+		+<u>clearSumWidth</u>()
+	}
+	class EdgeElement << class >> {
+		-xml
+		+keyShape
+		--
+		+__construct()
+		#innerXml()
+		+xml()
+	}
+	class P << class >> {
+		-x
+		-y
+		--
+		+__construct()
+		+getX()
+		+getY()
+	}
+	class ShapeBuilder << class >> {
+		-xml
+		-sequences
+		-calcShapeFirst
+		-returnXml
+		--
+		+__construct()
+		+xml()
+		-createNode()
+		-getRawStart()
+		-getRawEnd()
+		-createSequenceFlow()
+		-createNodeListSubProcess()
+		-createNodeListTask()
+		-pushSequence()
+		-pushShape()
+	}
+	class ShapeElement << class >> {
+		+keyShape
+		--
+		+innerXml()
+		+xmlFromRawStart()
+		+xmlFromRawEnd()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.BPMN.Shape.Raw  {
+	class RawEnd << class >> {
+		-incoming
+		--
+		+__construct()
+		+getIncoming()
+	}
+	class RawStart << class >> {
+		-outgoing
+		--
+		+__construct()
+		+getOutgoing()
+		+setOutgoing()
+	}
+	class RawSubProcess << class >> {
+		+start
+		+end
+		+listSubProcess
+		+listTask
+		--
+		+__construct()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.BPMN.SplitSubprocess  {
+	class BpmnBuilderSplitSubprocess << class >> {
+		+buildXmlsSplited()
+	}
+	class GetAllElementTypeSubprocess << class >> {
+		-rootEl
+		-listSubprocess
+		--
+		+__construct()
+		+all()
+		-allRecursive()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.BPMN.Xml  {
+	class BpmnXml << class >> {
+		-xml
+		-sequences
+		-key
+		--
+		+__construct()
+		+getXml()
+		+getSequences()
+		+setXml()
+		+setSequences()
+		+getKey()
+		+setKey()
+		+getInnerElement()
+	}
+	class BpmnXmlBuilder << class >> {
+		-outlineLevelBuffer
+		--
+		+build()
+		-innerCreateNode()
+		-getCreator()
+		-behavior()
+		-posBehavior()
+		-posBehaviorSubProcess()
+		-addToBuf()
+		-existSequenceFlow()
+		-addSubProcessToBuf()
+	}
+	abstract ElCreator << abstract >> {
+		#xml
+		#sequences
+		--
+		+<i>create</i>()
+		#addSequence()
+		+getXml()
+		+getSequences()
+		#addSequenceFlowToArray()
+	}
+	class EndEventCreator << class >> {
+		+create()
+	}
+	class ParamEl << class >> {
+		-prevEl
+		-actualEl
+		-nextEl
+		--
+		+__construct()
+		+getPrevEl()
+		+getActualEl()
+		+getNextEl()
+	}
+	class StartEventCreator << class >> {
+		+create()
+	}
+	class SubProcessCreator << class >> {
+		+create()
+	}
+	class TaskActivityCreator << class >> {
+		+create()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.Entity  {
+	class BpmnEntity << class >> {
+		-user
+		-name
+		-fileInformed
+		-generatedPieces
+		--
+		+__construct()
+		+toArray()
+		+jsonSerialize()
+		+getUser()
+		+setUser()
+		+getFileInformed()
+		+setFileInformed()
+		+getName()
+		+setName()
+		+addBpmnPiece()
+		+getGeneratedPieces()
+	}
+	interface ToArray << interface >> {
+		+toArray()
+	}
+	class BpmnPiece << class >> {
+		-bpmn
+		-xml
+		-name
+		--
+		+__construct()
+		+setBpmn()
+		+getName()
+		+getXml()
+	}
+	class EntityTrait << (T,#FF7700) trait >> {
+		-id
+		--
+		+getId()
+		+setId()
+	}
+	class TimestampTrait << (T,#FF7700) trait >> {
+		-createdAt
+		-updatedAt
+		--
+		+getCreatedAt()
+		+setCreatedAt()
+		+getUpdatedAt()
+		+setUpdatedAt()
+	}
+	interface ToExpose << interface >> {
+		+toArray()
+		+toExpose()
+	}
+	class User << class >> {
+		-name
+		-email
+		-password
+		-bpmnList
+		--
+		+__construct()
+		+addBpmn()
+		+jsonSerialize()
+		+toArray()
+		+<u>passwordHash</u>()
+		+passwordVerify()
+		+getName()
+		+setName()
+		+getEmail()
+		+setEmail()
+		+getPassword()
+		+setPassword()
+		+getBpmnList()
+		+setBpmnList()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.Project  {
+	class ProjectEntity << class >> {
+		-id
+		-nameFile
+		-title
+		+domQuery
+		-tasks
+		--
+		+__construct()
+		+getId()
+		+setId()
+		+getNameFile()
+		+setNameFile()
+		+getTitle()
+		+setTitle()
+		+getTasks()
+		+setTasks()
+		+addTask()
+	}
+	class ProjectMapper << class >> {
+		+DATE_FORMAT_READ
+		--
+		+map()
+	}
+	class ProjectTask << class >> {
+		-outlineLevel
+		+domQuery
+		--
+		+__construct()
+		+getOutlineLevel()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.Traits  {
+	class AttrElement << (T,#FF7700) trait >> {
+		#id
+		#name
+		--
+		+getId()
+		+setId()
+		+getName()
+		+setName()
+	}
+	class CreateFromTask << (T,#FF7700) trait >> {
+		+<u>createFromTask</u>()
+		+<u>getNameKey</u>()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.Model.Twig  {
+	class ViewFunctions << class >> {
+		-container
+		--
+		+__construct()
+		+getFunctions()
+		+baseAssets()
+	}
+}
+namespace andreluizlunelli.BpmnRestTool.System  {
+	class App << class >> {
+		-app
+		--
+		+<u>getApp</u>()
+		-<u>createApp</u>()
+	}
+	class Database << class >> {
+		-entityManager
+		--
+		+<u>getEntityManager</u>()
+		+<u>createEntityManager</u>()
+		+<u>getEm</u>()
+		+<u>createTables</u>()
+		+<u>truncateTables</u>()
+	}
+	class SystemConst << class >> {
+		+<u>getSettings</u>()
+		+<u>getDateTimeFormat</u>()
+	}
+}
+andreluizlunelli.BpmnRestTool.Controller.IndexController --|> andreluizlunelli.BpmnRestTool.Controller.ControllerBase
+andreluizlunelli.BpmnRestTool.Controller.LoginController --|> andreluizlunelli.BpmnRestTool.Controller.ControllerBase
+andreluizlunelli.BpmnRestTool.Exception.ArrayEmptyException --|> Exception
+andreluizlunelli.BpmnRestTool.Middleware.AuthorizationMiddleware ..|> andreluizlunelli.BpmnRestTool.Middleware.MiddlewareInterface
+andreluizlunelli.BpmnRestTool.Model.BPMN.Sequence ..|> andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.CreateArrayForXml
+andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TypeElementInterface --|> andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.CreateArrayForXml
+andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TypeElementAbstract ..|> andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TypeElementInterface
+andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.EndEvent --|> andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TypeElementAbstract
+andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.StartEvent --|> andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TypeElementAbstract
+andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.SubProcess --|> andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TypeElementAbstract
+andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TaskActivity --|> andreluizlunelli.BpmnRestTool.Model.BPMN.ElementType.TypeElementAbstract
+andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.EndEventCreator --|> andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.ElCreator
+andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.StartEventCreator --|> andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.ElCreator
+andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.SubProcessCreator --|> andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.ElCreator
+andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.TaskActivityCreator --|> andreluizlunelli.BpmnRestTool.Model.BPMN.Xml.ElCreator
+andreluizlunelli.BpmnRestTool.Model.Entity.BpmnEntity ..|> JsonSerializable
+andreluizlunelli.BpmnRestTool.Model.Entity.BpmnEntity ..|> andreluizlunelli.BpmnRestTool.Model.Entity.ToArray
+andreluizlunelli.BpmnRestTool.Model.Entity.User ..|> JsonSerializable
+andreluizlunelli.BpmnRestTool.Model.Entity.User ..|> andreluizlunelli.BpmnRestTool.Model.Entity.ToArray
+andreluizlunelli.BpmnRestTool.Model.Twig.ViewFunctions --|> Twig_Extension
+@enduml
+

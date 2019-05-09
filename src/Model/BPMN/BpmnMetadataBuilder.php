@@ -14,7 +14,6 @@ use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\StartEvent;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\SubProcess;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TaskActivity;
 use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementAbstract;
-use andreluizlunelli\BpmnRestTool\Model\BPMN\ElementType\TypeElementInterface;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectEntity;
 use andreluizlunelli\BpmnRestTool\Model\Project\ProjectTask;
 

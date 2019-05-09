@@ -25,3 +25,15 @@ arquitetura do sistema
 exemplo de uso da ferramenta com cópia de tela
 
 mer
+
+
+angelica disse:
+ 	o objetivo fica no final da introdução, não tem um tópico pra ele
+ 	na metodologia eu vou falar sobre como eu resolvi o problema descrito no objetivo
+ 	na metodologia eu posso iniciar separando cada objetivo especifico e como eu fiz para atingi-lo
+
+
+passos
+	poe o objetivo geral na introdução
+	pula fundamentação teorica
+	escreve os objetivos específicos

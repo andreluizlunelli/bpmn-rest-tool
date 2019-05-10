@@ -37,3 +37,6 @@ passos
 	poe o objetivo geral na introdução
 	pula fundamentação teorica
 	escreve os objetivos específicos
+
+
+diagrama de implantação

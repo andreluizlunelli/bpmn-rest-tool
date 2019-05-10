@@ -40,3 +40,9 @@ passos
 
 
 diagrama de implantação
+
+perguntas para um questionário
+	este trabalho auxiliou quanto a análise dos processos na sua empresa?
+	quais tipos de tarefas oneram seu processo?
+	o software foi fácil de usar?
+	sugestões para outros recursos na aplicação?

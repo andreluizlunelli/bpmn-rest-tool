@@ -42,7 +42,20 @@ passos
 diagrama de implantação
 
 perguntas para um questionário
+	conhece bpmn
+	conhece project
+	quanto tempo trabalha com modelagem processo
+	analise na forma de processo agregou valor a sua atividade
+	visulialização de um arquivo de projeto sobre a otica de processo agregou valor a sua atividade?
+	qual nível de detalhamento que se deve avançar nos trabalhos posteriores?
+	a forma como os modelos gerados são apresentados é adequada
+
 	este trabalho auxiliou quanto a análise dos processos na sua empresa?
-	quais tipos de tarefas oneram seu processo?
+	
 	o software foi fácil de usar?
 	sugestões para outros recursos na aplicação?
+
+
+
+
+fala de que subiu os arquivos de exemplo do Project para o server da aplicação esse é o teste do projeto

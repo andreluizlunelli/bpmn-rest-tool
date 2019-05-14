@@ -121,7 +121,7 @@ class IndexController extends ControllerBase
         ));
 
         if (count($args['files']) < 1)
-            $this->message()->addMessageNow('info', "Você não possue nenhuma bpmn, clique <a class='alert-link' href='{$this->route()->pathFor('carregarXmlProject')}'>aqui</a> para começar");
+            $this->message()->addMessageNow('info', "Você não possui nenhuma bpmn, clique <a class='alert-link' href='{$this->route()->pathFor('carregarXmlProject')}'>aqui</a> para começar");
 
         return $this->view()->render($response, './bpmn-list.twig', $args);
     }

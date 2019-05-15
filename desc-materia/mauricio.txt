@@ -30,3 +30,23 @@ desc
 	* objetivo geral e especifico
 		geral: criar um produto ....
 		especifico: subprodutos.. artefados gerados.. algo que é resultante.. 
+
+14/05
+
+nomes próprios não vao em italico
+palavras chave só a primeira palavra vai em caixa alta e separa as palavras por ponto. de 3 a 5 palavras
+resumo tem que ter o objetivo geral, metodos, resultado e conclusões
+lembrar da diferença entre resultado e conclusões
+Conforme Kostelac, Matrljan e Dobovicek (2011, tradução nossa): falta adicionar o numero da página
+usa a aba do word "Estilos"
+
+tem que remover o recuo de citação direta no Garvin porque não concluiu as 3 linhas completas
+não pode ficar dando mais de um enter apos um paragrafo e não pode ter enter apos alguma figura ou citação direta com mais de 3 linhas
+uma figura em cima é legenda em baixo é fonte, nos estilos
+tabela é pra dados quantidativos, estatisticos
+o nome do autor das figuras e quadros é somente com a primeira letra do nome em caixa alta
+quando altera a figura... use o "adaptado de.."
+fonte corrier vai tudo que está na sua diagramas especificações cósdigos implementação telas  tudo isso é fonte courier
+título não é texto, precisa repetir se necessário
+cuidar com palavras coloquiais e superlativo
+não começar frase com a palavra ONDE

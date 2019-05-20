@@ -61,3 +61,11 @@ perguntas para um questionário
 fala de que subiu os arquivos de exemplo do Project para o server da aplicação esse é o teste do projeto
 
 gerar diagrama só dos pacotes
+
+tem que ver a metodologia se está ok?
+tem que ver a questão do formulário se está ok?
+tópicos para fundamentação teórica
+	BPMN
+	bpmn.io
+
+	trabalhos correlatos

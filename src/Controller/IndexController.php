@@ -90,6 +90,7 @@ class IndexController extends ControllerBase
 
         return $response
             ->withStatus(200)
+            ->withAddedHeader('Content-Type', 'application/xml')
             ->write($bpmnSubprocessCollection->first()->getXml());
     }
 

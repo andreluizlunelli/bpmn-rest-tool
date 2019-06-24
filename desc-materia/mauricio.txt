@@ -50,3 +50,36 @@ fonte corrier vai tudo que está na sua diagramas especificações cósdigos imp
 título não é texto, precisa repetir se necessário
 cuidar com palavras coloquiais e superlativo
 não começar frase com a palavra ONDE
+
+
+18/06
+2 cópias impressas se mauricio ou dalton estao na banca entrega só 1
+
+postar no ava uma versão .doc
+
+dia 2/7 tem aula e vai ser marcado o dia da banca
+
+artigo no máximo 20 páginas incluindo as referencias exceto o apendice e anexos
+
+no ava tem um modelo de template de apresentação da banca (nao ta ele vai colocar)
+o tempo da banca é de 15 a 20 minutos
+1 minuto para cada slide mais ou menos 18 slides
+tem que ter diagrama de especificação
+faz a apresentação dos slides e no final apresenta o software
+principais resultados
+
+slides de 20 a 30 minutos (aqui não existe interação com público, ninguem pergunta nada)
+depois até 15 minutos para apresentar o software(aqui existe interação e perguntas por parte do público, apresentar o código fonte)(pode fazer um vídeo como plano b)
+
+roteiro:
+	slides|software|questões
+
+perde nota se passar do tempo da apresentação
+apresentar minimamente os correlatos,
+só nos resultados tem que comparar com o meu
+tem que mostrar o software para o mauro, mauricio pediu, ver o software funcionando e tal
+
+não precisa explicar nada do que eu mudei da banca pro artigo(tira o requisito funcional da mensagem de exceção)
+ver com o mauro o que o mauricio vai pegar no meu pé sobre o meu tcc
+não coçar o saco na apresentação
+

@@ -1,3 +1,6 @@
+OLHA O FINAL DO ARQUIVO
+
+
 * trazer o título do nodo que deu erro
 * loader quando envia o arquivo
 * dar um split de todo subprocesso para poder acessalo individualmente
@@ -69,3 +72,15 @@ tópicos para fundamentação teórica
 	bpmn.io
 
 	trabalhos correlatos
+
+
+30/05/19
+na introdução eu tenho que falar como esse artigo está organizado
+pegar e tirar um print de cada gráfico que o google forms gerou para cada pergunta
+alterar nome do título do artigo
+adicionar conclusão
+criar apendice para o mer
+
+================== OLHAR
+
+não esquecer que o "pulo do gato" é que, devido o crescimento de demanda de profissionais com o diploma de PMP, pode evidenciar que "apenas" gerencia de projetos não está dando conta da demanda das empresas quando seu real problema é que não há processos dentro da empresa

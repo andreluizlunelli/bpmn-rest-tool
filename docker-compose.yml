@@ -1,0 +1,47 @@
+version: '3'
+
+volumes:
+  app-data:
+    driver: local
+
+services:
+
+  database:
+    image: postgres
+    volumes:
+      - app-data:/var/lib/postgresql
+      - ./postgresql.conf:/usr/share/postgresql/9.4/postgresql.conf
+      - ./pg_hba.conf:/usr/share/postgresql/9.4/pg_hba.conf
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  app:
+    image: ambientum/php:7.3-nginx
+    volumes:
+      - ./:/var/www/app
+      - ./nginx-cors-default.conf:/etc/nginx/sites/laravel.conf
+    ports:
+      - "80:8080"
+    environment:
+      - XDEBUG_CONFIG="remote_host=localhost remote_port=9000"
+      - XDEBUG_ENABLED=true
+      - driver=pdo_pgsql
+      - user=postgres
+      - password=postgres
+      - dbname=app
+      - port=5432
+      - host=database
+    links:
+      - database
+
+
+  node:
+    image: ambientum/node:11
+    volumes:
+      - ./:/var/www/app
+    links:
+      - app

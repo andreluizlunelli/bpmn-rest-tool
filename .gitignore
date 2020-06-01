@@ -7,5 +7,4 @@ public/vendor/*
 public/project-informado/*
 !*.gitkeep
 public/node_modules/*
-public/dist/*
 artigo/*.png
